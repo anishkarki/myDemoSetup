@@ -1,0 +1,40 @@
+# Data directories
+postgres-data/
+postgres-logs/
+opensearch-data/
+jenkins-data/
+
+# Backup files
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# Node modules (if applicable)
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Temporary
+tmp/
+temp/
