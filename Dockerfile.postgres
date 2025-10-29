@@ -1,0 +1,29 @@
+FROM postgres:latest
+
+# Install SSH server
+RUN apt-get update && \
+    apt-get install -y openssh-server && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create SSH directory
+RUN mkdir -p /run/sshd
+
+# Create a user for ansible
+RUN useradd -m -s /bin/bash ansible && \
+    echo "ansible:ansible123" | chpasswd
+
+# Allow SSH connections
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# Generate SSH host keys
+RUN ssh-keygen -A
+
+# Expose ports
+EXPOSE 22 5432
+
+# Create wrapper script to start SSH + PostgreSQL
+RUN echo '#!/bin/bash\nservice ssh start\nexec /usr/local/bin/docker-entrypoint.sh postgres "$@"' > /entrypoint-wrapper.sh && \
+    chmod +x /entrypoint-wrapper.sh
+
+ENTRYPOINT ["/entrypoint-wrapper.sh"]

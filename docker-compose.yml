@@ -1,0 +1,138 @@
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "-c log_statement=all -c log_duration=on -c logging_collector=on -c log_directory=/var/log/postgresql -c log_filename=postgresql.log"
+    ports:
+      - "15432:5432"
+      - "2223:22"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql
+      - ./postgres-logs:/var/log/postgresql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=OpenSearch@2024
+      - DISABLE_SECURITY_PLUGIN=false
+    ports:
+      - "19200:9200"
+    volumes:
+      - ./opensearch-data:/usr/share/opensearch/data
+    networks:
+      - app-network
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -k -u admin:OpenSearch@2024 https://localhost:9200/_cluster/health | grep -q 'status' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - "15601:5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+      OPENSEARCH_USERNAME: admin
+      OPENSEARCH_PASSWORD: OpenSearch@2024
+      OPENSEARCH_SSL_VERIFICATIONMODE: none
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    depends_on:
+      - opensearch
+    networks:
+      - app-network
+
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    container_name: fluent-bit
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./parsers_postgresql.conf:/fluent-bit/etc/parsers_postgresql.conf:ro
+      - ./postgres-logs:/var/log/postgresql:ro
+    depends_on:
+      opensearch:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    ports:
+      - "15050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  ansible:
+    image: python:3.12-slim
+    container_name: ansible
+    volumes:
+      - ./ansible:/ansible:rw
+    working_dir: /ansible
+    networks:
+      - app-network
+    ports:
+      - "2222:22"       
+    command: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y openssh-server ansible sudo &&
+        mkdir -p /var/run/sshd &&
+        echo 'root:root' | chpasswd &&
+        sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config &&
+        service ssh start &&
+        tail -f /dev/null"
+    restart: unless-stopped
+  
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ./jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JENKINS_OPTS: --prefix=/
+    networks:
+      - app-network
+    user: root
+    command: |
+      sh -c 'apt-get update && apt-get install -y python3 python3-venv python3-pip &&
+      /usr/local/bin/jenkins.sh'
+
+networks:
+  app-network:
+    driver: bridge
