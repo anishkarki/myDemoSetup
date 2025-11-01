@@ -22,6 +22,7 @@ Thumbs.db
 
 # Environment
 .env
+.Scripts/venv/
 .env.local
 
 # Logs
