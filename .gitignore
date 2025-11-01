@@ -24,6 +24,11 @@ Thumbs.db
 .env
 .Scripts/venv/
 .env.local
+# Python virtual environment
+.venv/
+venv/
+Scripts/venv/
+
 
 # Logs
 *.log
