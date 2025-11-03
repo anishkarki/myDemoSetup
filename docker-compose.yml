@@ -8,7 +8,17 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_INITDB_ARGS: "-c log_statement=all -c log_duration=on -c logging_collector=on -c log_directory=/var/log/postgresql -c log_filename=postgresql.log"
+      POSTGRES_INITDB_ARGS: >
+        -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+        -c logging_collector=on
+        -c log_directory=/var/log/postgresql
+        -c log_filename='postgresql-%Y-%m-%d.log'
+        -c log_truncate_on_rotation=off
+        -c log_rotation_age=1d
+        -c log_rotation_size=0
+        -c log_min_messages=warning
+        -c log_min_error_statement=error
+        -c log_statement=none
     ports:
       - "15432:5432"
       - "2223:22"
@@ -139,6 +149,34 @@ services:
     command: |
       sh -c 'apt-get update && apt-get install -y python3 python3-venv python3-pip &&
       /usr/local/bin/jenkins.sh'
+
+  leader:
+    image: cribl/cribl:latest
+    environment:
+      - CRIBL_DIST_MODE=leader
+      - CRIBL_DIST_LEADER_URL=tcp://${CRIBL_DIST_TOKEN:-criblmaster}@0.0.0.0:4200
+      - CRIBL_VOLUME_DIR=/opt/cribl/config-volume
+    ports:
+      - "19000:9000"
+      - "4200:4200"
+    volumes:
+      - "~/cribl-config:/opt/cribl/config-volume"
+      - ./postgres-logs:/var/log/postgresql:ro
+    networks:
+      - app-network
+  workers:
+    image: cribl/cribl:latest
+    depends_on: 
+      - leader
+    environment:
+      - CRIBL_DIST_MODE=worker
+      - CRIBL_DIST_LEADER_URL=tcp://${CRIBL_DIST_TOKEN:-criblmaster}@leader:4200
+    ports:
+      - "19002:9000"
+    volumes:
+      - ./postgres-logs:/var/log/postgresql:ro
+    networks:
+      - app-network
 
 networks:
   app-network:

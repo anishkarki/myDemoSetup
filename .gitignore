@@ -3,6 +3,7 @@ postgres-data/
 postgres-logs/
 opensearch-data/
 jenkins-data/
+cribl/
 
 # Backup files
 *.bak
