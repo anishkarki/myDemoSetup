@@ -187,6 +187,21 @@ services:
     networks:
       - app-network
 
+  hammerdb:
+    image: tpcorg/hammerdb:latest
+    container_name: hammerdb
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+    environment:
+      DISPLAY: ":0"
+    stdin_open: true 
+    tty: true
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ["/bin/bash"]
+
 networks:
   app-network:
     driver: bridge
