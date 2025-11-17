@@ -1,0 +1,123 @@
+{
+  "type": "monitor",
+  "name": "error_5min",
+  "monitor_type": "query_level_monitor",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 5,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgres*"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m"
+                    }
+                  }
+                }
+              ],
+              "should": [
+                {
+                  "match": {
+                    "_raw": "ERROR:"
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "aggs": {
+            "count": {
+              "value_count": {
+                "field": "_id"
+              }
+            },
+            "by_host": {
+              "terms": {
+                "field": "host.keyword",
+                "size": 5
+              },
+              "aggs": {
+                "top_errors": {
+                  "top_hits": {
+                    "size": 2,
+                    "_source": [
+                      "@timestamp",
+                      "_raw",
+                      "pid"
+                    ],
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "sample_logs": {
+              "top_hits": {
+                "size": 3,
+                "_source": [
+                  "@timestamp",
+                  "_raw",
+                  "host",
+                  "pid"
+                ],
+                "sort": [
+                  {
+                    "@timestamp": {
+                      "order": "desc"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "query_level_trigger": {
+        "name": "error_5min trigger",
+        "severity": "2",
+        "condition": {
+          "script": {
+            "source": "try {\n  def v = ctx.results[0].aggregations.count.value;\n  return v >= 2;\n} catch (Exception e) {\n  return false;\n}",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "name": "Send Alert",
+            "destination_id": "your_webhook_config_id",
+            "subject_template": {
+              "source": "error_5min"
+            },
+            "message_template": {
+              "source": "{\n  \"test_recepient\": \"abc@mail.com\",\n  \"prod_recepient\": \"abc@mail.com\",\n  \"header\": \"all alert\",\n  \"message\": \"<h2>{{ctx.monitor.name}}</h2>\\n<p>Severity: {{ctx.trigger.severity}}</p>\\n<p>Count: {{ctx.results[0].aggregations.count.value}}</p>\\n<p>Time: {{ctx.trigger.triggered_time}}</p>\\n<h3>Hosts</h3>\\n<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse'>\\n  <tr><th>Host</th><th>Count</th></tr>\\n  {{#ctx.results[0].aggregations.by_host.buckets}}\\n    <tr><td>{{key}}</td><td>{{doc_count}}</td></tr>\\n  {{/ctx.results[0].aggregations.by_host.buckets}}\\n</table>\\n<h3>Sample Logs</h3>\\n<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse'>\\n  <tr><th>Time</th><th>Log</th></tr>\\n  {{#ctx.results[0].aggregations.sample_logs.hits.hits}}\\n    <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\\n  {{/ctx.results[0].aggregations.sample_logs.hits.hits}}\\n</table>\"\n}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": false
+          }
+        ]
+      }
+    }
+  ]
+}

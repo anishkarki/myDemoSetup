@@ -25,6 +25,7 @@ Thumbs.db
 .env
 .Scripts/venv/
 .env.local
+Scripts/.secret
 # Python virtual environment
 .venv/
 venv/
