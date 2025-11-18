@@ -1,6 +1,6 @@
 {
   "type": "monitor",
-  "name": "error_5min",
+  "name": "error_medium",
   "monitor_type": "query_level_monitor",
   "enabled": true,
   "schedule": {
@@ -14,7 +14,8 @@
       "search": {
         "indices": [
           "postgres*",
-          "postgresql*"
+          "postgresql*",
+          "postgres-logs*"
         ],
         "query": {
           "size": 0,
@@ -30,15 +31,15 @@
                 },
                 {
                   "wildcard": {
-                    "host.keyword": "*db*"
+                    "host.keyword": "*"
                   }
                 }
               ],
               "should": [
                 {
                   "regexp": {
-                    "_raw": {
-                      "value": ".*e=(123|3434).*,ERROR"
+                    "error.code": {
+                      "value": "\\b(?:21000|22000|22001|22002|22003|22004|22005|22007|22008|22009|2200B|2200C|2200D|2200F|2200G|2200H|2200L|2200M|2200N|2200S|2200T|22010|22011|22012|22013|22014|22015|22016|22018|22019|2201B|2201E|2201F|2201G|2201W|2201X|22021|22022|22023|22024|22025|22026|22027|2202E|2202G|2202H|22030|22031|22032|22033|22034|22035|22036|22037|22038|22039|2203A|2203B|2203C|2203D|2203E|2203F|2203G|22P01|22P02|22P03|22P04|22P05|22P06|23000|23001|23502|23503|23505|23514|23P01|25001|25002|25003|25004|25005|25006|25007|25008|25P01|25P02|25P03|25P04|28000|28P01|2B000|2BP01|2D000|2F000|2F002|2F003|2F004|2F005|39000|39001|39004|39P01|39P02|39P03|3B000|3B001|3D000|40000|40001|40002|40003|40P01|42000|42501|42601|42602|42611|42622|42701|42702|42703|42704|42710|42712|42723|42725|42803|42804|42809|42830|42846|42883|428C9|42939|42P01|42P02|42P03|42P04|42P05|42P06|42P07|42P08|42P09|42P10|42P11|42P12|42P13|42P14|42P15|42P16|42P17|42P18|42P19|42P20|42P21|42P22)\\b"
                     }
                   }
                 }
@@ -60,7 +61,7 @@
               "aggs": {
                 "top_errors": {
                   "top_hits": {
-                    "size": 2,
+                    "size": 3,
                     "_source": [
                       "@timestamp",
                       "_raw",
@@ -77,7 +78,7 @@
                 },
                 "by_error": {
                   "terms": {
-                    "field": "_raw.keyword",
+                    "field": "error.code.keyword",
                     "size": 10
                   }
                 },
@@ -109,7 +110,7 @@
   "triggers": [
     {
       "query_level_trigger": {
-        "name": "error_5min trigger",
+        "name": "error_medium trigger",
         "severity": "2",
         "condition": {
           "script": {
@@ -122,13 +123,17 @@
             "name": "Send Alert",
             "destination_id": "your_webhook_config_id",
             "subject_template": {
-              "source": "error_5min"
+              "source": "error_medium"
             },
             "message_template": {
               "source": "<h2>PostgreSQL Alert: {{ctx.monitor.name}}</h2>\n<p>Severity: {{ctx.trigger.severity}} \u2014 Time: {{ctx.trigger.triggered_time}}</p>\n<h3>Summary</h3>\n<table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse'>\n  <tr><th>Host</th><th>Count</th></tr>\n  {{#ctx.results[0].aggregations.by_host.buckets}}\n    <tr><td>{{key}}</td><td>{{doc_count}}</td></tr>\n  {{/ctx.results[0].aggregations.by_host.buckets}}\n</table>\n<h3>Logs Grouped By Host</h3>\n{{#ctx.results[0].aggregations.by_host.buckets}}\n  <h4>Host: {{key}} ({{doc_count}})</h4>\n  <table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse;width:100%'>\n    <tr><th>Time</th><th>Log</th></tr>\n    {{#top_errors.hits.hits}}\n      <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\n    {{/top_errors.hits.hits}}\n    {{#host_samples.hits.hits}}\n      <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\n    {{/host_samples.hits.hits}}\n  </table>\n{{/ctx.results[0].aggregations.by_host.buckets}}\n",
               "lang": "mustache"
             },
-            "throttle_enabled": false
+            "throttle_enabled": true,
+            "throttle": {
+              "value": 10,
+              "unit": "MINUTES"
+            }
           }
         ]
       }

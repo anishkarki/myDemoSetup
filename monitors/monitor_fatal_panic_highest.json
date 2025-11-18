@@ -1,6 +1,6 @@
 {
   "type": "monitor",
-  "name": "fatal_panic",
+  "name": "fatal_panic_highest",
   "monitor_type": "query_level_monitor",
   "enabled": true,
   "schedule": {
@@ -30,32 +30,17 @@
                   }
                 },
                 {
-                  "bool": {
-                    "should": [
-                      {
-                        "wildcard": {
-                          "host.name.keyword": "*db*"
-                        }
-                      },
-                      {
-                        "wildcard": {
-                          "host.name.keyword": "*postgres*"
-                        }
-                      }
-                    ],
-                    "minimum_should_match": 1
+                  "wildcard": {
+                    "host.keyword": "*"
                   }
                 }
               ],
               "should": [
                 {
-                  "match_phrase": {
-                    "_raw": "FATAL"
-                  }
-                },
-                {
-                  "match_phrase": {
-                    "_raw": "PANIC"
+                  "regexp": {
+                    "error.code": {
+                      "value": "\\b(?:53000|53100|53200|53300|53400|54000|54001|54011|54023|55006|55P02|55P03|55P04|57000|57014|57P01|57P02|57P03|57P04|57P05|58000|58030|58P01|58P02|58P03|F0001|XX001|XX002)\\b"
+                    }
                   }
                 }
               ],
@@ -70,7 +55,7 @@
             },
             "sample_logs": {
               "top_hits": {
-                "size": 3,
+                "size": 5,
                 "_source": [
                   "@timestamp",
                   "_raw",
@@ -94,7 +79,7 @@
   "triggers": [
     {
       "query_level_trigger": {
-        "name": "fatal_panic trigger",
+        "name": "fatal_panic_highest trigger",
         "severity": "1",
         "condition": {
           "script": {
@@ -107,13 +92,17 @@
             "name": "Send Alert",
             "destination_id": "your_webhook_config_id",
             "subject_template": {
-              "source": "fatal_panic"
+              "source": "fatal_panic_highest"
             },
             "message_template": {
               "source": "<h2>PostgreSQL Alert: {{ctx.monitor.name}}</h2>\n<table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse'>\n  <tr><th>Severity</th><th>Count</th><th>Time</th></tr>\n  <tr>\n    <td>{{ctx.trigger.severity}}</td>\n    <td>{{ctx.results[0].aggregations.count.value}}</td>\n    <td>{{ctx.trigger.triggered_time}}</td>\n  </tr>\n</table>\n<h3>Sample Logs</h3>\n<ul>\n{{#ctx.results[0].aggregations.sample_logs.hits.hits}}\n  <li>[{{_source.@timestamp}}] {{{{_source._raw}}}</li>\n{{/ctx.results[0].aggregations.sample_logs.hits.hits}}\n</ul>\n",
               "lang": "mustache"
             },
-            "throttle_enabled": false
+            "throttle_enabled": true,
+            "throttle": {
+              "value": 10,
+              "unit": "MINUTES"
+            }
           }
         ]
       }

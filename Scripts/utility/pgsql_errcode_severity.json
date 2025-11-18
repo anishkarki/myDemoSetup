@@ -1,0 +1,1694 @@
+{
+  "00000": {
+    "class": "00",
+    "condition_name": "successful_completion",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01000": {
+    "class": "01",
+    "condition_name": "warning",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01003": {
+    "class": "01",
+    "condition_name": "null_value_eliminated_in_set_function",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01004": {
+    "class": "01",
+    "condition_name": "string_data_right_truncation",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01006": {
+    "class": "01",
+    "condition_name": "privilege_not_revoked",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01007": {
+    "class": "01",
+    "condition_name": "privilege_not_granted",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01008": {
+    "class": "01",
+    "condition_name": "implicit_zero_bit_padding",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0100C": {
+    "class": "01",
+    "condition_name": "dynamic_result_sets_returned",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "01P01": {
+    "class": "01",
+    "condition_name": "deprecated_feature",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "02000": {
+    "class": "02",
+    "condition_name": "no_data",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "02001": {
+    "class": "02",
+    "condition_name": "no_additional_dynamic_result_sets_returned",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "03000": {
+    "class": "03",
+    "condition_name": "sql_statement_not_yet_complete",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08000": {
+    "class": "08",
+    "condition_name": "connection_exception",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08001": {
+    "class": "08",
+    "condition_name": "sqlclient_unable_to_establish_sqlconnection",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08003": {
+    "class": "08",
+    "condition_name": "connection_does_not_exist",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08004": {
+    "class": "08",
+    "condition_name": "sqlserver_rejected_establishment_of_sqlconnection",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08006": {
+    "class": "08",
+    "condition_name": "connection_failure",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08007": {
+    "class": "08",
+    "condition_name": "transaction_resolution_unknown",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "08P01": {
+    "class": "08",
+    "condition_name": "protocol_violation",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "09000": {
+    "class": "09",
+    "condition_name": "triggered_action_exception",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0A000": {
+    "class": "0A",
+    "condition_name": "feature_not_supported",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0B000": {
+    "class": "0B",
+    "condition_name": "invalid_transaction_initiation",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0F000": {
+    "class": "0F",
+    "condition_name": "locator_exception",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0F001": {
+    "class": "0F",
+    "condition_name": "invalid_locator_specification",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0L000": {
+    "class": "0L",
+    "condition_name": "invalid_grantor",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0LP01": {
+    "class": "0L",
+    "condition_name": "invalid_grant_operation",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0P000": {
+    "class": "0P",
+    "condition_name": "invalid_role_specification",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0Z000": {
+    "class": "0Z",
+    "condition_name": "diagnostics_exception",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "0Z002": {
+    "class": "0Z",
+    "condition_name": "stacked_diagnostics_accessed_without_active_handler",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "21000": {
+    "class": "21",
+    "condition_name": "cardinality_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22000": {
+    "class": "22",
+    "condition_name": "data_exception",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22001": {
+    "class": "22",
+    "condition_name": "string_data_right_truncation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22002": {
+    "class": "22",
+    "condition_name": "null_value_no_indicator_parameter",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22003": {
+    "class": "22",
+    "condition_name": "numeric_value_out_of_range",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22004": {
+    "class": "22",
+    "condition_name": "null_value_not_allowed",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22005": {
+    "class": "22",
+    "condition_name": "error_in_assignment",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22007": {
+    "class": "22",
+    "condition_name": "invalid_datetime_format",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22008": {
+    "class": "22",
+    "condition_name": "datetime_field_overflow",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22009": {
+    "class": "22",
+    "condition_name": "invalid_time_zone_displacement_value",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200B": {
+    "class": "22",
+    "condition_name": "escape_character_conflict",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200C": {
+    "class": "22",
+    "condition_name": "invalid_use_of_escape_character",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200D": {
+    "class": "22",
+    "condition_name": "invalid_escape_octet",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200F": {
+    "class": "22",
+    "condition_name": "zero_length_character_string",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200G": {
+    "class": "22",
+    "condition_name": "most_specific_type_mismatch",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200H": {
+    "class": "22",
+    "condition_name": "sequence_generator_limit_exceeded",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200L": {
+    "class": "22",
+    "condition_name": "not_an_xml_document",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200M": {
+    "class": "22",
+    "condition_name": "invalid_xml_document",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200N": {
+    "class": "22",
+    "condition_name": "invalid_xml_content",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200S": {
+    "class": "22",
+    "condition_name": "invalid_xml_comment",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2200T": {
+    "class": "22",
+    "condition_name": "invalid_xml_processing_instruction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22010": {
+    "class": "22",
+    "condition_name": "invalid_indicator_parameter_value",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22011": {
+    "class": "22",
+    "condition_name": "substring_error",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22012": {
+    "class": "22",
+    "condition_name": "division_by_zero",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22013": {
+    "class": "22",
+    "condition_name": "invalid_preceding_or_following_size",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22014": {
+    "class": "22",
+    "condition_name": "invalid_argument_for_ntile_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22015": {
+    "class": "22",
+    "condition_name": "interval_field_overflow",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22016": {
+    "class": "22",
+    "condition_name": "invalid_argument_for_nth_value_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22018": {
+    "class": "22",
+    "condition_name": "invalid_character_value_for_cast",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22019": {
+    "class": "22",
+    "condition_name": "invalid_escape_character",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2201B": {
+    "class": "22",
+    "condition_name": "invalid_regular_expression",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2201E": {
+    "class": "22",
+    "condition_name": "invalid_argument_for_logarithm",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2201F": {
+    "class": "22",
+    "condition_name": "invalid_argument_for_power_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2201G": {
+    "class": "22",
+    "condition_name": "invalid_argument_for_width_bucket_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2201W": {
+    "class": "22",
+    "condition_name": "invalid_row_count_in_limit_clause",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2201X": {
+    "class": "22",
+    "condition_name": "invalid_row_count_in_result_offset_clause",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22021": {
+    "class": "22",
+    "condition_name": "character_not_in_repertoire",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22022": {
+    "class": "22",
+    "condition_name": "indicator_overflow",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22023": {
+    "class": "22",
+    "condition_name": "invalid_parameter_value",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22024": {
+    "class": "22",
+    "condition_name": "unterminated_c_string",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22025": {
+    "class": "22",
+    "condition_name": "invalid_escape_sequence",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22026": {
+    "class": "22",
+    "condition_name": "string_data_length_mismatch",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22027": {
+    "class": "22",
+    "condition_name": "trim_error",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2202E": {
+    "class": "22",
+    "condition_name": "array_subscript_error",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2202G": {
+    "class": "22",
+    "condition_name": "invalid_tablesample_repeat",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2202H": {
+    "class": "22",
+    "condition_name": "invalid_tablesample_argument",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22030": {
+    "class": "22",
+    "condition_name": "duplicate_json_object_key_value",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22031": {
+    "class": "22",
+    "condition_name": "invalid_argument_for_sql_json_datetime_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22032": {
+    "class": "22",
+    "condition_name": "invalid_json_text",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22033": {
+    "class": "22",
+    "condition_name": "invalid_sql_json_subscript",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22034": {
+    "class": "22",
+    "condition_name": "more_than_one_sql_json_item",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22035": {
+    "class": "22",
+    "condition_name": "no_sql_json_item",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22036": {
+    "class": "22",
+    "condition_name": "non_numeric_sql_json_item",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22037": {
+    "class": "22",
+    "condition_name": "non_unique_keys_in_a_json_object",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22038": {
+    "class": "22",
+    "condition_name": "singleton_sql_json_item_required",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22039": {
+    "class": "22",
+    "condition_name": "sql_json_array_not_found",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203A": {
+    "class": "22",
+    "condition_name": "sql_json_member_not_found",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203B": {
+    "class": "22",
+    "condition_name": "sql_json_number_not_found",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203C": {
+    "class": "22",
+    "condition_name": "sql_json_object_not_found",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203D": {
+    "class": "22",
+    "condition_name": "too_many_json_array_elements",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203E": {
+    "class": "22",
+    "condition_name": "too_many_json_object_members",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203F": {
+    "class": "22",
+    "condition_name": "sql_json_scalar_required",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2203G": {
+    "class": "22",
+    "condition_name": "sql_json_item_cannot_be_cast_to_target_type",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22P01": {
+    "class": "22",
+    "condition_name": "floating_point_exception",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22P02": {
+    "class": "22",
+    "condition_name": "invalid_text_representation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22P03": {
+    "class": "22",
+    "condition_name": "invalid_binary_representation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22P04": {
+    "class": "22",
+    "condition_name": "bad_copy_file_format",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22P05": {
+    "class": "22",
+    "condition_name": "untranslatable_character",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "22P06": {
+    "class": "22",
+    "condition_name": "nonstandard_use_of_escape_character",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23000": {
+    "class": "23",
+    "condition_name": "integrity_constraint_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23001": {
+    "class": "23",
+    "condition_name": "restrict_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23502": {
+    "class": "23",
+    "condition_name": "not_null_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23503": {
+    "class": "23",
+    "condition_name": "foreign_key_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23505": {
+    "class": "23",
+    "condition_name": "unique_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23514": {
+    "class": "23",
+    "condition_name": "check_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "23P01": {
+    "class": "23",
+    "condition_name": "exclusion_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25001": {
+    "class": "25",
+    "condition_name": "active_sql_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25002": {
+    "class": "25",
+    "condition_name": "branch_transaction_already_active",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25003": {
+    "class": "25",
+    "condition_name": "inappropriate_access_mode_for_branch_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25004": {
+    "class": "25",
+    "condition_name": "inappropriate_isolation_level_for_branch_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25005": {
+    "class": "25",
+    "condition_name": "no_active_sql_transaction_for_branch_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25006": {
+    "class": "25",
+    "condition_name": "read_only_sql_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25007": {
+    "class": "25",
+    "condition_name": "schema_and_data_statement_mixing_not_supported",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25008": {
+    "class": "25",
+    "condition_name": "held_cursor_requires_same_isolation_level",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25P01": {
+    "class": "25",
+    "condition_name": "no_active_sql_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25P02": {
+    "class": "25",
+    "condition_name": "in_failed_sql_transaction",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25P03": {
+    "class": "25",
+    "condition_name": "idle_in_transaction_session_timeout",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "25P04": {
+    "class": "25",
+    "condition_name": "transaction_timeout",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "26000": {
+    "class": "26",
+    "condition_name": "invalid_sql_statement_name",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "27000": {
+    "class": "27",
+    "condition_name": "triggered_data_change_violation",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "28000": {
+    "class": "28",
+    "condition_name": "invalid_authorization_specification",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "28P01": {
+    "class": "28",
+    "condition_name": "invalid_password",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2B000": {
+    "class": "2B",
+    "condition_name": "dependent_privilege_descriptors_still_exist",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2BP01": {
+    "class": "2B",
+    "condition_name": "dependent_objects_still_exist",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2D000": {
+    "class": "2D",
+    "condition_name": "invalid_transaction_termination",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2F000": {
+    "class": "2F",
+    "condition_name": "sql_routine_exception",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2F002": {
+    "class": "2F",
+    "condition_name": "modifying_sql_data_not_permitted",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2F003": {
+    "class": "2F",
+    "condition_name": "prohibited_sql_statement_attempted",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2F004": {
+    "class": "2F",
+    "condition_name": "reading_sql_data_not_permitted",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "2F005": {
+    "class": "2F",
+    "condition_name": "function_executed_no_return_statement",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "34000": {
+    "class": "34",
+    "condition_name": "invalid_cursor_name",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "38000": {
+    "class": "38",
+    "condition_name": "external_routine_exception",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "38001": {
+    "class": "38",
+    "condition_name": "containing_sql_not_permitted",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "38002": {
+    "class": "38",
+    "condition_name": "modifying_sql_data_not_permitted",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "38003": {
+    "class": "38",
+    "condition_name": "prohibited_sql_statement_attempted",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "38004": {
+    "class": "38",
+    "condition_name": "reading_sql_data_not_permitted",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "39000": {
+    "class": "39",
+    "condition_name": "external_routine_invocation_exception",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "39001": {
+    "class": "39",
+    "condition_name": "invalid_sqlstate_returned",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "39004": {
+    "class": "39",
+    "condition_name": "null_value_not_allowed",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "39P01": {
+    "class": "39",
+    "condition_name": "trigger_protocol_violated",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "39P02": {
+    "class": "39",
+    "condition_name": "srf_protocol_violated",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "39P03": {
+    "class": "39",
+    "condition_name": "event_trigger_protocol_violated",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "3B000": {
+    "class": "3B",
+    "condition_name": "savepoint_exception",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "3B001": {
+    "class": "3B",
+    "condition_name": "invalid_savepoint_specification",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "3D000": {
+    "class": "3D",
+    "condition_name": "invalid_catalog_name",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "3F000": {
+    "class": "3F",
+    "condition_name": "invalid_schema_name",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "40000": {
+    "class": "40",
+    "condition_name": "transaction_rollback",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "40001": {
+    "class": "40",
+    "condition_name": "serialization_failure",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "40002": {
+    "class": "40",
+    "condition_name": "transaction_integrity_constraint_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "40003": {
+    "class": "40",
+    "condition_name": "statement_completion_unknown",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "40P01": {
+    "class": "40",
+    "condition_name": "deadlock_detected",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42000": {
+    "class": "42",
+    "condition_name": "syntax_error_or_access_rule_violation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42501": {
+    "class": "42",
+    "condition_name": "insufficient_privilege",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42601": {
+    "class": "42",
+    "condition_name": "syntax_error",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42602": {
+    "class": "42",
+    "condition_name": "invalid_name",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42611": {
+    "class": "42",
+    "condition_name": "invalid_column_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42622": {
+    "class": "42",
+    "condition_name": "name_too_long",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42701": {
+    "class": "42",
+    "condition_name": "duplicate_column",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42702": {
+    "class": "42",
+    "condition_name": "ambiguous_column",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42703": {
+    "class": "42",
+    "condition_name": "undefined_column",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42704": {
+    "class": "42",
+    "condition_name": "undefined_object",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42710": {
+    "class": "42",
+    "condition_name": "duplicate_object",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42712": {
+    "class": "42",
+    "condition_name": "duplicate_alias",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42723": {
+    "class": "42",
+    "condition_name": "duplicate_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42725": {
+    "class": "42",
+    "condition_name": "ambiguous_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42803": {
+    "class": "42",
+    "condition_name": "grouping_error",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42804": {
+    "class": "42",
+    "condition_name": "datatype_mismatch",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42809": {
+    "class": "42",
+    "condition_name": "wrong_object_type",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42830": {
+    "class": "42",
+    "condition_name": "invalid_foreign_key",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42846": {
+    "class": "42",
+    "condition_name": "cannot_coerce",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42883": {
+    "class": "42",
+    "condition_name": "undefined_function",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "428C9": {
+    "class": "42",
+    "condition_name": "generated_always",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42939": {
+    "class": "42",
+    "condition_name": "reserved_name",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P01": {
+    "class": "42",
+    "condition_name": "undefined_table",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P02": {
+    "class": "42",
+    "condition_name": "undefined_parameter",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P03": {
+    "class": "42",
+    "condition_name": "duplicate_cursor",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P04": {
+    "class": "42",
+    "condition_name": "duplicate_database",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P05": {
+    "class": "42",
+    "condition_name": "duplicate_prepared_statement",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P06": {
+    "class": "42",
+    "condition_name": "duplicate_schema",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P07": {
+    "class": "42",
+    "condition_name": "duplicate_table",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P08": {
+    "class": "42",
+    "condition_name": "ambiguous_parameter",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P09": {
+    "class": "42",
+    "condition_name": "ambiguous_alias",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P10": {
+    "class": "42",
+    "condition_name": "invalid_column_reference",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P11": {
+    "class": "42",
+    "condition_name": "invalid_cursor_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P12": {
+    "class": "42",
+    "condition_name": "invalid_database_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P13": {
+    "class": "42",
+    "condition_name": "invalid_function_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P14": {
+    "class": "42",
+    "condition_name": "invalid_prepared_statement_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P15": {
+    "class": "42",
+    "condition_name": "invalid_schema_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P16": {
+    "class": "42",
+    "condition_name": "invalid_table_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P17": {
+    "class": "42",
+    "condition_name": "invalid_object_definition",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P18": {
+    "class": "42",
+    "condition_name": "indeterminate_datatype",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P19": {
+    "class": "42",
+    "condition_name": "invalid_recursion",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P20": {
+    "class": "42",
+    "condition_name": "windowing_error",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P21": {
+    "class": "42",
+    "condition_name": "collation_mismatch",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "42P22": {
+    "class": "42",
+    "condition_name": "indeterminate_collation",
+    "preferred_level": "ERROR",
+    "severity": "medium"
+  },
+  "44000": {
+    "class": "44",
+    "condition_name": "with_check_option_violation",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "53000": {
+    "class": "53",
+    "condition_name": "insufficient_resources",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "53100": {
+    "class": "53",
+    "condition_name": "disk_full",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "53200": {
+    "class": "53",
+    "condition_name": "out_of_memory",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "53300": {
+    "class": "53",
+    "condition_name": "too_many_connections",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "53400": {
+    "class": "53",
+    "condition_name": "configuration_limit_exceeded",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "54000": {
+    "class": "54",
+    "condition_name": "program_limit_exceeded",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "54001": {
+    "class": "54",
+    "condition_name": "statement_too_complex",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "54011": {
+    "class": "54",
+    "condition_name": "too_many_columns",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "54023": {
+    "class": "54",
+    "condition_name": "too_many_arguments",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "55006": {
+    "class": "55",
+    "condition_name": "object_in_use",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "55P02": {
+    "class": "55",
+    "condition_name": "cant_change_runtime_param",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "55P03": {
+    "class": "55",
+    "condition_name": "lock_not_available",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "55P04": {
+    "class": "55",
+    "condition_name": "unsafe_new_enum_value_usage",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57000": {
+    "class": "57",
+    "condition_name": "operator_intervention",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57014": {
+    "class": "57",
+    "condition_name": "query_canceled",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57P01": {
+    "class": "57",
+    "condition_name": "admin_shutdown",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57P02": {
+    "class": "57",
+    "condition_name": "crash_shutdown",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57P03": {
+    "class": "57",
+    "condition_name": "cannot_connect_now",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57P04": {
+    "class": "57",
+    "condition_name": "database_dropped",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "57P05": {
+    "class": "57",
+    "condition_name": "idle_session_timeout",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "58000": {
+    "class": "58",
+    "condition_name": "system_error",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "58030": {
+    "class": "58",
+    "condition_name": "io_error",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "58P01": {
+    "class": "58",
+    "condition_name": "undefined_file",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "58P02": {
+    "class": "58",
+    "condition_name": "duplicate_file",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "58P03": {
+    "class": "58",
+    "condition_name": "file_name_too_long",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "ABOUT": {
+    "class": "AB",
+    "condition_name": "Download",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "CHECK": {
+    "class": "CH",
+    "condition_name": "OPTION",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "CLASS": {
+    "class": "CL",
+    "condition_name": "of",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "DEVEL": {
+    "class": "DE",
+    "condition_name": "Unsupported",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "ERROR": {
+    "class": "ER",
+    "condition_name": "Codes",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "F0001": {
+    "class": "F0",
+    "condition_name": "lock_file_exists",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "FIRST": {
+    "class": "FI",
+    "condition_name": "two",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "FOUND": {
+    "class": "FO",
+    "condition_name": "20000",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV000": {
+    "class": "HV",
+    "condition_name": "fdw_error",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV001": {
+    "class": "HV",
+    "condition_name": "fdw_out_of_memory",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV002": {
+    "class": "HV",
+    "condition_name": "fdw_dynamic_parameter_value_needed",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV004": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_data_type",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV005": {
+    "class": "HV",
+    "condition_name": "fdw_column_name_not_found",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV006": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_data_type_descriptors",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV007": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_column_name",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV008": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_column_number",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV009": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_use_of_null_pointer",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00A": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_string_format",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00B": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_handle",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00C": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_option_index",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00D": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_option_name",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00J": {
+    "class": "HV",
+    "condition_name": "fdw_option_name_not_found",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00K": {
+    "class": "HV",
+    "condition_name": "fdw_reply_handle",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00L": {
+    "class": "HV",
+    "condition_name": "fdw_unable_to_create_execution",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00M": {
+    "class": "HV",
+    "condition_name": "fdw_unable_to_create_reply",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00N": {
+    "class": "HV",
+    "condition_name": "fdw_unable_to_establish_connection",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00P": {
+    "class": "HV",
+    "condition_name": "fdw_no_schemas",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00Q": {
+    "class": "HV",
+    "condition_name": "fdw_schema_not_found",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV00R": {
+    "class": "HV",
+    "condition_name": "fdw_table_not_found",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV010": {
+    "class": "HV",
+    "condition_name": "fdw_function_sequence_error",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV014": {
+    "class": "HV",
+    "condition_name": "fdw_too_many_handles",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV021": {
+    "class": "HV",
+    "condition_name": "fdw_inconsistent_descriptor_information",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV024": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_attribute_value",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV090": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_string_length_or_buffer_length",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "HV091": {
+    "class": "HV",
+    "condition_name": "fdw_invalid_descriptor_field_identifier",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "INFER": {
+    "class": "IN",
+    "condition_name": "what",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "LIMIT": {
+    "class": "LI",
+    "condition_name": "Exceeded",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "LISTS": {
+    "class": "LI",
+    "condition_name": "all",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "LOWER": {
+    "class": "LO",
+    "condition_name": "case",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "MATCH": {
+    "class": "MA",
+    "condition_name": "your",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "MIGHT": {
+    "class": "MI",
+    "condition_name": "still",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "NAMES": {
+    "class": "NA",
+    "condition_name": "can",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "OTHER": {
+    "class": "OT",
+    "condition_name": "databases",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "P0000": {
+    "class": "P0",
+    "condition_name": "plpgsql_error",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "P0001": {
+    "class": "P0",
+    "condition_name": "raise_exception",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "P0002": {
+    "class": "P0",
+    "condition_name": "no_data_found",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "P0003": {
+    "class": "P0",
+    "condition_name": "too_many_rows",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "P0004": {
+    "class": "P0",
+    "condition_name": "assert_failure",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "PGSQL": {
+    "class": "PG",
+    "condition_name": "does",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "SHOWN": {
+    "class": "SH",
+    "condition_name": "in",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "STATE": {
+    "class": "ST",
+    "condition_name": "24000",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "STILL": {
+    "class": "ST",
+    "condition_name": "Exist",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "TABLE": {
+    "class": "TA",
+    "condition_name": "column",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "THERE": {
+    "class": "TH",
+    "condition_name": "is",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "THOSE": {
+    "class": "TH",
+    "condition_name": "are",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "THREE": {
+    "class": "TH",
+    "condition_name": "characters",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "TYPES": {
+    "class": "TY",
+    "condition_name": "of",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "UPPER": {
+    "class": "UP",
+    "condition_name": "or",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "WHICH": {
+    "class": "WH",
+    "condition_name": "error",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "WHILE": {
+    "class": "WH",
+    "condition_name": "the",
+    "preferred_level": "WARNING",
+    "severity": "normal"
+  },
+  "XX001": {
+    "class": "XX",
+    "condition_name": "data_corrupted",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  },
+  "XX002": {
+    "class": "XX",
+    "condition_name": "index_corrupted",
+    "preferred_level": "FATAL",
+    "severity": "highest"
+  }
+}

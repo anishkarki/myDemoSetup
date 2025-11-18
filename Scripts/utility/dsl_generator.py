@@ -70,8 +70,16 @@ def build_match_clauses(field: str, values: List[str]) -> List[Dict[str, Any]]:
         v = v.strip()
         if not v:
             continue
-        # If value looks like regex with |, let caller decide, here we use match
-        clauses.append({"match": {field: v}})
+        # Heuristics: if value looks like a regex, use a regexp clause; otherwise use match_phrase
+        is_regex = False
+        if any(x in v for x in ['.*', '(', ')', '|', '^', '$', '[', ']']):
+            is_regex = True
+        if is_regex:
+            # regexp clause uses the provided pattern
+            clauses.append({"regexp": {field: {"value": v}}})
+        else:
+            # use match_phrase to prefer exact token sequences
+            clauses.append({"match_phrase": {field: v}})
     return clauses
 
 
@@ -85,7 +93,25 @@ def hostname_clause(field: str, pattern: str) -> Dict[str, Any]:
     return {"term": {field: {"value": pattern}}}
 
 
-def build_query(match_field: str, match_values: List[str], window: str, host_field: str = None, host_pattern: str = None) -> Dict[str, Any]:
+def build_host_filter(field: str, patterns: List[str]) -> Dict[str, Any]:
+    """Build a filter for one or more hostname patterns.
+    
+    If multiple patterns, returns a 'should' clause with wildcards/terms.
+    If single pattern, returns the clause directly.
+    """
+    if not patterns:
+        return None
+    
+    clauses = [hostname_clause(field, p.strip()) for p in patterns if p.strip()]
+    if not clauses:
+        return None
+    if len(clauses) == 1:
+        return clauses[0]
+    # multiple patterns: use should with minimum_should_match=1
+    return {"bool": {"should": clauses, "minimum_should_match": 1}}
+
+
+def build_query(match_field: str, match_values: List[str], window: str, host_field: str = None, host_patterns: List[str] = None) -> Dict[str, Any]:
     time_range = {"range": {"@timestamp": {"gte": f"now-{window}"}}}
 
     should = build_match_clauses(match_field, match_values)
@@ -95,17 +121,36 @@ def build_query(match_field: str, match_values: List[str], window: str, host_fie
     else:
         bool_q = {"must": must}
 
-    if host_field and host_pattern:
-        must.append(hostname_clause(host_field, host_pattern))
+    if host_field and host_patterns:
+        host_filter = build_host_filter(host_field, host_patterns)
+        if host_filter:
+            must.append(host_filter)
 
     return {"bool": bool_q}
 
 
 def build_aggregations(options: Dict[str, str]) -> Dict[str, Any]:
     aggs = {"count": {"value_count": {"field": "_id"}}}
-    if options.get("by_host", "false").lower() in ("1", "true", "yes"):
-        aggs["by_host"] = {
-            "terms": {"field": "host.keyword", "size": int(options.get("by_host_size", "5"))},
+    # Helper to interpret sample sizes: allow 'all' to request a large cap
+    def parse_sample_size(val: str, default: int) -> int:
+        if not val:
+            return default
+        try:
+            if isinstance(val, str) and val.lower() == 'all':
+                return 10000
+            return int(val)
+        except Exception:
+            return default
+
+    sample_size_global = parse_sample_size(options.get("sample_size", "0"), 0)
+    sample_size_per_host = parse_sample_size(options.get("sample_size_per_host", options.get("sample_size", "0")), 0)
+
+    # by_host aggregation (optional)
+    if options.get("by_host", "false").lower() in ("1", "true", "yes") or int(options.get("per_host_threshold", "0")) > 0:
+        host_field = options.get("host_field", "host")
+        host_keyword = host_field if host_field.endswith('.keyword') else f"{host_field}.keyword"
+        by_host = {
+            "terms": {"field": host_keyword, "size": int(options.get("by_host_size", "5"))},
             "aggs": {
                 "top_errors": {
                     "top_hits": {
@@ -117,10 +162,32 @@ def build_aggregations(options: Dict[str, str]) -> Dict[str, Any]:
             }
         }
 
-    if int(options.get("sample_size", "0")) > 0:
+        # If per-host error threshold is requested, add nested by_error terms aggregation
+        if int(options.get("per_host_threshold", "0")) > 0:
+            # choose the field to bucket errors on; prefer match_field if passed in options
+            match_field = options.get("match_field", "_raw")
+            error_field_keyword = match_field if match_field.endswith('.keyword') else f"{match_field}.keyword"
+            by_host["aggs"]["by_error"] = {
+                "terms": {"field": error_field_keyword, "size": int(options.get("by_error_size", "10"))}
+            }
+
+        # If user requested per-host samples (or global samples) add a top_hits under each host bucket
+        if sample_size_per_host > 0:
+            by_host["aggs"]["host_samples"] = {
+                "top_hits": {
+                    "size": sample_size_per_host,
+                    "_source": ["@timestamp", "_raw", "pid", "host"],
+                    "sort": [{"@timestamp": {"order": "desc"}}]
+                }
+            }
+
+        aggs["by_host"] = by_host
+
+    # global sample logs (not grouped by host)
+    if sample_size_global > 0:
         aggs["sample_logs"] = {
             "top_hits": {
-                "size": int(options.get("sample_size", "3")),
+                "size": sample_size_global,
                 "_source": ["@timestamp", "_raw", "host", "pid"],
                 "sort": [{"@timestamp": {"order": "desc"}}]
             }
@@ -128,8 +195,28 @@ def build_aggregations(options: Dict[str, str]) -> Dict[str, Any]:
     return aggs
 
 
-def build_safe_script(threshold: int, agg_name: str = "count") -> Dict[str, Any]:
-    # Return a painless script that returns false on exception and otherwise evaluates the condition
+def build_safe_script(threshold: int, agg_name: str = "count", per_host_threshold: int = 0) -> Dict[str, Any]:
+    # Return a painless script that returns false on exception and otherwise evaluates the condition.
+    # If per_host_threshold > 0, the script scans nested by_host.by_error buckets for counts >= threshold.
+    if per_host_threshold and per_host_threshold > 0:
+        src = (
+            "try {\n"
+            "  def hosts = ctx.results[0].aggregations.by_host.buckets;\n"
+            "  for (h in hosts) {\n"
+            "    if (h.containsKey('by_error')) {\n"
+            "      for (e in h.by_error.buckets) {\n"
+            f"        if (e.doc_count >= {per_host_threshold}) return true;\n"
+            "      }\n"
+            "    }\n"
+            "  }\n"
+            "  return false;\n"
+            "} catch (Exception e) {\n"
+            "  return false;\n"
+            "}"
+        )
+        return {"script": {"source": src, "lang": "painless"}}
+
+    # default path: check single aggregation value
     src = (
         "try {\n"
         f"  def v = ctx.results[0].aggregations.{agg_name}.value;\n"
@@ -159,12 +246,50 @@ def html_table_template(agg_name: str = "count", include_samples: bool = True) -
             "<h3>Sample Logs</h3>\n"
             "<ul>\n"
             "{{#ctx.results[0].aggregations.sample_logs.hits.hits}}\n"
-            "  <li>[{{_source.@timestamp}}] {{{{_source._raw}}}}</li>\n"
+            "  <li>[{{_source.@timestamp}}] {{{{_source._raw}}}</li>\n"
             "{{/ctx.results[0].aggregations.sample_logs.hits.hits}}\n"
             "</ul>\n"
         )
         return header + samples
     return header
+
+
+def html_grouped_by_host_template(include_hosts: bool = True, include_samples_per_host: bool = True) -> str:
+    """Build an HTML Mustache template grouping results by host and listing logs per host.
+
+    The template expects `ctx.results[0].aggregations.by_host.buckets` to exist and optionally
+    `top_errors` or `host_samples` inside each host bucket.
+    """
+    tpl = (
+        "<h2>PostgreSQL Alert: {{ctx.monitor.name}}</h2>\n"
+        "<p>Severity: {{ctx.trigger.severity}} — Time: {{ctx.trigger.triggered_time}}</p>\n"
+        "<h3>Summary</h3>\n"
+        "<table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse'>\n"
+        "  <tr><th>Host</th><th>Count</th></tr>\n"
+        "  {{#ctx.results[0].aggregations.by_host.buckets}}\n"
+        "    <tr><td>{{key}}</td><td>{{doc_count}}</td></tr>\n"
+        "  {{/ctx.results[0].aggregations.by_host.buckets}}\n"
+        "</table>\n"
+    )
+
+    if include_samples_per_host:
+        tpl += (
+            "<h3>Logs Grouped By Host</h3>\n"
+            "{{#ctx.results[0].aggregations.by_host.buckets}}\n"
+            "  <h4>Host: {{key}} ({{doc_count}})</h4>\n"
+            "  <table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse;width:100%'>\n"
+            "    <tr><th>Time</th><th>Log</th></tr>\n"
+            "    {{#top_errors.hits.hits}}\n"
+            "      <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\n"
+            "    {{/top_errors.hits.hits}}\n"
+            "    {{#host_samples.hits.hits}}\n"
+            "      <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\n"
+            "    {{/host_samples.hits.hits}}\n"
+            "  </table>\n"
+            "{{/ctx.results[0].aggregations.by_host.buckets}}\n"
+        )
+
+    return tpl
 
 
 def build_monitor_payload(name: str, options: Dict[str, str], mapping: Dict[str, Any]) -> Dict[str, Any]:
@@ -174,19 +299,58 @@ def build_monitor_payload(name: str, options: Dict[str, str], mapping: Dict[str,
     window = options.get("window", "5m")
 
     # resolve match_field via mapping if requested
-    match_field = options.get("match_field") or find_field_for_raw(mapping)
-
-    # parse match values: support comma or pipe
-    raw_vals = options.get("match_value", "ERROR")
-    if '|' in raw_vals and ',' not in raw_vals:
-        match_values = [v for v in raw_vals.split('|') if v]
+    # If user prefers structured error code fields, allow opting into `error.code` (or similar)
+    if options.get("use_structured_code", "false").lower() in ("1", "true", "yes"):
+        # prefer a standard structured field name for SQLSTATE-like codes
+        # common names: error.code, sqlstate, sql_state, code
+        # We default to `error.code` but this can be overridden explicitly with match_field
+        match_field = options.get("match_field") or "error.code"
     else:
-        match_values = [v for v in re.split('[,;]', raw_vals) if v]
+        match_field = options.get("match_field") or find_field_for_raw(mapping)
+
+    # parse match values: support comma or pipe, but preserve regex patterns as single value
+    raw_vals = options.get("match_value", "ERROR")
+
+    # Allow shorthand expansion: `match_value = highest|medium|normal` will load
+    # precomputed regexes from `Scripts/utility/pgsql_errcode_regexes.json`.
+    shorthand = raw_vals.strip().lower()
+    if shorthand in ("highest", "medium", "normal"):
+        try:
+            with open('Scripts/utility/pgsql_errcode_regexes.json', 'r', encoding='utf-8') as fh:
+                jr = json.load(fh)
+            if shorthand in jr and jr[shorthand]:
+                raw_vals = jr[shorthand]
+                match_type_opt = 'regex'
+            else:
+                match_type_opt = options.get('match_type', '').lower()
+        except Exception:
+            match_type_opt = options.get('match_type', '').lower()
+    else:
+        match_type_opt = options.get('match_type', '').lower()
+
+    # Heuristic: detect if the value is a regex pattern by presence of regex metacharacters
+    has_regex_marker = bool(re.search(r'[.*()|\[\]^$\\]', raw_vals))
+    if match_type_opt.startswith("regex") or has_regex_marker:
+        # Single regex pattern
+        match_values = [raw_vals.strip()]
+    elif ',' in raw_vals:
+        # Comma-separated list of literals (or regexes, but not combined)
+        match_values = [v.strip() for v in raw_vals.split(',') if v.strip()]
+    elif '|' in raw_vals:
+        # Pipe-separated (for literals like FATAL|PANIC without ())
+        match_values = [v.strip() for v in raw_vals.split('|') if v.strip()]
+    else:
+        match_values = [raw_vals.strip()]
 
     host_field = options.get("host_field", "host.name")
-    host_pattern = options.get("host_pattern", None)
+    host_pattern_str = options.get("host_pattern", None)
+    # Parse host patterns (comma or semicolon separated)
+    # allow comma, semicolon or pipe as separators for multiple host patterns
+    host_patterns = [p.strip() for p in re.split('[,;|]', host_pattern_str) if p.strip()] if host_pattern_str else None
 
-    q = build_query(match_field, match_values, window, host_field if host_pattern else None, host_pattern)
+    q = build_query(match_field, match_values, window, host_field if host_patterns else None, host_patterns)
+    # determine if per-host error threshold behavior is requested
+    per_host_threshold = int(options.get("per_host_threshold", "0"))
     aggs = build_aggregations(options)
 
     input_search = {"search": {"indices": indices, "query": {"size": 0, "query": q, "aggs": aggs}}}
@@ -195,10 +359,26 @@ def build_monitor_payload(name: str, options: Dict[str, str], mapping: Dict[str,
     severity = options.get("severity", "1")
     destination_id = options.get("destination_id", "")
 
-    trigger_condition = build_safe_script(threshold, agg_name="count")
+    # Build trigger condition: if per_host_threshold set, generate script to scan nested buckets
+    if per_host_threshold > 0:
+        trigger_condition = build_safe_script(threshold=threshold, agg_name="count", per_host_threshold=per_host_threshold)
+    else:
+        trigger_condition = build_safe_script(threshold, agg_name="count")
 
     # Build HTML message template
-    html_msg = html_table_template(agg_name="count", include_samples=(int(options.get("sample_size", "0")) > 0))
+    by_host_enabled = options.get("by_host", "false").lower() in ("1", "true", "yes") or per_host_threshold > 0
+    include_samples_global = (options.get("sample_size", "0").lower() == 'all') or (int(options.get("sample_size", "0")) > 0)
+    include_samples_per_host = (options.get("sample_size_per_host") and options.get("sample_size_per_host").lower() == 'all') or (int(options.get("sample_size_per_host", options.get("sample_size", "0"))) > 0)
+
+    if by_host_enabled:
+        # Use grouped-by-host template when results are bucketed by host
+        html_msg = html_grouped_by_host_template(include_hosts=True, include_samples_per_host=include_samples_per_host)
+    else:
+        html_msg = html_table_template(agg_name="count", include_samples=include_samples_global)
+
+    # Build throttle settings if enabled
+    throttle_enabled = options.get("throttle_enabled", "false").lower() in ("1", "true", "yes")
+    throttle_duration_mins = int(options.get("throttle_duration_minutes", "10"))
 
     trigger = {
         "name": options.get("trigger_name", f"{name} trigger"),
@@ -210,10 +390,17 @@ def build_monitor_payload(name: str, options: Dict[str, str], mapping: Dict[str,
                 "destination_id": destination_id,
                 "subject_template": {"source": options.get("subject_template", name)},
                 "message_template": {"source": html_msg, "lang": "mustache"},
-                "throttle_enabled": options.get("throttle_enabled", "false").lower() in ("1", "true", "yes")
+                "throttle_enabled": throttle_enabled,
+                "throttle": {
+                    "value": throttle_duration_mins,
+                    "unit": "MINUTES"
+                } if throttle_enabled else None
             }
         ]
     }
+    # Remove throttle key if not enabled
+    if not throttle_enabled:
+        trigger["actions"][0].pop("throttle", None)
 
     payload = {
         "type": "monitor",

@@ -1,11 +1,11 @@
 {
   "type": "monitor",
-  "name": "error_5min",
+  "name": "error_normal",
   "monitor_type": "query_level_monitor",
   "enabled": true,
   "schedule": {
     "period": {
-      "interval": 5,
+      "interval": 10,
       "unit": "MINUTES"
     }
   },
@@ -14,7 +14,8 @@
       "search": {
         "indices": [
           "postgres*",
-          "postgresql*"
+          "postgresql*",
+          "postgres-logs*"
         ],
         "query": {
           "size": 0,
@@ -24,21 +25,21 @@
                 {
                   "range": {
                     "@timestamp": {
-                      "gte": "now-5m"
+                      "gte": "now-10m"
                     }
                   }
                 },
                 {
                   "wildcard": {
-                    "host.keyword": "*db*"
+                    "host.keyword": "*"
                   }
                 }
               ],
               "should": [
                 {
                   "regexp": {
-                    "_raw": {
-                      "value": ".*e=(123|3434).*,ERROR"
+                    "error.code": {
+                      "value": "\\b(?:00000|01000|01003|01004|01006|01007|01008|0100C|01P01|02000|02001|03000|08000|08001|08003|08004|08006|08007|08P01|09000|0A000|0B000|0F000|0F001|0L000|0LP01|0P000|0Z000|0Z002|26000|27000|34000|38000|38001|38002|38003|38004|3F000|44000|ABOUT|CHECK|CLASS|DEVEL|ERROR|FIRST|FOUND|HV000|HV001|HV002|HV004|HV005|HV006|HV007|HV008|HV009|HV00A|HV00B|HV00C|HV00D|HV00J|HV00K|HV00L|HV00M|HV00N|HV00P|HV00Q|HV00R|HV010|HV014|HV021|HV024|HV090|HV091|INFER|LIMIT|LISTS|LOWER|MATCH|MIGHT|NAMES|OTHER|P0000|P0001|P0002|P0003|P0004|PGSQL|SHOWN|STATE|STILL|TABLE|THERE|THOSE|THREE|TYPES|UPPER|WHICH|WHILE)\\b"
                     }
                   }
                 }
@@ -60,7 +61,7 @@
               "aggs": {
                 "top_errors": {
                   "top_hits": {
-                    "size": 2,
+                    "size": 3,
                     "_source": [
                       "@timestamp",
                       "_raw",
@@ -77,7 +78,7 @@
                 },
                 "by_error": {
                   "terms": {
-                    "field": "_raw.keyword",
+                    "field": "error.code.keyword",
                     "size": 10
                   }
                 },
@@ -109,11 +110,11 @@
   "triggers": [
     {
       "query_level_trigger": {
-        "name": "error_5min trigger",
-        "severity": "2",
+        "name": "error_normal trigger",
+        "severity": "3",
         "condition": {
           "script": {
-            "source": "try {\n  def hosts = ctx.results[0].aggregations.by_host.buckets;\n  for (h in hosts) {\n    if (h.containsKey('by_error')) {\n      for (e in h.by_error.buckets) {\n        if (e.doc_count >= 5) return true;\n      }\n    }\n  }\n  return false;\n} catch (Exception e) {\n  return false;\n}",
+            "source": "try {\n  def hosts = ctx.results[0].aggregations.by_host.buckets;\n  for (h in hosts) {\n    if (h.containsKey('by_error')) {\n      for (e in h.by_error.buckets) {\n        if (e.doc_count >= 10) return true;\n      }\n    }\n  }\n  return false;\n} catch (Exception e) {\n  return false;\n}",
             "lang": "painless"
           }
         },
@@ -122,13 +123,17 @@
             "name": "Send Alert",
             "destination_id": "your_webhook_config_id",
             "subject_template": {
-              "source": "error_5min"
+              "source": "error_normal"
             },
             "message_template": {
               "source": "<h2>PostgreSQL Alert: {{ctx.monitor.name}}</h2>\n<p>Severity: {{ctx.trigger.severity}} \u2014 Time: {{ctx.trigger.triggered_time}}</p>\n<h3>Summary</h3>\n<table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse'>\n  <tr><th>Host</th><th>Count</th></tr>\n  {{#ctx.results[0].aggregations.by_host.buckets}}\n    <tr><td>{{key}}</td><td>{{doc_count}}</td></tr>\n  {{/ctx.results[0].aggregations.by_host.buckets}}\n</table>\n<h3>Logs Grouped By Host</h3>\n{{#ctx.results[0].aggregations.by_host.buckets}}\n  <h4>Host: {{key}} ({{doc_count}})</h4>\n  <table border=1 cellpadding=6 cellspacing=0 style='border-collapse:collapse;width:100%'>\n    <tr><th>Time</th><th>Log</th></tr>\n    {{#top_errors.hits.hits}}\n      <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\n    {{/top_errors.hits.hits}}\n    {{#host_samples.hits.hits}}\n      <tr><td>{{_source.@timestamp}}</td><td>{{{_source._raw}}}</td></tr>\n    {{/host_samples.hits.hits}}\n  </table>\n{{/ctx.results[0].aggregations.by_host.buckets}}\n",
               "lang": "mustache"
             },
-            "throttle_enabled": false
+            "throttle_enabled": true,
+            "throttle": {
+              "value": 20,
+              "unit": "MINUTES"
+            }
           }
         ]
       }
