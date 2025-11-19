@@ -178,7 +178,7 @@ class TestMonitorGenerator(unittest.TestCase):
         
         # Test HTML grouped template
         template = generator._get_message_template('html_grouped_by_host')
-        self.assertIn('{{#grouped_hosts}}', template)
+        self.assertIn('{{#ctx.results.0.hits.hits}}', template)
         self.assertIn('<table>', template)
         
         # Test HTML simple template

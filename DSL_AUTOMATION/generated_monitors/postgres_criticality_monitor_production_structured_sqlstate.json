@@ -21,53 +21,217 @@
             "bool": {
               "should": [
                 {
-                  "terms": {
-                    "postgres.sqlstate": [
-                      "22012",
-                      "53000",
-                      "53100",
-                      "53200",
-                      "53300",
-                      "53400",
-                      "54000",
-                      "54001",
-                      "54011",
-                      "54023",
-                      "57000",
-                      "57014",
-                      "57P01",
-                      "57P02",
-                      "57P03",
-                      "57P04",
-                      "57P05",
-                      "58000",
-                      "58030",
-                      "58P01",
-                      "58P02",
-                      "58P03",
-                      "F0000",
-                      "F0001",
-                      "XX000",
-                      "XX001",
-                      "XX002"
-                    ]
+                  "match_phrase": {
+                    "_raw": "e=08000,"
                   }
                 },
                 {
                   "match_phrase": {
-                    "_raw": "PANIC"
+                    "_raw": "e=08006,"
                   }
                 },
                 {
                   "match_phrase": {
-                    "_raw": "FATAL"
+                    "_raw": "e=08001,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=08004,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=22012,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=22003,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=22P01,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=23000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=23503,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=23505,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=28000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=28P01,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=40000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=40001,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=40P01,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53100,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53200,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53300,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53400,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=54000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=54001,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=55000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=55P03,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57014,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57P01,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57P02,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57P04,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=58000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=58030,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=F0000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=F0001,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=XX000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=XX001,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=XX002,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "PANIC:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "FATAL:"
                   }
                 }
               ],
-              "minimum_should_match": 1
+              "minimum_should_match": 1,
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-2m",
+                      "lte": "now"
+                    }
+                  }
+                }
+              ]
             }
           },
-          "size": 100
+          "size": 10000,
+          "sort": [
+            {
+              "@timestamp": {
+                "order": "desc"
+              }
+            }
+          ]
         }
       }
     }
@@ -90,12 +254,12 @@
             "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}"
           },
           "message_template": {
-            "source": "<html><head><meta charset=\"utf-8\">\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;background:#f9f9f9}time{color:#555;font-size:11px;font-weight:normal}</style>\n</head><body><h2 style=\"color:#d9534f;margin:0 0 10px 0\">\ud83d\udea8 Postgres Critical Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results[0].hits.total.value}}<br/><strong>Time:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log Entry</th></tr></thead><tbody>{{#ctx.results.0.hits.hits}}<tr><td class=\"hostname\">{{_source.host.name}}</td><td><time>{{_source.@timestamp}}</time></td><td class=\"log\">{{{_source._raw}}}</td></tr>{{/ctx.results.0.hits.hits}}</tbody></table></body></html>",
+            "source": "<html><head><meta charset=\"utf-8\">\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px}time{color:#555;font-size:11px;font-weight:normal}tbody tr:nth-child(odd){background:#ffffff}tbody tr:nth-child(even){background:#f9f9f9}</style>\n</head><body><h2 style=\"color:#d9534f;margin:0 0 10px 0\">\ud83d\udea8 Postgres Critical Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results.0.hits.total.value}}<br/><strong>Time:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log Entry</th></tr></thead><tbody>{{#ctx.results.0.hits.hits}}<tr><td class=\"hostname\">{{_source.host.name}}</td><td><time>{{_source.@timestamp}}</time></td><td class=\"log\">{{{_source._raw}}}</td></tr>{{/ctx.results.0.hits.hits}}</tbody></table></body></html>",
             "lang": "mustache"
           },
           "throttle_enabled": true,
           "throttle": {
-            "value": 15,
+            "value": 5,
             "unit": "MINUTES"
           }
         }

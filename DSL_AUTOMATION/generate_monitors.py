@@ -16,8 +16,8 @@ class MonitorGenerator:
     
     # HTML template for grouped-by-host email
     HTML_GROUPED_TEMPLATE = """<html><head><meta charset="utf-8">
-<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;background:#f9f9f9}time{color:#555;font-size:11px;font-weight:normal}</style>
-</head><body><h2 style="color:#d9534f;margin:0 0 10px 0">🚨 Postgres Critical Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results[0].hits.total.value}}<br/><strong>Time:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log Entry</th></tr></thead><tbody>{{#ctx.results.0.hits.hits}}<tr><td class="hostname">{{_source.host.name}}</td><td><time>{{_source.@timestamp}}</time></td><td class="log">{{{_source._raw}}}</td></tr>{{/ctx.results.0.hits.hits}}</tbody></table></body></html>"""
+<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px}time{color:#555;font-size:11px;font-weight:normal}tbody tr:nth-child(odd){background:#ffffff}tbody tr:nth-child(even){background:#f9f9f9}</style>
+</head><body><h2 style="color:#d9534f;margin:0 0 10px 0">🚨 Postgres Critical Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results.0.hits.total.value}}<br/><strong>Time:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log Entry</th></tr></thead><tbody>{{#ctx.results.0.hits.hits}}<tr><td class="hostname">{{_source.host.name}}</td><td><time>{{_source.@timestamp}}</time></td><td class="log">{{{_source._raw}}}</td></tr>{{/ctx.results.0.hits.hits}}</tbody></table></body></html>"""
     
     # HTML template for simple list
     HTML_SIMPLE_TEMPLATE = """<html><head><meta charset="utf-8">
@@ -88,9 +88,22 @@ Log Entries:
         query_type = inputs.get('query_type', 'bool_should')
         conditions = inputs.get('conditions', [])
         size = inputs.get('query_size', 100)
+        time_range = inputs.get('time_range')
+        sort_config = inputs.get('sort')
         
         # Build condition clauses
         condition_clauses = [self._build_query_condition(c) for c in conditions]
+        
+        # Add time range filter if specified
+        if time_range:
+            time_filter = {
+                "range": {
+                    "@timestamp": {
+                        "gte": f"now-{time_range['value']}{time_range['unit'][0].lower()}",
+                        "lte": "now"
+                    }
+                }
+            }
         
         # Build bool query
         if query_type == 'bool_should':
@@ -100,20 +113,46 @@ Log Entries:
                     "minimum_should_match": inputs.get('minimum_should_match', 1)
                 }
             }
+            # Add time range as must clause if specified
+            if time_range:
+                bool_query["bool"]["filter"] = [time_filter]
         elif query_type == 'bool_must':
             bool_query = {
                 "bool": {
                     "must": condition_clauses
                 }
             }
+            # Add time range as filter if specified
+            if time_range:
+                bool_query["bool"]["filter"] = [time_filter]
         else:
             # Single condition query
-            bool_query = condition_clauses[0] if condition_clauses else {"match_all": {}}
+            if time_range:
+                bool_query = {
+                    "bool": {
+                        "must": [condition_clauses[0] if condition_clauses else {"match_all": {}}],
+                        "filter": [time_filter]
+                    }
+                }
+            else:
+                bool_query = condition_clauses[0] if condition_clauses else {"match_all": {}}
         
-        return {
+        query_result = {
             "query": bool_query,
             "size": size
         }
+        
+        # Add sort if specified
+        if sort_config:
+            query_result["sort"] = [
+                {
+                    sort_config['field']: {
+                        "order": sort_config.get('order', 'desc')
+                    }
+                }
+            ]
+        
+        return query_result
     
     def _get_message_template(self, template_type: str) -> str:
         """Get message template based on type"""

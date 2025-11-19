@@ -15,49 +15,183 @@ monitors:
         - "postgreslogs"
       
       query_type: "bool_should"  # Options: bool_should, bool_must, match, terms
-      query_size: 100
+      query_size: 10000  # High limit to get all results
+      
+      sort:
+        field: "@timestamp"
+        order: "desc"
       
       conditions:
-        - type: "terms"
-          field: "postgres.sqlstate"
-          values:
-            - "22012"  # Division by zero
-            - "53000"  # Insufficient resources
-            - "53100"  # Disk full
-            - "53200"  # Out of memory
-            - "53300"  # Too many connections
-            - "53400"  # Configuration limit exceeded
-            - "54000"  # Program limit exceeded
-            - "54001"  # Statement too complex
-            - "54011"  # Too many columns
-            - "54023"  # Too many arguments
-            - "57000"  # Operator intervention
-            - "57014"  # Query canceled
-            - "57P01"  # Admin shutdown
-            - "57P02"  # Crash shutdown
-            - "57P03"  # Cannot connect now
-            - "57P04"  # Database dropped
-            - "57P05"  # Idle session timeout
-            - "58000"  # System error
-            - "58030"  # I/O error
-            - "58P01"  # Undefined file
-            - "58P02"  # Duplicate file
-            - "58P03"  # Lock not available
-            - "F0000"  # Config file error
-            - "F0001"  # Lock file exists
-            - "XX000"  # Internal error
-            - "XX001"  # Data corrupted
-            - "XX002"  # Index corrupted
+        # Class 08 - Connection Exception (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=08000,"  # connection_exception
         
         - type: "match_phrase"
           field: "_raw"
-          value: "PANIC"
+          value: "e=08006,"  # connection_failure
         
         - type: "match_phrase"
           field: "_raw"
-          value: "FATAL"
+          value: "e=08001,"  # sqlclient_unable_to_establish_sqlconnection
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=08004,"  # sqlserver_rejected_establishment_of_sqlconnection
+        
+        # Class 22 - Data Exception (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=22012,"  # division_by_zero
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=22003,"  # numeric_value_out_of_range
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=22P01,"  # floating_point_exception
+        
+        # Class 23 - Integrity Constraint Violation (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=23000,"  # integrity_constraint_violation
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=23503,"  # foreign_key_violation
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=23505,"  # unique_violation
+        
+        # Class 28 - Invalid Authorization (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=28000,"  # invalid_authorization_specification
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=28P01,"  # invalid_password
+        
+        # Class 40 - Transaction Rollback (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=40000,"  # transaction_rollback
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=40001,"  # serialization_failure
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=40P01,"  # deadlock_detected
+        
+        # Class 53 - Insufficient Resources (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53000,"  # insufficient_resources
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53100,"  # disk_full
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53200,"  # out_of_memory
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53300,"  # too_many_connections
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53400,"  # configuration_limit_exceeded
+        
+        # Class 54 - Program Limit Exceeded (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=54000,"  # program_limit_exceeded
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=54001,"  # statement_too_complex
+        
+        # Class 55 - Object Not In Prerequisite State (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=55000,"  # object_not_in_prerequisite_state
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=55P03,"  # lock_not_available
+        
+        # Class 57 - Operator Intervention (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57000,"  # operator_intervention
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57014,"  # query_canceled
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57P01,"  # admin_shutdown
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57P02,"  # crash_shutdown
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57P04,"  # database_dropped
+        
+        # Class 58 - System Error (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=58000,"  # system_error
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=58030,"  # io_error
+        
+        # Class F0 - Configuration File Error (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=F0000,"  # config_file_error
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=F0001,"  # lock_file_exists
+        
+        # Class XX - Internal Error (CRITICAL)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=XX000,"  # internal_error
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=XX001,"  # data_corrupted
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=XX002,"  # index_corrupted
+        
+        # Log Level Patterns (CRITICAL/FATAL/PANIC)
+        - type: "match_phrase"
+          field: "_raw"
+          value: "PANIC:"
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "FATAL:"
       
       minimum_should_match: 1
+      
+      time_range:
+        value: 2
+        unit: "MINUTES"
     
     triggers:
       - name: "Critical Errcodes Trigger"
@@ -77,7 +211,7 @@ monitors:
             
             throttle:
               enabled: true
-              value: 15
+              value: 5
               unit: "MINUTES"
 
 # Additional monitors can be defined below

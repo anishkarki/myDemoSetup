@@ -264,6 +264,190 @@ Common critical SQLSTATEs included in the example config:
 
 See [PostgreSQL Error Codes](https://www.postgresql.org/docs/current/errcodes-appendix.html) for complete list.
 
+## Working with SQLSTATE in OpenSearch
+
+### Approach 1: Using Grok Ingest Pipeline (Recommended for Structured Fields)
+
+If your logs are in raw format and you want to extract SQLSTATE codes into a structured field, use an OpenSearch ingest pipeline with grok patterns.
+
+#### Create Grok Pipeline
+
+```bash
+curl -X PUT 'http://localhost:19200/_ingest/pipeline/postgres-sqlstate-parser' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "description": "Extract PostgreSQL SQLSTATE codes from log messages",
+  "processors": [
+    {
+      "grok": {
+        "field": "_raw",
+        "patterns": [
+          "e=%{DATA:postgres.sqlstate},",
+          "SQLSTATE: %{DATA:postgres.sqlstate}"
+        ],
+        "ignore_missing": true,
+        "ignore_failure": false
+      }
+    }
+  ]
+}'
+```
+
+#### Apply Pipeline to Index
+
+**Option 1: Set as default pipeline for an index**
+
+```bash
+curl -X PUT 'http://localhost:19200/postgresdata/_settings' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "index.default_pipeline": "postgres-sqlstate-parser"
+}'
+```
+
+**Option 2: Use pipeline during index creation**
+
+```bash
+curl -X PUT 'http://localhost:19200/postgresdata' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "settings": {
+    "index.default_pipeline": "postgres-sqlstate-parser"
+  },
+  "mappings": {
+    "properties": {
+      "_raw": { "type": "text" },
+      "postgres": {
+        "properties": {
+          "sqlstate": { "type": "keyword" }
+        }
+      }
+    }
+  }
+}'
+```
+
+**Option 3: Apply during document indexing**
+
+```bash
+curl -X POST 'http://localhost:19200/postgresdata/_doc?pipeline=postgres-sqlstate-parser' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "_raw": "ts=2025-11-19 09:32:46 e=22012, ERROR: division by zero"
+}'
+```
+
+#### Verify Extraction
+
+```bash
+# Search for documents with extracted sqlstate
+curl -X GET 'http://localhost:19200/postgresdata/_search?pretty' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "query": {
+    "exists": {
+      "field": "postgres.sqlstate"
+    }
+  },
+  "_source": ["_raw", "postgres.sqlstate"],
+  "size": 5
+}'
+```
+
+#### Use Structured Field in Monitor
+
+Once you have the `postgres.sqlstate` field extracted, use the `terms` query:
+
+```yaml
+conditions:
+  - type: "terms"
+    field: "postgres.sqlstate"
+    values: ["22012", "53000", "57000"]
+```
+
+**Pros:**
+- Clean, structured queries using `terms` filter
+- Better performance with exact keyword matching
+- Easier aggregations and analytics
+- Reusable structured field across multiple monitors
+
+**Cons:**
+- Requires pipeline setup and configuration
+- Pipeline must run on all documents (overhead)
+- Requires reindexing if applied to existing data
+
+---
+
+### Approach 2: Pattern Matching on _raw Field (Current Implementation)
+
+If you don't have structured fields or cannot use ingest pipelines, match patterns directly in the `_raw` field:
+
+```yaml
+conditions:
+  - type: "match_phrase"
+    field: "_raw"
+    value: "e=22012,"
+  
+  - type: "match_phrase"
+    field: "_raw"
+    value: "e=53000,"
+  
+  - type: "match_phrase"
+    field: "_raw"
+    value: "PANIC"
+  
+  - type: "match_phrase"
+    field: "_raw"
+    value: "FATAL"
+```
+
+**Pros:**
+- No pipeline setup required
+- Works immediately with any log format
+- Flexible pattern matching
+- No reindexing needed
+
+**Cons:**
+- Less efficient than structured field queries
+- Multiple conditions needed for multiple codes
+- Harder to aggregate or analyze SQLSTATEs
+- Pattern must exactly match log format
+
+---
+
+### Comparison Example
+
+**Raw Log:**
+```
+ts=2025-11-19 09:32:46.508 UTC session=2025-11-19 09:32:46 UTC db=postgres user=postgres pid=77645 host=172.18.0.1(47202) app=psql e=22012, ERROR:  division by zero
+```
+
+**Approach 1 (Grok Pipeline):**
+- Extracts: `postgres.sqlstate = "22012"`
+- Monitor uses: `{"terms": {"postgres.sqlstate": ["22012", "53000"]}}`
+- Query performance: Fast (keyword exact match)
+
+**Approach 2 (_raw Pattern Match):**
+- No extraction
+- Monitor uses: `{"match_phrase": {"_raw": "e=22012,"}}`
+- Query performance: Slower (text search with phrase matching)
+
+---
+
+### Recommendation
+
+- **Use Approach 1 (Grok Pipeline)** if:
+  - You control the indexing pipeline
+  - You need to run multiple monitors on SQLSTATE codes
+  - You want to perform analytics/aggregations on error codes
+  - Performance is critical
+
+- **Use Approach 2 (_raw Pattern Match)** if:
+  - You cannot modify the ingest pipeline
+  - You need a quick solution without infrastructure changes
+  - Logs are already indexed and reindexing is not feasible
+  - Simple pattern matching meets your needs
+
 ## Troubleshooting
 
 ### Invalid destination_id
