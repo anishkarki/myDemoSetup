@@ -1,0 +1,25 @@
+{
+  "description": "Extracts connection failure and CPU usage from _raw log lines",
+  "processors": [
+    {
+      "set": {
+        "field": "conn_fail",
+        "value": 0,
+        "ignore_empty_value": true
+      }
+    },
+    {
+      "set": {
+        "field": "cpu",
+        "value": 0,
+        "ignore_empty_value": true
+      }
+    },
+    {
+      "script": {
+        "lang": "painless",
+        "source": "if (ctx.containsKey('_raw')) { String msg = ctx._raw.toLowerCase(); if (msg.contains('connection') && (msg.contains('fail') || msg.contains('timeout') || msg.contains('refused') || msg.contains('broken pipe'))) { ctx.conn_fail = 1; } java.util.regex.Matcher m = /cpu=(\\d+)/.matcher(ctx._raw); if (m.find()) { ctx.cpu = Integer.parseInt(m.group(1)); } }"
+      }
+    }
+  ]
+}

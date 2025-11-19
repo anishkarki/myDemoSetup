@@ -1,0 +1,66 @@
+{
+  "type": "monitor",
+  "name": "Postgres Grouped Critical Errors Test v2",
+  "enabled": true,
+  "monitor_type": "bucket_level_monitor",
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresdata-*"],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                { "exists": { "field": "postgres.sqlstate" } }
+              ]
+            }
+          },
+          "aggs": {
+            "by_host": {
+              "terms": { "field": "host.name", "size": 10 },
+              "aggs": {
+                "by_sqlstate": {
+                  "terms": { "field": "postgres.sqlstate", "size": 10 },
+                  "aggs": {
+                    "top_logs": {
+                      "top_hits": { "size": 5 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "bucket_level_trigger": {
+        "name": "Grouped Critical Errors Trigger",
+        "severity": "1",
+        "condition": {
+          "script": {
+            "source": "return ctx.bucket != null;",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "name": "Email Grouped Critical Errors",
+            "destination_id": "yZI4WJoBHocox8i_xA-r",
+            "subject_template": { "source": "Postgres Grouped CRITICAL Alert" },
+            "message_template": {
+              "source": "<html><head><meta charset=\"utf-8\"><style>body{font-family:Arial,Helvetica,sans-serif;color:#222}h3{color:#b00}table{border-collapse:collapse;width:100%;margin-bottom:20px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-width:80ch}time{color:#555;font-size:12px}</style></head><body><h3>Grouped Postgres Errors</h3><h4>Host: <span style=\"color:#0074d9\">{{key}}</span></h4><table><thead><tr><th>SQLSTATE</th><th>Sample Logs</th></tr></thead><tbody>{{#by_sqlstate.buckets}}<tr><td><b>{{key}}</b></td><td><ul>{{#top_logs.hits.hits}}<li><span style=\"color:#888\">{{_source.@timestamp}}</span>: <span class=\"log\">{{_source._raw}}</span></li>{{/top_logs.hits.hits}}</ul></td></tr>{{/by_sqlstate.buckets}}</tbody></table></body></html>",
+              "lang": "mustache"
+            },
+            "throttle_enabled": true,
+            "throttle": { "value": 15, "unit": "MINUTES" }
+          }
+        ]
+      }
+    }
+  ]
+}

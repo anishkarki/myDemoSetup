@@ -1,0 +1,37 @@
+{
+  "type": "monitor",
+  "name": "Minimal Bucket Monitor Other Index",
+  "enabled": true,
+  "monitor_type": "bucket_level_monitor",
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": [".kibana*"],
+        "query": {
+          "size": 0,
+          "aggs": {
+            "by_type": {
+              "terms": { "field": "type", "size": 10 }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "bucket_level_trigger": {
+        "name": "Minimal Trigger",
+        "severity": "1",
+        "condition": {
+          "script": {
+            "source": "return ctx.bucket != null;",
+            "lang": "painless"
+          }
+        },
+        "actions": []
+      }
+    }
+  ]
+}
