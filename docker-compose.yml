@@ -40,7 +40,7 @@ services:
       - discovery.type=single-node
       - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=OpenSearch@2024
-      - DISABLE_SECURITY_PLUGIN=false
+      - DISABLE_SECURITY_PLUGIN=true
     ports:
       - "19200:9200"
     volumes:
@@ -64,17 +64,12 @@ services:
     ports:
       - "15601:5601"
     environment:
-      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
-      OPENSEARCH_USERNAME: admin
-      OPENSEARCH_PASSWORD: OpenSearch@2024
-      OPENSEARCH_SSL_VERIFICATIONMODE: none
-      NODE_TLS_REJECT_UNAUTHORIZED: "0"
-    volumes:
-      - ./dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
-    depends_on:
-      - opensearch
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+      - OPENSEARCH_HOSTS=["http://opensearch:9200"]
     networks:
       - app-network
+    depends_on:
+      - opensearch
 
   fluent-bit:
     user: root

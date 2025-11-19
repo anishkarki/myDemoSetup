@@ -1,0 +1,64 @@
+{
+  "type": "monitor",
+  "name": "Postgres Criticality Monitor - Production (Structured sqlstate)",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresd*", "postgresdata", "postgreslogs"],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                {
+                  "terms": {
+                    "postgres.sqlstate": [
+                      "22012","53000","53100","53200","53300","53400",
+                      "54000","54001","54011","54023","57000","57014",
+                      "57P01","57P02","57P03","57P04","57P05",
+                      "58000","58030","58P01","58P02","58P03",
+                      "F0000","F0001","XX000","XX001","XX002"
+                    ]
+                  }
+                },
+                { "match_phrase": { "_raw": "PANIC" } },
+                { "match_phrase": { "_raw": "FATAL" } }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "size": 100
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical Errcodes Trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email Critical Errcodes (Production)",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": { "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}" },
+          "message_template": {
+            "source": "<html><head><meta charset=\"utf-8\">\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-width:80ch}time{color:#555;font-size:12px}</style>\n</head><body><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results[0].hits.total.value}}</p><p>Showing up to 100 most recent matching log entries. For full results, query your index or use the dashboard.</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log</th></tr></thead><tbody>{{#ctx.results}}{{#hits}}{{#hits}}{{#_source}}<tr><td>{{host.name}}</td><td><time datetime=\"{{@timestamp}}\">{{@timestamp}}</time></td><td class=\"log\">{{{_raw}}}</td></tr>{{/_source}}{{/hits}}{{/hits}}{{/ctx.results}}</tbody></table></body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": true,
+          "throttle": {
+            "value": 15,
+            "unit": "MINUTES"
+          }
+        }
+      ]
+    }
+  ]
+}

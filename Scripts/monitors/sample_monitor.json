@@ -1,0 +1,31 @@
+{
+  "type": "monitor",
+  "name": "Sample Postgres Monitor",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresd*"],
+        "query": {
+          "query": {
+            "match_all": {}
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Any log trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": []
+    }
+  ]
+}

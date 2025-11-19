@@ -1,0 +1,51 @@
+{
+  "type": "monitor",
+  "name": "Postgres Criticality Monitor - Errcode Driven",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresd*", "postgresdata", "postgreslogs"],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                { "match_phrase": { "_raw": "PANIC" } },
+                { "match_phrase": { "_raw": "FATAL" } },
+                { "match_phrase": { "_raw": "division by zero" } },
+                { "match_phrase": { "_raw": "1/0" } },
+                { "regexp": { "_raw": "e=(22012|53000|53100|53200|53300|53400|54000|54001|54011|54023|57000|57014|57P01|57P02|57P03|57P04|57P05|58000|58030|58P01|58P02|58P03|F0000|F0001|XX000|XX001|XX002)" } }
+              ],
+              "minimum_should_match": 1
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical Errcodes Trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email Critical Errcodes",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": { "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}" },
+          "message_template": {
+            "source": "<html><head><meta charset=\"utf-8\"></head><body><p>Monitor: {{ctx.monitor.name}}<br/>Trigger: {{ctx.trigger.name}}<br/>Total hits: {{ctx.results[0].hits.total.value}}</p><table border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"border-collapse:collapse; font-family:Arial,Helvetica,sans-serif; font-size:13px;\"><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log</th></tr></thead><tbody>{{#ctx.results}}{{#hits}}{{#hits}}{{#_source}}<tr><td>{{host.name}}</td><td>{{@timestamp}}</td><td><pre style=\"white-space:pre-wrap; word-break:break-word; margin:0;\">{{{_raw}}}</pre></td></tr>{{/_source}}{{/hits}}{{/hits}}{{/ctx.results}}</tbody></table></body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": false
+        }
+      ]
+    }
+  ]
+}

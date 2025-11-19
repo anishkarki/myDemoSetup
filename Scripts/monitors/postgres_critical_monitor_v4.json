@@ -1,0 +1,51 @@
+{
+  "type": "monitor",
+  "name": "Postgres Critical Errors Monitor (DSL-safe)",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresd*", "postgresdata", "postgreslogs"],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                { "match_phrase": { "_raw": "PANIC" } },
+                { "match_phrase": { "_raw": "FATAL" } },
+                { "match_phrase": { "_raw": "division by zero" } },
+                { "match_phrase": { "_raw": "1/0" } },
+                { "match_phrase": { "_raw": "e=22012" } }
+              ],
+              "minimum_should_match": 1
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical errors trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email Critical Errors v4",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": { "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}" },
+          "message_template": {
+            "source": "<html><body><p>Monitor: {{ctx.monitor.name}}<br/>Trigger: {{ctx.trigger.name}}<br/>Total hits: {{ctx.results[0].hits.total.value}}</p><table border=1 cellpadding=4 cellspacing=0><thead><tr><th>Hostname</th><th>Log</th></tr></thead><tbody>{{#ctx.results}}{{#hits}}{{#hits}}{{#_source}}<tr><td>{{host.name}}</td><td><pre>{{_raw}}</pre></td></tr>{{/_source}}{{/hits}}{{/hits}}{{/ctx.results}}</tbody></table></body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": false
+        }
+      ]
+    }
+  ]
+}

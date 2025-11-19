@@ -1,0 +1,19 @@
+{
+    
+  "processors": [
+    {
+      "grok": {
+        "field": "_raw",
+        "patterns": [
+          "%{DATA}e=%{WORD:postgres.sqlstate}",
+          "%{DATA}sqlstate=%{WORD:postgres.sqlstate}",
+          "%{DATA}error_code=%{WORD:postgres.sqlstate}"
+        ],
+        "ignore_missing": true,
+          "on_failure": [
+            { "set": { "field": "postgres.sqlstate", "value": "" } }
+          ]
+      }
+      }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+  "index_patterns": ["postgresd*", "postgresdata", "postgreslogs"],
+  "template": {
+    "mappings": {
+      "properties": {
+        "postgres": {
+          "properties": {
+            "sqlstate": { "type": "keyword" }
+          }
+        },
+        "host": {
+          "properties": {
+            "name": { "type": "keyword" }
+          }
+        },
+        "@timestamp": { "type": "date" },
+        "_raw": { "type": "text" }
+      }
+    }
+  }
+}

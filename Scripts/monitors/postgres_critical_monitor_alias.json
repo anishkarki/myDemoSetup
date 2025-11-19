@@ -1,0 +1,48 @@
+{
+  "type": "monitor",
+  "name": "Postgres Critical Monitor (Alias: postgresdata-write)",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresdata-*"],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                { "terms": { "postgres.sqlstate": ["22012","53000","57P01","XX000"] } },
+                { "match_phrase": { "_raw": "PANIC" } },
+                { "match_phrase": { "_raw": "FATAL" } }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "size": 100
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical Errcodes Trigger",
+      "severity": "1",
+      "condition": {
+        "script": { "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;", "lang": "painless" }
+      },
+      "actions": [
+        {
+          "name": "Email Critical Errcodes",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": { "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}" },
+          "message_template": {
+            "source": "<html><head><meta charset=\"utf-8\"><style>body{font-family:Arial,Helvetica,sans-serif}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}td.log{font-family:monospace;white-space:pre-wrap;word-break:break-word;max-width:80ch}time{color:#555;font-size:12px}</style></head><body><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results[0].hits.total.value}}</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log</th></tr></thead><tbody>{{#ctx.results}}{{#hits}}{{#hits}}{{#_source}}<tr><td>{{host.name}}</td><td><time datetime=\"{{@timestamp}}\">{{@timestamp}}</time></td><td class=\"log\">{{{_raw}}}</td></tr>{{/_source}}{{/hits}}{{/hits}}{{/ctx.results}}</tbody></table></body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": true,
+          "throttle": { "value": 15, "unit": "MINUTES" }
+        }
+      ]
+    }
+  ]
+}

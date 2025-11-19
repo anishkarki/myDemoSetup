@@ -1,0 +1,45 @@
+{
+  "type": "monitor",
+  "name": "Postgres ERROR Monitor",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresd*", "postgresdata", "postgreslogs"],
+        "query": {
+          "query": {
+            "bool": {
+              "must": [
+                { "match_phrase": { "_raw": "ERROR:" } }
+              ],
+              "filter": [
+                { "range": { "@timestamp": { "gte": "now-7d/d" } } }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "ERROR lines trigger",
+      "severity": "2",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email on ERROR",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": { "source": "Postgres ERROR Alert: {{ctx.trigger.name}}" },
+          "message_template": { "source": "Monitor: {{ctx.monitor.name}}\nTrigger: {{ctx.trigger.name}}\nTotal ERROR hits: {{ctx.results[0].hits.total.value}}\n\nRecent hits (top 10):\n{{#ctx.results}}- index: {{_index}} id: {{_id}}\n{{/ctx.results}}" }
+        }
+      ]
+    }
+  ]
+}

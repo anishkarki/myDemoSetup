@@ -1,0 +1,54 @@
+{
+  "type": "monitor",
+  "name": "Postgres Critical Errors Monitor",
+  "enabled": true,
+  "schedule": { "period": { "interval": 1, "unit": "MINUTES" } },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresd*", "postgresdata", "postgreslogs"],
+        "query": {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "query_string": {
+                    "default_field": "_raw",
+                    "query": "(panic OR PANIC OR fatal OR FATAL OR \\\"division by zero\\\" OR \\\"1/0\\\" OR e=22012)"
+                  }
+                }
+              ],
+              "filter": [
+                { "range": { "@timestamp": { "gte": "now-7d/d" } } }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical panic/fatal/1-0 trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email Critical Errors",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": { "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}" },
+          "message_template": {
+            "source": "<html><body><p>Monitor: {{ctx.monitor.name}}<br/>Trigger: {{ctx.trigger.name}}<br/>Total hits: {{ctx.results[0].hits.total.value}}</p><table border=1 cellpadding=4 cellspacing=0><thead><tr><th>Hostname</th><th>Log</th></tr></thead><tbody>{{#ctx.results}}<tr><td>{{_source.host.name}}</td><td><pre>{{_source._raw}}</pre></td></tr>{{/ctx.results}}</tbody></table></body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": false
+        }
+      ]
+    }
+  ]
+}
