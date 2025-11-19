@@ -33,6 +33,11 @@ Log Entries:
 {{#ctx.results.0.hits.hits}}
 - [{{_source.@timestamp}}] {{_source.host.name}}: {{_source._raw}}
 {{/ctx.results.0.hits.hits}}"""
+    
+    # HTML template for frequency alerts (aggregation-based)
+    HTML_FREQUENCY_TEMPLATE = """<html><head><meta charset="utf-8">
+<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px;margin-bottom:20px}th,td{border:1px solid #ddd;padding:8px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc;background:#e6f2ff;padding:10px;font-size:15px}.count{font-weight:bold;color:#d9534f;font-size:16px}.sqlstate{font-family:Menlo,Consolas,monospace;font-weight:bold}.warning{background:#fff3cd;border-left:4px solid #ffc107}tr:nth-child(even){background:#f9f9f9}</style>
+</head><body><h2 style="color:#ff9800;margin:0 0 10px 0">⚠️ Postgres Frequency Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert Condition:</strong> Same SQLSTATE error repeated >5 times on a hostname in last 5 minutes</p>{{#ctx.results.0.aggregations.group_by_hostname.buckets}}<div class="hostname">📍 Hostname: {{key}} ({{doc_count}} total errors in 5min)</div><table><thead><tr><th width="100">Count</th><th width="120">SQLSTATE</th><th>Error Description</th></tr></thead><tbody>{{#group_by_sqlstate.buckets}}<tr class="warning"><td class="count">{{doc_count}}×</td><td class="sqlstate">{{key}}</td><td>{{#script}}var codes = {'22012':'Division by zero','53000':'Insufficient resources','53100':'Disk full','53200':'Out of memory','53300':'Too many connections','54000':'Program limit exceeded','57000':'Operator intervention','57014':'Query canceled','57P01':'Admin shutdown','57P02':'Crash shutdown','58000':'System error','XX000':'Internal error'}; return codes[params._value.key] || 'Unknown error';{{/script}}</td></tr>{{/group_by_sqlstate.buckets}}</tbody></table>{{/ctx.results.0.aggregations.group_by_hostname.buckets}}</body></html>"""
 
     def __init__(self, config_path: str):
         """Initialize generator with YAML config path"""
@@ -90,6 +95,7 @@ Log Entries:
         size = inputs.get('query_size', 100)
         time_range = inputs.get('time_range')
         sort_config = inputs.get('sort')
+        aggregations = inputs.get('aggregations')
         
         # Build condition clauses
         condition_clauses = [self._build_query_condition(c) for c in conditions]
@@ -106,7 +112,29 @@ Log Entries:
             }
         
         # Build bool query
-        if query_type == 'bool_should':
+        if query_type == 'aggregation':
+            # For aggregation queries, we need both query and aggs
+            bool_query = {
+                "bool": {
+                    "should": condition_clauses,
+                    "minimum_should_match": inputs.get('minimum_should_match', 1)
+                }
+            }
+            if time_range:
+                bool_query["bool"]["filter"] = [time_filter]
+            
+            query_result = {
+                "query": bool_query,
+                "size": 0  # Don't need hits for aggregation queries
+            }
+            
+            # Add aggregations
+            if aggregations:
+                query_result["aggs"] = aggregations
+            
+            return query_result
+                
+        elif query_type == 'bool_should':
             bool_query = {
                 "bool": {
                     "should": condition_clauses,
@@ -159,7 +187,8 @@ Log Entries:
         templates = {
             'html_grouped_by_host': self.HTML_GROUPED_TEMPLATE,
             'html_simple': self.HTML_SIMPLE_TEMPLATE,
-            'plain_text': self.PLAIN_TEXT_TEMPLATE
+            'plain_text': self.PLAIN_TEXT_TEMPLATE,
+            'html_frequency_grouped': self.HTML_FREQUENCY_TEMPLATE
         }
         return templates.get(template_type, self.HTML_SIMPLE_TEMPLATE)
     

@@ -215,44 +215,69 @@ monitors:
               unit: "MINUTES"
 
 # Additional monitors can be defined below
-  - name: "Postgres Warning Monitor - Development"
-    enabled: false
+  - name: "Postgres Frequency Alert - Repeated Errors by Hostname"
+    enabled: true
     schedule:
-      interval: 5
+      interval: 1
       unit: "MINUTES"
     
     inputs:
       indices:
+        - "postgresd*"
         - "postgresdata"
+        - "postgreslogs"
       
-      query_type: "bool_should"
-      query_size: 50
+      query_type: "aggregation"
+      
+      time_range:
+        value: 5
+        unit: "MINUTES"
+      
+      aggregations:
+        group_by_hostname:
+          terms:
+            field: "host.name.keyword"
+            size: 100
+          aggs:
+            group_by_sqlstate:
+              terms:
+                field: "postgres.sqlstate"
+                size: 50
+                min_doc_count: 6
       
       conditions:
-        - type: "match_phrase"
-          field: "_raw"
-          value: "WARNING"
-        
-        - type: "match_phrase"
-          field: "_raw"
-          value: "ERROR"
+        - type: "terms"
+          field: "postgres.sqlstate"
+          values: ["22012", "53000", "53100", "53200", "53300", "54000", "57000", "57014", "57P01", "57P02", "58000", "XX000"]
       
       minimum_should_match: 1
     
     triggers:
-      - name: "Warning Trigger"
-        severity: 3
+      - name: "Repeated Error Trigger"
+        severity: 2
         condition:
-          script: "return ctx.results != null && ctx.results[0].hits.total.value > 5;"
+          script: |
+            if (ctx.results[0].aggregations == null) return false;
+            
+            def hostBuckets = ctx.results[0].aggregations.group_by_hostname.buckets;
+            for (host in hostBuckets) {
+              def sqlstateBuckets = host.group_by_sqlstate.buckets;
+              for (sqlstate in sqlstateBuckets) {
+                if (sqlstate.doc_count > 5) {
+                  return true;
+                }
+              }
+            }
+            return false;
           lang: "painless"
         
         actions:
-          - name: "Email Warning"
+          - name: "Email Frequency Alert"
             type: "email"
             destination_id: "yZI4WJoBHocox8i_xA-r"
-            subject_template: "Postgres Warning: {{ctx.monitor.name}}"
-            message_template_type: "html_simple"
+            subject_template: "⚠️ Postgres FREQUENCY Alert: Repeated Errors on {{ctx.monitor.name}}"
+            message_template_type: "html_frequency_grouped"
             throttle:
               enabled: true
-              value: 30
+              value: 5
               unit: "MINUTES"

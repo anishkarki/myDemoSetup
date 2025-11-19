@@ -1,0 +1,107 @@
+{
+  "type": "monitor",
+  "name": "Postgres Frequency Alert - Repeated Errors by Hostname",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresd*",
+          "postgresdata",
+          "postgreslogs"
+        ],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                {
+                  "terms": {
+                    "postgres.sqlstate": [
+                      "22012",
+                      "53000",
+                      "53100",
+                      "53200",
+                      "53300",
+                      "54000",
+                      "57000",
+                      "57014",
+                      "57P01",
+                      "57P02",
+                      "58000",
+                      "XX000"
+                    ]
+                  }
+                }
+              ],
+              "minimum_should_match": 1,
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m",
+                      "lte": "now"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "size": 0,
+          "aggs": {
+            "group_by_hostname": {
+              "terms": {
+                "field": "host.name.keyword",
+                "size": 100
+              },
+              "aggs": {
+                "group_by_sqlstate": {
+                  "terms": {
+                    "field": "postgres.sqlstate",
+                    "size": 50,
+                    "min_doc_count": 6
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Repeated Error Trigger",
+      "severity": "2",
+      "condition": {
+        "script": {
+          "source": "if (ctx.results[0].aggregations == null) return false;\n\ndef hostBuckets = ctx.results[0].aggregations.group_by_hostname.buckets;\nfor (host in hostBuckets) {\n  def sqlstateBuckets = host.group_by_sqlstate.buckets;\n  for (sqlstate in sqlstateBuckets) {\n    if (sqlstate.doc_count > 5) {\n      return true;\n    }\n  }\n}\nreturn false;\n",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email Frequency Alert",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": {
+            "source": "\u26a0\ufe0f Postgres FREQUENCY Alert: Repeated Errors on {{ctx.monitor.name}}"
+          },
+          "message_template": {
+            "source": "<html><head><meta charset=\"utf-8\">\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px;margin-bottom:20px}th,td{border:1px solid #ddd;padding:8px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc;background:#e6f2ff;padding:10px;font-size:15px}.count{font-weight:bold;color:#d9534f;font-size:16px}.sqlstate{font-family:Menlo,Consolas,monospace;font-weight:bold}.warning{background:#fff3cd;border-left:4px solid #ffc107}tr:nth-child(even){background:#f9f9f9}</style>\n</head><body><h2 style=\"color:#ff9800;margin:0 0 10px 0\">\u26a0\ufe0f Postgres Frequency Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert Condition:</strong> Same SQLSTATE error repeated >5 times on a hostname in last 5 minutes</p>{{#ctx.results.0.aggregations.group_by_hostname.buckets}}<div class=\"hostname\">\ud83d\udccd Hostname: {{key}} ({{doc_count}} total errors in 5min)</div><table><thead><tr><th width=\"100\">Count</th><th width=\"120\">SQLSTATE</th><th>Error Description</th></tr></thead><tbody>{{#group_by_sqlstate.buckets}}<tr class=\"warning\"><td class=\"count\">{{doc_count}}\u00d7</td><td class=\"sqlstate\">{{key}}</td><td>{{#script}}var codes = {'22012':'Division by zero','53000':'Insufficient resources','53100':'Disk full','53200':'Out of memory','53300':'Too many connections','54000':'Program limit exceeded','57000':'Operator intervention','57014':'Query canceled','57P01':'Admin shutdown','57P02':'Crash shutdown','58000':'System error','XX000':'Internal error'}; return codes[params._value.key] || 'Unknown error';{{/script}}</td></tr>{{/group_by_sqlstate.buckets}}</tbody></table>{{/ctx.results.0.aggregations.group_by_hostname.buckets}}</body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": true,
+          "throttle": {
+            "value": 5,
+            "unit": "MINUTES"
+          }
+        }
+      ]
+    }
+  ]
+}
