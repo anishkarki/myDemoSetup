@@ -1,0 +1,124 @@
+# OpenSearch Monitor Configuration
+# This YAML file defines monitor configurations that will be converted to OpenSearch JSON monitors
+
+monitors:
+  - name: "Postgres Criticality Monitor - Production (Structured sqlstate)"
+    enabled: true
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    inputs:
+      indices:
+        - "postgresd*"
+        - "postgresdata"
+        - "postgreslogs"
+      
+      query_type: "bool_should"  # Options: bool_should, bool_must, match, terms
+      query_size: 100
+      
+      conditions:
+        - type: "terms"
+          field: "postgres.sqlstate"
+          values:
+            - "22012"  # Division by zero
+            - "53000"  # Insufficient resources
+            - "53100"  # Disk full
+            - "53200"  # Out of memory
+            - "53300"  # Too many connections
+            - "53400"  # Configuration limit exceeded
+            - "54000"  # Program limit exceeded
+            - "54001"  # Statement too complex
+            - "54011"  # Too many columns
+            - "54023"  # Too many arguments
+            - "57000"  # Operator intervention
+            - "57014"  # Query canceled
+            - "57P01"  # Admin shutdown
+            - "57P02"  # Crash shutdown
+            - "57P03"  # Cannot connect now
+            - "57P04"  # Database dropped
+            - "57P05"  # Idle session timeout
+            - "58000"  # System error
+            - "58030"  # I/O error
+            - "58P01"  # Undefined file
+            - "58P02"  # Duplicate file
+            - "58P03"  # Lock not available
+            - "F0000"  # Config file error
+            - "F0001"  # Lock file exists
+            - "XX000"  # Internal error
+            - "XX001"  # Data corrupted
+            - "XX002"  # Index corrupted
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "PANIC"
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "FATAL"
+      
+      minimum_should_match: 1
+    
+    triggers:
+      - name: "Critical Errcodes Trigger"
+        severity: 1  # 1=Critical, 2=High, 3=Medium, 4=Low, 5=Info
+        condition:
+          script: "return ctx.results != null && ctx.results[0].hits.total.value > 0;"
+          lang: "painless"
+        
+        actions:
+          - name: "Email Critical Errcodes (Production)"
+            type: "email"
+            destination_id: "yZI4WJoBHocox8i_xA-r"  # Replace with your destination ID
+            
+            subject_template: "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}"
+            
+            message_template_type: "html_grouped_by_host"  # Options: html_simple, html_grouped_by_host, plain_text
+            
+            throttle:
+              enabled: true
+              value: 15
+              unit: "MINUTES"
+
+# Additional monitors can be defined below
+  - name: "Postgres Warning Monitor - Development"
+    enabled: false
+    schedule:
+      interval: 5
+      unit: "MINUTES"
+    
+    inputs:
+      indices:
+        - "postgresdata"
+      
+      query_type: "bool_should"
+      query_size: 50
+      
+      conditions:
+        - type: "match_phrase"
+          field: "_raw"
+          value: "WARNING"
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "ERROR"
+      
+      minimum_should_match: 1
+    
+    triggers:
+      - name: "Warning Trigger"
+        severity: 3
+        condition:
+          script: "return ctx.results != null && ctx.results[0].hits.total.value > 5;"
+          lang: "painless"
+        
+        actions:
+          - name: "Email Warning"
+            type: "email"
+            destination_id: "yZI4WJoBHocox8i_xA-r"
+            subject_template: "Postgres Warning: {{ctx.monitor.name}}"
+            message_template_type: "html_simple"
+            throttle:
+              enabled: true
+              value: 30
+              unit: "MINUTES"
