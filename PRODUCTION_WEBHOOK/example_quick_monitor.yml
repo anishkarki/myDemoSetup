@@ -1,0 +1,57 @@
+# Quick Example - Create a Monitor in 2 Minutes
+# Copy this file, customize, and run generator
+
+opensearch_url: "http://localhost:19200"
+output_directory: "./my_monitors"
+
+notification_channel:
+  channel_id: "Pt_ioJoBd6nYLt6SZJOX"  # Use existing channel
+  name: "SMTP Webhook"
+  webhook_url: "http://192.168.1.222:5001/webhook/send-email"
+
+monitors:
+  - name: "My Quick Test Monitor"
+    description: "Testing the DSL generator"
+    enabled: true
+    
+    indices: ["postgresdata"]
+    match_field: "_raw"
+    time_window: "5m"
+    
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "ERROR"
+        - "CRITICAL"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 20
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 1
+    
+    trigger_name: "Test Alert"
+    severity: 3
+    
+    throttle:
+      enabled: true
+      value: 5
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "test@example.com"
+      subject: "Test: {{ctx.results.0.aggregations.group_by_field.buckets.size}} groups"
+    
+    email_template:
+      alert_title: "🧪 Test Alert"
+      section_icon: "🔵"
+      section_title: "Host"
+      styles:
+        primary_color: "#3498db"

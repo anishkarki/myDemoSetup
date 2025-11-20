@@ -1,0 +1,90 @@
+{
+  "type": "monitor",
+  "name": "Postgres Critical Errors - Webhook (Production)",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": ["postgresdata"],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                {"match_phrase": {"_raw": "e=22012,"}}
+              ],
+              "minimum_should_match": 1,
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-2m",
+                      "lte": "now"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "size": 0,
+          "aggs": {
+            "group_by_hostname": {
+              "terms": {
+                "field": "host.name",
+                "size": 100
+              },
+              "aggs": {
+                "top_errors": {
+                  "top_hits": {
+                    "size": 100,
+                    "sort": [{"@timestamp": {"order": "desc"}}],
+                    "_source": {
+                      "includes": ["_raw", "@timestamp", "host.name"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical Error Detected",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "if (ctx.results[0].aggregations == null) return false; def hostBuckets = ctx.results[0].aggregations.group_by_hostname.buckets; return hostBuckets.size() > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Send Email via Webhook",
+          "custom_webhook": {
+            "url": "http://localhost:5001/webhook/send-email",
+            "scheme": null,
+            "host": null,
+            "port": -1,
+            "path": null,
+            "query_params": {},
+            "header_params": {
+              "Content-Type": "application/json"
+            },
+            "username": null,
+            "password": null,
+            "method": "POST",
+            "body": "{\"recipients\": [\"dev1@test.local\", \"dev2@test.local\"], \"subject\": \"Test Webhook Alert\", \"message\": \"<html><body><h1>Test</h1></body></html>\"}"
+          }
+        }
+      ]
+    }
+  ]
+}

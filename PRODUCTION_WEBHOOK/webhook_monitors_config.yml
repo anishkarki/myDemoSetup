@@ -1,0 +1,390 @@
+# Webhook Monitor Configuration
+# Dynamic DSL for generating OpenSearch monitors with webhook notifications
+
+# OpenSearch connection
+opensearch_url: "http://localhost:19200"
+
+# Output configuration
+output_directory: "./generated_webhook_monitors"
+generated_date: "2025-11-20"
+
+# Notification channel configuration
+notification_channel:
+  # If channel_id is empty, the deploy script will create a new channel
+  channel_id: ""  # Leave empty to auto-create, or provide existing ID like "Pt_ioJoBd6nYLt6SZJOX"
+  name: "SMTP Webhook Channel"
+  description: "Custom webhook for SMTP email delivery"
+  webhook_url: "http://192.168.1.222:5001/webhook/send-email"
+
+# Monitor definitions
+monitors:
+  # ===================================================================
+  # PostgreSQL Critical Errors Monitor
+  # ===================================================================
+  - name: "Postgres Critical Errors - Production"
+    description: "Monitors critical PostgreSQL errors across all database servers"
+    enabled: true
+    
+    # Indices to monitor
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    # Field to match error patterns against
+    match_field: "_raw"
+    
+    # Time window for query
+    time_window: "2m"
+    
+    # Schedule configuration
+    schedule:
+      interval: 1
+      unit: "MINUTES"  # MINUTES, HOURS, DAYS
+    
+    # Error patterns to match
+    error_codes:
+      # PostgreSQL SQLSTATE codes
+      sqlstate_codes:
+        # Connection exceptions
+        - "08000"  # connection_exception
+        - "08006"  # connection_failure
+        - "08001"  # sqlclient_unable_to_establish_sqlconnection
+        - "08004"  # sqlserver_rejected_establishment_of_sqlconnection
+        
+        # Data exceptions
+        - "22012"  # division_by_zero
+        - "22003"  # numeric_value_out_of_range
+        - "22P01"  # floating_point_exception
+        
+        # Integrity constraint violations
+        - "23000"  # integrity_constraint_violation
+        - "23503"  # foreign_key_violation
+        - "23505"  # unique_violation
+        
+        # Invalid authorization
+        - "28000"  # invalid_authorization_specification
+        - "28P01"  # invalid_password
+        
+        # Transaction rollback
+        - "40000"  # transaction_rollback
+        - "40001"  # serialization_failure
+        - "40P01"  # deadlock_detected
+        
+        # Insufficient resources
+        - "53000"  # insufficient_resources
+        - "53100"  # disk_full
+        - "53200"  # out_of_memory
+        - "53300"  # too_many_connections
+        - "53400"  # configuration_limit_exceeded
+        
+        # Program limit exceeded
+        - "54000"  # program_limit_exceeded
+        - "54001"  # statement_too_complex
+        
+        # Object not in prerequisite state
+        - "55000"  # object_not_in_prerequisite_state
+        - "55P03"  # lock_not_available
+        
+        # Operator intervention
+        - "57000"  # operator_intervention
+        - "57014"  # query_canceled
+        - "57P01"  # admin_shutdown
+        - "57P02"  # crash_shutdown
+        - "57P04"  # database_dropped
+        
+        # System error
+        - "58000"  # system_error
+        - "58030"  # io_error
+        
+        # Config file error
+        - "F0000"  # config_file_error
+        - "F0001"  # lock_file_exists
+        
+        # Internal error
+        - "XX000"  # internal_error
+        - "XX001"  # data_corrupted
+        - "XX002"  # index_corrupted
+      
+      # Keyword patterns
+      keywords:
+        - "PANIC:"
+        - "FATAL:"
+    
+    # Grouping configuration
+    grouping:
+      field: "host.name"  # Group by hostname
+      size: 100  # Max number of groups
+      top_hits_size: 100  # Max logs per group
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    # Trigger condition
+    trigger_condition:
+      min_groups: 1  # Alert if at least 1 group has errors
+      min_errors_per_group: 1  # Alert if at least 1 error per group
+    
+    # Trigger metadata
+    trigger_name: "Critical Error Detected"
+    severity: 1  # 1=Critical, 2=High, 3=Medium, 4=Low, 5=Info
+    action_name: "Send Email via Webhook"
+    
+    # Throttle configuration
+    throttle:
+      enabled: true
+      value: 5
+      unit: "MINUTES"
+    
+    # Email configuration
+    email_config:
+      recipients:
+        - "dev1@test.local"
+        - "dev2@test.local"
+      subject: "🚨 Postgres CRITICAL: Errors Detected - {{ctx.results.0.aggregations.group_by_field.buckets.size}} hosts affected"
+    
+    # Email template styling
+    email_template:
+      alert_title: "🚨 Postgres Critical Alert"
+      section_icon: "🔴"
+      section_title: "Hostname"
+      alert_condition: "Critical errors detected"
+      styles:
+        primary_color: "#d9534f"
+        header_bg: "#d9534f"
+        border_color: "#d9534f"
+  
+  # ===================================================================
+  # PostgreSQL High Frequency Errors Monitor
+  # ===================================================================
+  - name: "Postgres High Frequency Errors"
+    description: "Alerts when same error appears multiple times in short window"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "5m"
+    
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    error_codes:
+      sqlstate_codes:
+        - "22012"  # division_by_zero
+        - "22003"  # numeric_value_out_of_range
+        - "23505"  # unique_violation
+        - "40P01"  # deadlock_detected
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 50
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 5  # Alert if 5+ same errors
+    
+    trigger_name: "High Frequency Errors"
+    severity: 2
+    action_name: "Send Alert Email"
+    
+    throttle:
+      enabled: true
+      value: 10
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dev1@test.local"
+        - "ops@test.local"
+      subject: "⚠️ Postgres HIGH FREQUENCY: {{ctx.results.0.aggregations.group_by_field.buckets.size}} hosts with repeated errors"
+    
+    email_template:
+      alert_title: "⚠️ Postgres High Frequency Alert"
+      section_icon: "🟡"
+      section_title: "Hostname"
+      alert_condition: "Same error repeated 5+ times in 5 minutes"
+      styles:
+        primary_color: "#f0ad4e"
+        header_bg: "#f0ad4e"
+        border_color: "#f0ad4e"
+  
+  # ===================================================================
+  # PostgreSQL Connection Issues Monitor
+  # ===================================================================
+  - name: "Postgres Connection Issues"
+    description: "Monitors connection-related errors and authentication failures"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "3m"
+    
+    schedule:
+      interval: 2
+      unit: "MINUTES"
+    
+    error_codes:
+      sqlstate_codes:
+        - "08000"  # connection_exception
+        - "08006"  # connection_failure
+        - "08001"  # unable_to_connect
+        - "08004"  # connection_rejected
+        - "28000"  # invalid_authorization
+        - "28P01"  # invalid_password
+        - "53300"  # too_many_connections
+      keywords:
+        - "connection refused"
+        - "authentication failed"
+        - "too many connections"
+    
+    grouping:
+      field: "host.name"
+      size: 100
+      top_hits_size: 50
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 1
+    
+    trigger_name: "Connection Issues Detected"
+    severity: 2
+    action_name: "Send Connection Alert"
+    
+    throttle:
+      enabled: true
+      value: 15
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dev1@test.local"
+        - "dba@test.local"
+      subject: "🔌 Postgres CONNECTION: Issues on {{ctx.results.0.aggregations.group_by_field.buckets.size}} host(s)"
+    
+    email_template:
+      alert_title: "🔌 Postgres Connection Alert"
+      section_icon: "🔵"
+      section_title: "Hostname"
+      alert_condition: "Connection or authentication issues detected"
+      styles:
+        primary_color: "#5bc0de"
+        header_bg: "#5bc0de"
+        border_color: "#5bc0de"
+
+# ===================================================================
+# Advanced Example: Custom Pattern Monitor
+# ===================================================================
+# Uncomment to enable custom pattern monitoring
+#
+#  - name: "Custom Error Pattern Monitor"
+#    description: "Monitor with regex and wildcard patterns"
+#    enabled: false
+#    
+#    indices:
+#      - "logs*"
+#    
+#    match_field: "message"
+#    time_window: "10m"
+#    
+#    schedule:
+#      interval: 5
+#      unit: "MINUTES"
+#    
+#    error_codes:
+#      # Regex patterns
+#      regex_patterns:
+#        - "ERROR.*database.*"
+#        - "CRITICAL.*failed.*"
+#      
+#      # Wildcard patterns
+#      wildcard_patterns:
+#        - "*timeout*"
+#        - "*connection*lost*"
+#      
+#      # Keywords
+#      keywords:
+#        - "OutOfMemoryError"
+#        - "StackOverflow"
+#    
+#    # Custom additional filters
+#    additional_filters:
+#      - term:
+#          severity: "error"
+#      - range:
+#          response_time:
+#            gte: 5000
+#    
+#    grouping:
+#      field: "service.name"
+#      size: 50
+#      top_hits_size: 20
+#      sort_field: "@timestamp"
+#      sort_order: "desc"
+#      source_fields:
+#        - "message"
+#        - "@timestamp"
+#        - "service.name"
+#        - "severity"
+#      
+#      # Additional aggregations
+#      additional_aggs:
+#        error_count:
+#          value_count:
+#            field: "message"
+#        avg_response_time:
+#          avg:
+#            field: "response_time"
+#    
+#    trigger_condition:
+#      # Custom Painless script
+#      custom_script: |
+#        if (ctx.results[0].aggregations == null) return false;
+#        def groups = ctx.results[0].aggregations.group_by_field.buckets;
+#        // Alert if any service has more than 10 errors
+#        return groups.any { it.doc_count > 10 };
+#    
+#    trigger_name: "Custom Pattern Alert"
+#    severity: 3
+#    action_name: "Send Custom Alert"
+#    
+#    throttle:
+#      enabled: true
+#      value: 30
+#      unit: "MINUTES"
+#    
+#    email_config:
+#      recipients:
+#        - "alerts@example.com"
+#      subject: "Custom Alert: {{ctx.results.0.aggregations.group_by_field.buckets.size}} services affected"
+#    
+#    email_template:
+#      alert_title: "📊 Custom Pattern Alert"
+#      section_icon: "⚙️"
+#      section_title: "Service"
+#      alert_condition: "Custom error patterns detected"
+#      styles:
+#        primary_color: "#9b59b6"
+#        header_bg: "#9b59b6"
+#        border_color: "#9b59b6"
