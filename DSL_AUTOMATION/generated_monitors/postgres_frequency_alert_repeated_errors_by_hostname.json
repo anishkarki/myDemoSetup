@@ -56,7 +56,7 @@
           "aggs": {
             "group_by_hostname": {
               "terms": {
-                "field": "host.name.keyword",
+                "field": "host.name",
                 "size": 100
               },
               "aggs": {

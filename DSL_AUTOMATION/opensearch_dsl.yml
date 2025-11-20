@@ -215,6 +215,180 @@ monitors:
               unit: "MINUTES"
 
 # Additional monitors can be defined below
+  - name: "Postgres Critical Errors - Grouped by Hostname (Immediate Alert)"
+    enabled: true
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    inputs:
+      indices:
+        - "postgresdata"
+        - "postgresd*"
+      
+      query_type: "aggregation"
+      
+      time_range:
+        value: 2
+        unit: "MINUTES"
+      
+      aggregations:
+        group_by_hostname:
+          terms:
+            field: "host.name"
+            size: 100
+          aggs:
+            top_errors:
+              top_hits:
+                size: 100
+                sort:
+                  - "@timestamp":
+                      order: "desc"
+                _source:
+                  includes:
+                    - "_raw"
+                    - "@timestamp"
+                    - "host.name"
+      
+      conditions:
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=08000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=08006,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=08001,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=08004,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=22012,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=22003,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=22P01,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=23000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=23503,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=23505,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=28000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=28P01,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=40000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=40001,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=40P01,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53100,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53200,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53300,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=53400,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=54000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=54001,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=55000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=55P03,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57014,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57P01,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57P02,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=57P04,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=58000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=58030,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=F0000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=F0001,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=XX000,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=XX001,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "e=XX002,"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "PANIC:"
+        - type: "match_phrase"
+          field: "_raw"
+          value: "FATAL:"
+      
+      minimum_should_match: 1
+    
+    triggers:
+      - name: "Critical Error Detected"
+        severity: 1
+        condition:
+          script: |
+            if (ctx.results[0].aggregations == null) return false;
+            def hostBuckets = ctx.results[0].aggregations.group_by_hostname.buckets;
+            return hostBuckets.size() > 0;
+          lang: "painless"
+        
+        actions:
+          - name: "Email Critical Error Alert"
+            type: "email"
+            destination_id: "yZI4WJoBHocox8i_xA-r"
+            subject_template: "🚨 Postgres CRITICAL: Errors Detected - {{ctx.results.0.aggregations.group_by_hostname.buckets.size}} hosts affected"
+            message_template_type: "html_critical_grouped"
+            throttle:
+              enabled: true
+              value: 5
+              unit: "MINUTES"
+
   - name: "Postgres Frequency Alert - Repeated Errors by Hostname"
     enabled: true
     schedule:
@@ -236,7 +410,7 @@ monitors:
       aggregations:
         group_by_hostname:
           terms:
-            field: "host.name.keyword"
+            field: "host.name"
             size: 100
           aggs:
             group_by_sqlstate:
