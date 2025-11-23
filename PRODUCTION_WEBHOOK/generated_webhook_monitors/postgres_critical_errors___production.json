@@ -249,6 +249,36 @@
                       ]
                     }
                   }
+                },
+                "group_by_error_code": {
+                  "terms": {
+                    "script": {
+                      "source": "\n                            def raw = doc['_raw'].value;\n                            def matcher = /e=([^,]+)/.matcher(raw);\n                            if (matcher.find()) {\n                                return matcher.group(1);\n                            }\n                            return 'UNKNOWN';\n                        ",
+                      "lang": "painless"
+                    },
+                    "size": 50
+                  },
+                  "aggs": {
+                    "top_errors_by_code": {
+                      "top_hits": {
+                        "size": 100,
+                        "sort": [
+                          {
+                            "@timestamp": {
+                              "order": "desc"
+                            }
+                          }
+                        ],
+                        "_source": {
+                          "includes": [
+                            "_raw",
+                            "@timestamp",
+                            "host.name"
+                          ]
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -270,13 +300,13 @@
       "actions": [
         {
           "name": "Send Email via Webhook",
-          "destination_id": "CHANNEL_ID_PLACEHOLDER",
+          "destination_id": "Pt_ioJoBd6nYLt6SZJOX",
           "subject_template": {
             "source": "\ud83d\udea8 Postgres CRITICAL: Errors Detected - {{ctx.results.0.aggregations.group_by_field.buckets.size}} hosts affected",
             "lang": "mustache"
           },
           "message_template": {
-            "source": "{\"recipients\":[\"dev1@test.local\",\"dev2@test.local\"],\"subject\":\"\\ud83d\\udea8 Postgres CRITICAL: Errors Detected - {{ctx.results.0.aggregations.group_by_field.buckets.size}} hosts affected\",\"message\":\"<html><head><meta charset=\\\\\\\"utf-8\\\\\\\">\\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:10px}\\n.group-section{margin-bottom:25px;border:2px solid #d9534f;border-radius:5px;overflow:hidden}\\n.group-header{font-weight:bold;color:#fff;background:#d9534f;padding:12px 15px;font-size:16px}\\n.log-container{background:#fff}\\n.log-entry{padding:10px 15px;border-bottom:1px solid #ffe6e6;font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5}\\n.log-entry:nth-child(odd){background:#fff}\\n.log-entry:nth-child(even){background:#fff9f9}\\n.log-entry:last-child{border-bottom:none}\\ntime{color:#666;font-size:11px;display:block;margin-bottom:4px}</style>\\n</head><body><h2 style=\\\\\\\"color:#d9534f;margin:0 0 15px 0\\\\\\\">\\ud83d\\udea8 Postgres Critical Alert</h2><p style=\\\\\\\"margin-bottom:20px\\\\\\\"><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert Condition:</strong> Critical errors detected</p>{{#ctx.results.0.aggregations.group_by_field.buckets}}<div class=\\\\\\\"group-section\\\\\\\"><div class=\\\\\\\"group-header\\\\\\\">\\ud83d\\udd34 Hostname: {{key}} \\u2014 {{doc_count}} error(s)</div><div class=\\\\\\\"log-container\\\\\\\">{{#top_entries.hits.hits}}<div class=\\\\\\\"log-entry\\\\\\\"><time>{{_source.@timestamp}}</time>{{{_source._raw}}}}</div>{{/top_entries.hits.hits}}</div></div>{{/ctx.results.0.aggregations.group_by_field.buckets}}</body></html>\"}",
+            "source": "{\"recipients\":[\"dev1@test.local\",\"dev2@test.local\"],\"subject\":\"\\ud83d\\udea8 Postgres CRITICAL: Errors Detected - {{ctx.results.0.aggregations.group_by_field.buckets.size}} hosts affected\",\"message\":\"<html><head><meta charset=\\\\\\\"utf-8\\\\\\\">\\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:10px}\\n.group-section{margin-bottom:25px;border:2px solid #d9534f;border-radius:5px;overflow:hidden}\\n.group-header{font-weight:bold;color:#fff;background:#d9534f;padding:12px 15px;font-size:16px}\\n.error-code-section{margin:10px;border:1px solid #ddd;border-radius:3px;overflow:hidden}\\n.error-code-header{font-weight:bold;color:#333;background:#f5f5f5;padding:8px 12px;font-size:14px;border-bottom:1px solid #ddd}\\n.log-container{background:#fff}\\n.log-entry{padding:10px 15px;border-bottom:1px solid #ffe6e6;font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5}\\n.log-entry:nth-child(odd){background:#fff}\\n.log-entry:nth-child(even){background:#fff9f9}\\n.log-entry:last-child{border-bottom:none}\\ntime{color:#666;font-size:11px;display:block;margin-bottom:4px}</style>\\n</head><body><h2 style=\\\\\\\"color:#d9534f;margin:0 0 15px 0\\\\\\\">\\ud83d\\udea8 Postgres Critical Alert</h2><p style=\\\\\\\"margin-bottom:20px\\\\\\\"><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert Condition:</strong> Critical errors detected</p>{{#ctx.results.0.aggregations.group_by_field.buckets}}<div class=\\\\\\\"group-section\\\\\\\"><div class=\\\\\\\"group-header\\\\\\\">\\ud83d\\udd34 Hostname: {{key}} \\u2014 {{doc_count}} error(s)</div>{{#group_by_error_code.buckets}}<div class=\\\\\\\"error-code-section\\\\\\\"><div class=\\\\\\\"error-code-header\\\\\\\">\\u26a0\\ufe0f Error Code: {{key}} ({{doc_count}} occurrence(s))</div><div class=\\\\\\\"log-container\\\\\\\">{{#top_errors_by_code.hits.hits}}<div class=\\\\\\\"log-entry\\\\\\\"><time>{{_source.@timestamp}}</time>{{{_source._raw}}}}</div>{{/top_errors_by_code.hits.hits}}</div></div>{{/group_by_error_code.buckets}}</div>{{/ctx.results.0.aggregations.group_by_field.buckets}}</body></html>\"}",
             "lang": "mustache"
           },
           "throttle_enabled": true,

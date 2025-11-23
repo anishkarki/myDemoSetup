@@ -79,14 +79,40 @@ class WebhookMonitorGenerator:
         source_includes = monitor_config['grouping'].get('source_fields', 
             ['_raw', '@timestamp', group_by_field])
         
-        aggregations = {
-            "group_by_field": {
+        # Check if error code grouping is enabled
+        group_by_error_code = monitor_config['grouping'].get('group_by_error_code', False)
+        error_code_pattern = monitor_config['grouping'].get('error_code_pattern', 'e=([^,]+)')
+        error_code_size = monitor_config['grouping'].get('error_code_size', 50)
+        
+        # Base aggregation structure
+        base_aggs = {
+            "top_entries": {
+                "top_hits": {
+                    "size": top_hits_size,
+                    "sort": [
+                        {
+                            sort_field: {
+                                "order": sort_order
+                            }
+                        }
+                    ],
+                    "_source": {
+                        "includes": source_includes
+                    }
+                }
+            }
+        }
+        
+        # If grouping by error code, add nested aggregation
+        if group_by_error_code:
+            # Use runtime field for error code aggregation
+            base_aggs["group_by_error_code"] = {
                 "terms": {
-                    "field": group_by_field,
-                    "size": group_size
+                    "field": "error_code",
+                    "size": error_code_size
                 },
                 "aggs": {
-                    "top_entries": {
+                    "top_errors_by_code": {
                         "top_hits": {
                             "size": top_hits_size,
                             "sort": [
@@ -102,6 +128,15 @@ class WebhookMonitorGenerator:
                         }
                     }
                 }
+            }
+        
+        aggregations = {
+            "group_by_field": {
+                "terms": {
+                    "field": group_by_field,
+                    "size": group_size
+                },
+                "aggs": base_aggs
             }
         }
         
@@ -143,6 +178,32 @@ class WebhookMonitorGenerator:
             "aggs": self._build_aggregation_query(monitor_config)
         }
         
+        # Add runtime field for error code extraction if needed
+        if monitor_config['grouping'].get('group_by_error_code', False):
+            match_field = monitor_config.get('match_field', '_raw')
+            error_code_pattern = monitor_config['grouping'].get('error_code_pattern', 'e=([^,]+)')
+            
+            query["runtime_mappings"] = {
+                "error_code": {
+                    "type": "keyword",
+                    "script": {
+                        "source": f"""
+                            String raw = doc['{match_field}'].value;
+                            if (raw != null) {{
+                                java.util.regex.Matcher m = /{error_code_pattern}/.matcher(raw);
+                                if (m.find()) {{
+                                    emit(m.group(1));
+                                }} else {{
+                                    emit('UNKNOWN');
+                                }}
+                            }} else {{
+                                emit('UNKNOWN');
+                            }}
+                        """
+                    }
+                }
+            }
+        
         # Add additional filters if specified
         if 'additional_filters' in monitor_config:
             query['query']['bool']['filter'].extend(monitor_config['additional_filters'])
@@ -164,15 +225,22 @@ class WebhookMonitorGenerator:
         raw_field = monitor_config.get('match_field', '_raw')
         timestamp_field = monitor_config['grouping'].get('sort_field', '@timestamp')
         
+        # Check if error code grouping is enabled
+        group_by_error_code = monitor_config['grouping'].get('group_by_error_code', False)
+        
         # Get template strings
         alert_title = template_config.get('alert_title', '🚨 Critical Alert')
         section_icon = template_config.get('section_icon', '🔴')
         section_title = template_config.get('section_title', 'Group')
+        error_code_icon = template_config.get('error_code_icon', '⚠️')
+        error_code_title = template_config.get('error_code_title', 'Error Code')
         
         # Build CSS
         css = f"""body{{font-family:Arial,Helvetica,sans-serif;color:#222;padding:10px}}
 .group-section{{margin-bottom:25px;border:2px solid {border_color};border-radius:5px;overflow:hidden}}
 .group-header{{font-weight:bold;color:#fff;background:{header_bg};padding:12px 15px;font-size:16px}}
+.error-code-section{{margin:10px;border:1px solid #ddd;border-radius:3px;overflow:hidden}}
+.error-code-header{{font-weight:bold;color:#333;background:#f5f5f5;padding:8px 12px;font-size:14px;border-bottom:1px solid #ddd}}
 .log-container{{background:#fff}}
 .log-entry{{padding:10px 15px;border-bottom:1px solid #ffe6e6;font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5}}
 .log-entry:nth-child(odd){{background:#fff}}
@@ -194,10 +262,23 @@ time{{color:#666;font-size:11px;display:block;margin-bottom:4px}}"""
         # Add grouped sections
         html += """{{#ctx.results.0.aggregations.group_by_field.buckets}}"""
         html += f"""<div class="group-section"><div class="group-header">{section_icon} {section_title}: {{{{key}}}} — {{{{doc_count}}}} error(s)</div>"""
-        html += """<div class="log-container">{{#top_entries.hits.hits}}"""
-        html += f"""<div class="log-entry"><time>{{{{_source.{timestamp_field}}}}}</time>{{{{{{_source.{raw_field}}}}}}}}}</div>"""
-        html += """{{/top_entries.hits.hits}}</div></div>"""
-        html += """{{/ctx.results.0.aggregations.group_by_field.buckets}}"""
+        
+        # If grouping by error code, show nested structure
+        if group_by_error_code:
+            # Show error codes grouped within each host
+            html += """{{#group_by_error_code.buckets}}"""
+            html += f"""<div class="error-code-section"><div class="error-code-header">{error_code_icon} {error_code_title}: {{{{key}}}} ({{{{doc_count}}}} occurrence(s))</div>"""
+            html += """<div class="log-container">{{#top_errors_by_code.hits.hits}}"""
+            html += f"""<div class="log-entry"><time>{{{{_source.{timestamp_field}}}}}</time>{{{{{{_source.{raw_field}}}}}}}}}</div>"""
+            html += """{{/top_errors_by_code.hits.hits}}</div></div>"""
+            html += """{{/group_by_error_code.buckets}}"""
+        else:
+            # Standard flat structure
+            html += """<div class="log-container">{{#top_entries.hits.hits}}"""
+            html += f"""<div class="log-entry"><time>{{{{_source.{timestamp_field}}}}}</time>{{{{{{_source.{raw_field}}}}}}}}}</div>"""
+            html += """{{/top_entries.hits.hits}}</div>"""
+        
+        html += """</div>{{/ctx.results.0.aggregations.group_by_field.buckets}}"""
         html += """</body></html>"""
         
         return html

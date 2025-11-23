@@ -71,26 +71,6 @@ services:
     depends_on:
       - opensearch
 
-  fluent-bit:
-    user: root
-    build:
-      context: .
-      dockerfile: Dockerfile.fluentbit
-    container_name: fluent-bit
-    volumes:
-      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./parsers_postgresql.conf:/fluent-bit/etc/parsers_postgresql.conf:ro
-      - ./postgres-logs:/var/log/postgresql:ro
-      - ./fluent-bit/state:/var/fluent-bit/state
-    depends_on:
-      opensearch:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-    networks:
-      - app-network
-    restart: unless-stopped
-
 
   pgadmin:
     image: dpage/pgadmin4:latest

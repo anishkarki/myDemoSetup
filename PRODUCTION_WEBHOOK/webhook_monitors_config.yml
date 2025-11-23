@@ -121,6 +121,16 @@ monitors:
         - "_raw"
         - "@timestamp"
         - "host.name"
+      
+      # Nested grouping by error code (extracted from _raw field)
+      group_by_error_code: true  # Enable nested error code grouping
+      error_code_pattern: 'e=([^,]+)'  # Regex to extract error code from _raw
+      error_code_size: 50  # Max error codes per hostname
+      
+      # Nested grouping by error code (extracted from _raw field)
+      group_by_error_code: true  # Enable nested aggregation by error code
+      error_code_pattern: 'e=([^,]+)'  # Regex pattern to extract error code from _raw
+      error_code_size: 50  # Max error codes per host
     
     # Trigger condition
     trigger_condition:
@@ -150,6 +160,8 @@ monitors:
       alert_title: "🚨 Postgres Critical Alert"
       section_icon: "🔴"
       section_title: "Hostname"
+      error_code_icon: "⚠️"  # Icon for error code sections
+      error_code_title: "Error Code"  # Title for error code sections
       alert_condition: "Critical errors detected"
       styles:
         primary_color: "#d9534f"

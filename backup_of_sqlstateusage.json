@@ -1,0 +1,132 @@
+{
+  "type": "monitor",
+  "name": "Postgres Criticality Monitor - Production (Structured sqlstate)",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresd*",
+          "postgresdata",
+          "postgreslogs"
+        ],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                {
+                  "match_phrase": {
+                    "_raw": "e=22012,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53100,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53200,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=53300,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=54000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57014,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57P01,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=57P02,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=58000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "e=XX000,"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "PANIC"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "FATAL"
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "size": 100
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Critical Errcodes Trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "return ctx.results != null && ctx.results[0].hits.total.value > 0;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Email Critical Errcodes (Production)",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "subject_template": {
+            "source": "Postgres CRITICAL Alert: {{ctx.monitor.name}} - {{ctx.trigger.name}}"
+          },
+          "message_template": {
+            "source": "<html><head><meta charset=\"utf-8\">\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ddd;padding:6px;vertical-align:top}th{background:#f2f2f2;text-align:left}.hostname{font-weight:bold;color:#0066cc}td.log{font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px}time{color:#555;font-size:11px;font-weight:normal}tbody tr:nth-child(odd){background:#ffffff}tbody tr:nth-child(even){background:#f9f9f9}</style>\n</head><body><h2 style=\"color:#d9534f;margin:0 0 10px 0\">\ud83d\udea8 Postgres Critical Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Total hits:</strong> {{ctx.results.0.hits.total.value}}<br/><strong>Time:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}</p><table><thead><tr><th>Hostname</th><th>Timestamp</th><th>Log Entry</th></tr></thead><tbody>{{#ctx.results.0.hits.hits}}<tr><td class=\"hostname\">{{_source.host.name}}</td><td><time>{{_source.@timestamp}}</time></td><td class=\"log\">{{{_source._raw}}}</td></tr>{{/ctx.results.0.hits.hits}}</tbody></table></body></html>",
+            "lang": "mustache"
+          },
+          "throttle_enabled": true,
+          "throttle": {
+            "value": 15,
+            "unit": "MINUTES"
+          }
+        }
+      ]
+    }
+  ]
+}
