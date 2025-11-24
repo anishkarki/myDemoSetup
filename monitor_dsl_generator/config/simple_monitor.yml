@@ -1,0 +1,35 @@
+# Simple Monitor Example
+
+monitors:
+  - name: "Simple Error Monitor"
+    enabled: true
+    schedule:
+      interval: 5
+      unit: "MINUTES"
+    
+    inputs:
+      indices: ["my-logs-*"]
+      
+      query_type: "match"
+      query_size: 50
+      
+      conditions:
+        - type: "match_phrase"
+          field: "message"
+          value: "ERROR"
+      
+      time_range:
+        value: 5
+        unit: "MINUTES"
+    
+    triggers:
+      - name: "Alert on Errors"
+        severity: 2
+        condition:
+          script: "return ctx.results[0].hits.total.value > 0;"
+        
+        actions:
+          - name: "Send Email"
+            destination_id: "YOUR_DESTINATION_ID"
+            subject_template: "Errors Detected"
+            message_template_type: "html_simple"

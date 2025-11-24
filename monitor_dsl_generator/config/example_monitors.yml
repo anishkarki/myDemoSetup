@@ -1,0 +1,186 @@
+# Example Monitor DSL Configuration
+
+monitors:
+  # Basic error monitor
+  - name: "Application Error Monitor"
+    enabled: true
+    schedule:
+      interval: 5
+      unit: "MINUTES"
+    
+    inputs:
+      indices:
+        - "app-logs-*"
+      
+      query_type: "bool_should"
+      query_size: 100
+      
+      conditions:
+        - type: "match_phrase"
+          field: "log.level"
+          value: "ERROR"
+        
+        - type: "match_phrase"
+          field: "log.level"
+          value: "CRITICAL"
+      
+      minimum_should_match: 1
+      
+      time_range:
+        value: 5
+        unit: "MINUTES"
+      
+      sort:
+        field: "@timestamp"
+        order: "desc"
+    
+    triggers:
+      - name: "Error Detected"
+        severity: 2
+        condition:
+          script: "return ctx.results[0].hits.total.value > 0;"
+          lang: "painless"
+        
+        actions:
+          - name: "Email Alert"
+            destination_id: "your-destination-id-here"
+            subject_template: "🚨 Application Errors Detected"
+            message_template_type: "html_simple"
+            throttle:
+              enabled: true
+              value: 10
+              unit: "MINUTES"
+
+  # Critical database errors with aggregation
+  - name: "Database Critical Errors - Grouped by Host"
+    enabled: true
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    inputs:
+      indices:
+        - "postgres-logs-*"
+      
+      query_type: "aggregation"
+      
+      time_range:
+        value: 5
+        unit: "MINUTES"
+      
+      aggregations:
+        group_by_hostname:
+          terms:
+            field: "host.name"
+            size: 100
+          aggs:
+            top_errors:
+              top_hits:
+                size: 50
+                sort:
+                  - "@timestamp":
+                      order: "desc"
+                _source:
+                  includes:
+                    - "_raw"
+                    - "@timestamp"
+                    - "host.name"
+      
+      conditions:
+        - type: "match_phrase"
+          field: "postgres.sqlstate"
+          value: "53200"  # out_of_memory
+        
+        - type: "match_phrase"
+          field: "postgres.sqlstate"
+          value: "57P02"  # crash_shutdown
+        
+        - type: "match_phrase"
+          field: "_raw"
+          value: "PANIC:"
+      
+      minimum_should_match: 1
+    
+    triggers:
+      - name: "Critical DB Error"
+        severity: 1
+        condition:
+          script: |
+            if (ctx.results[0].aggregations == null) return false;
+            def hostBuckets = ctx.results[0].aggregations.group_by_hostname.buckets;
+            return hostBuckets.size() > 0;
+          lang: "painless"
+        
+        actions:
+          - name: "Email DBA Team"
+            destination_id: "your-destination-id-here"
+            subject_template: "🔴 CRITICAL: Database Errors on {{ctx.results.0.aggregations.group_by_hostname.buckets.size}} hosts"
+            message_template_type: "html_critical_grouped"
+            throttle:
+              enabled: true
+              value: 5
+              unit: "MINUTES"
+
+  # Frequency-based monitor
+  - name: "High Error Frequency Monitor"
+    enabled: true
+    schedule:
+      interval: 2
+      unit: "MINUTES"
+    
+    inputs:
+      indices:
+        - "app-logs-*"
+      
+      query_type: "aggregation"
+      
+      time_range:
+        value: 10
+        unit: "MINUTES"
+      
+      aggregations:
+        group_by_hostname:
+          terms:
+            field: "host.name"
+            size: 50
+          aggs:
+            group_by_field:
+              terms:
+                field: "error.code"
+                size: 20
+                min_doc_count: 10  # Alert if same error occurs 10+ times
+      
+      conditions:
+        - type: "match"
+          field: "tags"
+          value: "error"
+      
+      minimum_should_match: 1
+    
+    triggers:
+      - name: "High Frequency Error"
+        severity: 2
+        condition:
+          script: |
+            if (ctx.results[0].aggregations == null) return false;
+            def hostBuckets = ctx.results[0].aggregations.group_by_hostname.buckets;
+            for (host in hostBuckets) {
+              def errorBuckets = host.group_by_field.buckets;
+              for (error in errorBuckets) {
+                if (error.doc_count >= 10) {
+                  return true;
+                }
+              }
+            }
+            return false;
+          lang: "painless"
+        
+        actions:
+          - name: "Email Operations"
+            destination_id: "your-destination-id-here"
+            subject_template: "⚠️ High Error Frequency Detected"
+            message_template_type: "html_frequency"
+            throttle:
+              enabled: true
+              value: 15
+              unit: "MINUTES"
