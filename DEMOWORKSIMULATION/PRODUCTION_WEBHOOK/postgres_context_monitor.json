@@ -1,0 +1,138 @@
+{
+  "type": "monitor",
+  "name": "PostgreSQL Errors with Full Context",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "from": "now-2m",
+                      "to": "now"
+                    }
+                  }
+                }
+              ],
+              "should": [
+                {"match_phrase": {"_raw": "ERROR:"}},
+                {"match_phrase": {"_raw": "FATAL:"}},
+                {"match_phrase": {"_raw": "PANIC:"}}
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "aggregations": {
+            "errors_by_host": {
+              "terms": {
+                "field": "host.name",
+                "size": 20
+              },
+              "aggregations": {
+                "error_logs": {
+                  "top_hits": {
+                    "size": 10,
+                    "sort": [{"@timestamp": {"order": "desc"}}],
+                    "_source": ["_raw", "@timestamp", "host.name"]
+                  }
+                },
+                "context_before": {
+                  "top_hits": {
+                    "size": 5,
+                    "sort": [{"@timestamp": {"order": "desc"}}],
+                    "_source": ["_raw", "@timestamp"],
+                    "script_fields": {
+                      "time_offset": {
+                        "script": {
+                          "source": "doc['@timestamp'].value.toInstant().toEpochMilli() - params.error_time",
+                          "params": {
+                            "error_time": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "size": 100,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "from": "now-2m",
+                      "to": "now"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "sort": [{"@timestamp": {"order": "asc"}}],
+          "_source": ["_raw", "@timestamp", "host.name"]
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "query_level_trigger": {
+        "name": "Errors with Context",
+        "severity": "1",
+        "condition": {
+          "script": {
+            "source": "if (ctx.results[0].aggregations == null) return false; return ctx.results[0].aggregations.errors_by_host.buckets.size() > 0;",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "name": "Send Alert with Context",
+            "destination_id": "CHANNEL_ID_PLACEHOLDER",
+            "message_template": {
+              "source": "{\"recipients\":[\"dba@test.local\",\"ops@test.local\"],\"subject\":\"🚨 PostgreSQL Errors: {{ctx.results.0.aggregations.errors_by_host.buckets.size}} host(s) affected\",\"message\":\"<html><head><style>body{font-family:Arial,sans-serif;padding:10px;background:#f5f5f5}.host-block{margin:20px 0;background:#fff;border:2px solid #dc3545;border-radius:8px;overflow:hidden}.host-header{background:#dc3545;color:#fff;padding:12px 20px;font-weight:bold}.error-section{padding:15px;border-bottom:1px solid #eee}.error-header{background:#ffe6e6;padding:8px 12px;margin:-15px -15px 10px -15px;font-weight:bold;color:#721c24}.context-logs{background:#f8f9fa;padding:10px;border-left:3px solid #6c757d;margin:10px 0}.log-line{padding:4px 8px;margin:2px 0;font-family:Consolas,monospace;font-size:12px;border-left:2px solid #dee2e6}.log-line.error{background:#ffe6e6;border-left-color:#dc3545;font-weight:bold}.timestamp{color:#6c757d;font-size:10px;margin-right:8px}</style></head><body><h2 style='color:#dc3545;margin:0 0 20px 0'>🚨 PostgreSQL Error Alert with Context</h2><p><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Affected Hosts:</strong> {{ctx.results.0.aggregations.errors_by_host.buckets.size}}</p>{{#ctx.results.0.aggregations.errors_by_host.buckets}}<div class='host-block'><div class='host-header'>🔴 Host: {{key}} — {{doc_count}} error(s)</div>{{#error_logs.hits.hits}}<div class='error-section'><div class='error-header'>❌ Error Log</div><div class='log-line error'><span class='timestamp'>{{_source.@timestamp}}</span>{{{_source._raw}}}</div><div class='context-logs'><strong>📋 Surrounding Logs:</strong>{{#ctx.results.1.hits.hits}}{{#_source.host}}{{#name}}{{#eq key .}}<div class='log-line'><span class='timestamp'>{{../../../_source.@timestamp}}</span>{{../../../_source._raw}}</div>{{/eq}}{{/name}}{{/_source.host}}{{/ctx.results.1.hits.hits}}</div></div>{{/error_logs.hits.hits}}</div>{{/ctx.results.0.aggregations.errors_by_host.buckets}}</body></html>\"}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": true,
+            "subject_template": {
+              "source": "🚨 PostgreSQL Errors: {{ctx.results.0.aggregations.errors_by_host.buckets.size}} host(s) affected",
+              "lang": "mustache"
+            },
+            "throttle": {
+              "value": 5,
+              "unit": "MINUTES"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

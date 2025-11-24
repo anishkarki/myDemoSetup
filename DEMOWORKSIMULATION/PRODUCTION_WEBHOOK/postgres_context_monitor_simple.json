@@ -1,0 +1,188 @@
+{
+  "type": "monitor",
+  "monitor_type": "query_level_monitor",
+  "name": "PostgreSQL Errors with Context (Enhanced)",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "size": 50,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m",
+                      "lte": "now"
+                    }
+                  }
+                },
+                {
+                  "bool": {
+                    "should": [
+                      {
+                        "match": {
+                          "_raw": "ERROR"
+                        }
+                      },
+                      {
+                        "match": {
+                          "_raw": "FATAL"
+                        }
+                      },
+                      {
+                        "match": {
+                          "_raw": "PANIC"
+                        }
+                      },
+                      {
+                        "match": {
+                          "_raw": "WARNING"
+                        }
+                      },
+                      {
+                        "match": {
+                          "_raw": "CRITICAL"
+                        }
+                      }
+                    ],
+                    "minimum_should_match": 1
+                  }
+                }
+              ]
+            }
+          },
+          "sort": [
+            {
+              "@timestamp": {
+                "order": "desc"
+              }
+            }
+          ],
+          "aggs": {
+            "by_host": {
+              "terms": {
+                "field": "host.name.keyword",
+                "size": 10
+              },
+              "aggs": {
+                "error_logs": {
+                  "top_hits": {
+                    "size": 30,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ],
+                    "_source": [
+                      "@timestamp",
+                      "_raw",
+                      "source",
+                      "host.name"
+                    ]
+                  }
+                },
+                "by_source": {
+                  "terms": {
+                    "field": "source.keyword",
+                    "size": 5
+                  },
+                  "aggs": {
+                    "recent_errors": {
+                      "top_hits": {
+                        "size": 10,
+                        "sort": [
+                          {
+                            "@timestamp": {
+                              "order": "desc"
+                            }
+                          }
+                        ],
+                        "_source": [
+                          "@timestamp",
+                          "_raw"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "query_level_trigger": {
+        "id": "postgres-error-context-trigger",
+        "name": "PostgreSQL Errors Detected - Check Logs for Context",
+        "severity": "1",
+        "condition": {
+          "script": {
+            "source": "ctx.results[0].aggregations.by_host.buckets.size() > 0",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "id": "send-webhook-notification",
+            "name": "Send Webhook Alert with Log Details",
+            "destination_id": "",
+            "message_template": {
+              "source": "⚠️ PostgreSQL/Patroni Errors Detected\n\nMonitor: {{ctx.monitor.name}}\nTrigger: {{ctx.trigger.name}}\nSeverity: {{ctx.trigger.severity}}\nPeriod: {{ctx.periodStart}} to {{ctx.periodEnd}}\n\n📊 ERRORS BY HOST:\n{{#ctx.results.0.aggregations.by_host.buckets}}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🖥️  Host: {{key}}\n📈 Error Count: {{doc_count}}\n\n📂 Errors by Log File:\n{{#by_source.buckets}}\n  📄 {{key}}\n  Recent Errors:\n{{#recent_errors.hits.hits}}\n    [{{_source.@timestamp}}] {{_source._raw}}\n{{/recent_errors.hits.hits}}\n\n{{/by_source.buckets}}\n\n📋 Sample Error Logs:\n{{#error_logs.hits.hits}}\n  ⏰ {{_source.@timestamp}}\n  📝 {{_source._raw}}\n  📁 Source: {{_source.source}}\n  ---\n{{/error_logs.hits.hits}}\n\n{{/ctx.results.0.aggregations.by_host.buckets}}\n\n💡 TO VIEW CONTEXT (±5 lines around errors):\nFor each error timestamp above, query OpenSearch:\n  GET /postgresdata/_search\n  {\n    \"query\": {\n      \"bool\": {\n        \"filter\": [\n          {\"term\": {\"source.keyword\": \"<log_file_from_above>\"}},\n          {\"range\": {\"@timestamp\": {\"gte\": \"<error_time_minus_1min>\", \"lte\": \"<error_time_plus_1min>\"}}}\n        ]\n      }\n    },\n    \"sort\": [{\"@timestamp\": \"asc\"}],\n    \"size\": 100\n  }\n\nOr check log files directly:\n  tail -100 /var/log/postgresql/<source_file> | grep -C 5 '<error_keyword>'",
+              "lang": "mustache"
+            },
+            "throttle_enabled": true,
+            "throttle": {
+              "value": 10,
+              "unit": "MINUTES"
+            },
+            "subject_template": {
+              "source": "⚠️ PostgreSQL Errors on {{#ctx.results.0.aggregations.by_host.buckets}}{{key}}{{^-last}}, {{/-last}}{{/ctx.results.0.aggregations.by_host.buckets}}",
+              "lang": "mustache"
+            },
+            "action_execution_policy": {
+              "action_execution_scope": {
+                "per_alert": {
+                  "actionable_alerts": [
+                    "DEDUPED",
+                    "NEW"
+                  ]
+                }
+              }
+            },
+            "custom_webhook": {
+              "url": "http://localhost:5001/webhook/send-email",
+              "scheme": "HTTPS",
+              "host": "localhost",
+              "port": 5001,
+              "path": "webhook/send-email",
+              "method": "POST",
+              "query_params": {},
+              "header_params": {
+                "Content-Type": "application/json"
+              },
+              "body": "{\"to\": [\"admin@example.com\"], \"subject\": \"⚠️ PostgreSQL Errors - {{ctx.trigger.name}}\", \"body\": \"<html><body><h2>PostgreSQL/Patroni Errors Detected</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br><strong>Severity:</strong> {{ctx.trigger.severity}}<br><strong>Period:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}</p><h3>Errors by Host</h3>{{#ctx.results.0.aggregations.by_host.buckets}}<div style='border:1px solid #ccc; padding:10px; margin:10px 0;'><h4>Host: {{key}} ({{doc_count}} errors)</h4><h5>By Log File:</h5>{{#by_source.buckets}}<p><strong>{{key}}</strong></p><ul>{{#recent_errors.hits.hits}}<li>[{{_source.@timestamp}}] {{_source._raw}}</li>{{/recent_errors.hits.hits}}</ul>{{/by_source.buckets}}<h5>Sample Logs:</h5><pre>{{#error_logs.hits.hits}}[{{_source.@timestamp}}] {{_source._raw}}\\nSource: {{_source.source}}\\n---\\n{{/error_logs.hits.hits}}</pre></div>{{/ctx.results.0.aggregations.by_host.buckets}}<p><em>Note: Query OpenSearch with error timestamps ±1min filtered by source file to see surrounding log context</em></p></body></html>\"}"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

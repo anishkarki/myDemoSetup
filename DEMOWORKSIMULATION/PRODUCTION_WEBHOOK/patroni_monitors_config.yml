@@ -1,0 +1,452 @@
+# Patroni High Availability Monitoring Configuration
+# Dynamic DSL for generating OpenSearch monitors for Patroni cluster health
+
+# OpenSearch connection
+opensearch_url: "http://localhost:19200"
+
+# Output configuration
+output_directory: "./generated_webhook_monitors"
+generated_date: "2025-11-24"
+
+# Notification channel configuration
+notification_channel:
+  channel_id: ""  # Leave empty to auto-create
+  name: "Patroni SMTP Webhook Channel"
+  description: "Webhook for Patroni cluster alerts via SMTP"
+  webhook_url: "http://192.168.1.222:5001/webhook/send-email"
+
+# Monitor definitions
+monitors:
+  # ===================================================================
+  # Patroni Cluster Leader Election Monitor
+  # ===================================================================
+  - name: "Patroni Leader Election Events"
+    description: "Monitors leader election events and failover scenarios"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "5m"
+    
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "promoted self to leader"
+        - "demoted self"
+        - "switched over to leader"
+        - "no leader found"
+        - "acquired session lock"
+        - "released session lock"
+        - "failover triggered"
+      
+      regex_patterns:
+        - ".*promoted.*leader.*"
+        - ".*demoted.*"
+        - ".*failover.*"
+        - ".*leader.*election.*"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 100
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 1
+    
+    trigger_name: "Leader Election Detected"
+    severity: 1  # Critical - cluster topology change
+    action_name: "Send Leader Election Alert"
+    
+    throttle:
+      enabled: true
+      value: 3
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dba@test.local"
+        - "ops@test.local"
+      subject: "🔄 Patroni LEADER ELECTION: Cluster topology changed"
+    
+    email_template:
+      alert_title: "🔄 Patroni Leader Election Alert"
+      section_icon: "🔴"
+      section_title: "Node"
+      alert_condition: "Leader election or failover event detected"
+      styles:
+        primary_color: "#e74c3c"
+        header_bg: "#e74c3c"
+        border_color: "#e74c3c"
+  
+  # ===================================================================
+  # Patroni Replication Lag Monitor
+  # ===================================================================
+  - name: "Patroni Replication Lag Issues"
+    description: "Monitors replication lag and synchronization issues"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "5m"
+    
+    schedule:
+      interval: 2
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "replication lag"
+        - "wal receiver"
+        - "wal sender"
+        - "replication slot"
+        - "standby disconnected"
+        - "replica behind"
+        - "sync standby"
+      
+      regex_patterns:
+        - ".*lag.*exceeds.*"
+        - ".*replication.*failed.*"
+        - ".*standby.*disconnect.*"
+        - ".*wal.*receiver.*"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 50
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 3  # Alert if 3+ lag messages
+    
+    trigger_name: "Replication Lag Detected"
+    severity: 2  # High priority
+    action_name: "Send Replication Alert"
+    
+    throttle:
+      enabled: true
+      value: 10
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dba@test.local"
+        - "dev1@test.local"
+      subject: "⚠️ Patroni REPLICATION LAG: {{ctx.results.0.aggregations.group_by_field.buckets.size}} node(s) affected"
+    
+    email_template:
+      alert_title: "⚠️ Patroni Replication Lag Alert"
+      section_icon: "🟡"
+      section_title: "Node"
+      alert_condition: "Replication lag detected on standby nodes"
+      styles:
+        primary_color: "#f39c12"
+        header_bg: "#f39c12"
+        border_color: "#f39c12"
+  
+  # ===================================================================
+  # Patroni ETCD Connection Monitor
+  # ===================================================================
+  - name: "Patroni ETCD Connection Issues"
+    description: "Monitors ETCD connectivity and DCS communication problems"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "3m"
+    
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "etcd"
+        - "Can not connect to DCS"
+        - "failed to get leader from DCS"
+        - "DCS is not accessible"
+        - "request to DCS failed"
+        - "DCS connection lost"
+      
+      regex_patterns:
+        - ".*etcd.*timeout.*"
+        - ".*etcd.*connection.*refused.*"
+        - ".*DCS.*error.*"
+        - ".*etcd.*unavailable.*"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 50
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 1
+    
+    trigger_name: "ETCD Connection Problem"
+    severity: 1  # Critical - can cause split-brain
+    action_name: "Send ETCD Alert"
+    
+    throttle:
+      enabled: true
+      value: 5
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dba@test.local"
+        - "ops@test.local"
+        - "dev1@test.local"
+      subject: "🚨 Patroni ETCD: Connection issues on {{ctx.results.0.aggregations.group_by_field.buckets.size}} node(s)"
+    
+    email_template:
+      alert_title: "🚨 Patroni ETCD Connection Alert"
+      section_icon: "🔴"
+      section_title: "Node"
+      alert_condition: "ETCD/DCS connection problems detected"
+      styles:
+        primary_color: "#c0392b"
+        header_bg: "#c0392b"
+        border_color: "#c0392b"
+  
+  # ===================================================================
+  # Patroni REST API Monitor
+  # ===================================================================
+  - name: "Patroni REST API Health Issues"
+    description: "Monitors Patroni REST API availability and health check failures"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "5m"
+    
+    schedule:
+      interval: 2
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "restapi"
+        - "health check failed"
+        - "REST API is not accessible"
+        - "API endpoint unavailable"
+      
+      regex_patterns:
+        - ".*restapi.*error.*"
+        - ".*REST.*failed.*"
+        - ".*health.*check.*fail.*"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 50
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 2
+    
+    trigger_name: "REST API Issues"
+    severity: 3  # Medium
+    action_name: "Send API Alert"
+    
+    throttle:
+      enabled: true
+      value: 15
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "ops@test.local"
+        - "dev1@test.local"
+      subject: "🔧 Patroni REST API: Health issues detected"
+    
+    email_template:
+      alert_title: "🔧 Patroni REST API Alert"
+      section_icon: "🟠"
+      section_title: "Node"
+      alert_condition: "REST API health check failures"
+      styles:
+        primary_color: "#e67e22"
+        header_bg: "#e67e22"
+        border_color: "#e67e22"
+  
+  # ===================================================================
+  # Patroni Cluster State Monitor
+  # ===================================================================
+  - name: "Patroni Cluster State Changes"
+    description: "Monitors cluster state changes and synchronization status"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "5m"
+    
+    schedule:
+      interval: 1
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "I am the leader"
+        - "I am a secondary"
+        - "following a leader"
+        - "starting as"
+        - "cluster state"
+        - "no action"
+        - "Lock owner"
+      
+      regex_patterns:
+        - ".*INFO:.*no action.*"
+        - ".*starting as.*"
+        - ".*following.*leader.*"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 30
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 2  # Alert when 2+ nodes report state changes
+      min_errors_per_group: 1
+    
+    trigger_name: "Cluster State Change"
+    severity: 2
+    action_name: "Send Cluster State Alert"
+    
+    throttle:
+      enabled: true
+      value: 10
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dba@test.local"
+      subject: "ℹ️ Patroni CLUSTER STATE: Multiple nodes reporting changes"
+    
+    email_template:
+      alert_title: "ℹ️ Patroni Cluster State Alert"
+      section_icon: "🔵"
+      section_title: "Node"
+      alert_condition: "Cluster state changes detected"
+      styles:
+        primary_color: "#3498db"
+        header_bg: "#3498db"
+        border_color: "#3498db"
+  
+  # ===================================================================
+  # Patroni Configuration Issues Monitor
+  # ===================================================================
+  - name: "Patroni Configuration Errors"
+    description: "Monitors configuration reload issues and parameter problems"
+    enabled: true
+    
+    indices:
+      - "postgresdata"
+      - "postgresd*"
+    
+    match_field: "_raw"
+    time_window: "10m"
+    
+    schedule:
+      interval: 5
+      unit: "MINUTES"
+    
+    error_codes:
+      keywords:
+        - "configuration"
+        - "reload failed"
+        - "invalid parameter"
+        - "config error"
+        - "parameter changed"
+      
+      regex_patterns:
+        - ".*config.*error.*"
+        - ".*reload.*fail.*"
+        - ".*parameter.*invalid.*"
+    
+    grouping:
+      field: "host.name"
+      size: 50
+      top_hits_size: 50
+      sort_field: "@timestamp"
+      sort_order: "desc"
+      source_fields:
+        - "_raw"
+        - "@timestamp"
+        - "host.name"
+    
+    trigger_condition:
+      min_groups: 1
+      min_errors_per_group: 1
+    
+    trigger_name: "Configuration Error"
+    severity: 3
+    action_name: "Send Config Alert"
+    
+    throttle:
+      enabled: true
+      value: 20
+      unit: "MINUTES"
+    
+    email_config:
+      recipients:
+        - "dba@test.local"
+      subject: "⚙️ Patroni CONFIG: Configuration issues detected"
+    
+    email_template:
+      alert_title: "⚙️ Patroni Configuration Alert"
+      section_icon: "🟡"
+      section_title: "Node"
+      alert_condition: "Configuration errors or reload failures"
+      styles:
+        primary_color: "#95a5a6"
+        header_bg: "#95a5a6"
+        border_color: "#95a5a6"

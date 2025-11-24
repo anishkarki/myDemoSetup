@@ -18,8 +18,8 @@ create_channel() {
           -H 'Content-Type: application/json' \
           -d '{
             "config": {
-              "name": "SMTP Webhook Channel",
-              "description": "Custom webhook for SMTP email delivery",
+              "name": "Patroni SMTP Webhook Channel",
+              "description": "Webhook for Patroni cluster alerts via SMTP",
               "config_type": "webhook",
               "is_enabled": true,
               "webhook": {
@@ -53,44 +53,86 @@ create_channel
 
 # Deploy monitors
 
-echo "📊 Deploying postgres_critical_errors___production.json..."
+echo "📊 Deploying patroni_leader_election_events.json..."
 RESPONSE=$(curl -s -X POST "${OPENSEARCH_URL}/_plugins/_alerting/monitors" \
   -H 'Content-Type: application/json' \
-  -d @postgres_critical_errors___production.json)
+  -d @patroni_leader_election_events.json)
 
 MONITOR_ID=$(echo $RESPONSE | jq -r '._id')
 if [ "$MONITOR_ID" != "null" ]; then
     echo "✓ Monitor deployed: $MONITOR_ID"
 else
-    echo "❌ Failed to deploy postgres_critical_errors___production.json"
+    echo "❌ Failed to deploy patroni_leader_election_events.json"
     echo "$RESPONSE" | jq '.'
 fi
 echo ""
 
-echo "📊 Deploying postgres_high_frequency_errors.json..."
+echo "📊 Deploying patroni_replication_lag_issues.json..."
 RESPONSE=$(curl -s -X POST "${OPENSEARCH_URL}/_plugins/_alerting/monitors" \
   -H 'Content-Type: application/json' \
-  -d @postgres_high_frequency_errors.json)
+  -d @patroni_replication_lag_issues.json)
 
 MONITOR_ID=$(echo $RESPONSE | jq -r '._id')
 if [ "$MONITOR_ID" != "null" ]; then
     echo "✓ Monitor deployed: $MONITOR_ID"
 else
-    echo "❌ Failed to deploy postgres_high_frequency_errors.json"
+    echo "❌ Failed to deploy patroni_replication_lag_issues.json"
     echo "$RESPONSE" | jq '.'
 fi
 echo ""
 
-echo "📊 Deploying postgres_connection_issues.json..."
+echo "📊 Deploying patroni_etcd_connection_issues.json..."
 RESPONSE=$(curl -s -X POST "${OPENSEARCH_URL}/_plugins/_alerting/monitors" \
   -H 'Content-Type: application/json' \
-  -d @postgres_connection_issues.json)
+  -d @patroni_etcd_connection_issues.json)
 
 MONITOR_ID=$(echo $RESPONSE | jq -r '._id')
 if [ "$MONITOR_ID" != "null" ]; then
     echo "✓ Monitor deployed: $MONITOR_ID"
 else
-    echo "❌ Failed to deploy postgres_connection_issues.json"
+    echo "❌ Failed to deploy patroni_etcd_connection_issues.json"
+    echo "$RESPONSE" | jq '.'
+fi
+echo ""
+
+echo "📊 Deploying patroni_rest_api_health_issues.json..."
+RESPONSE=$(curl -s -X POST "${OPENSEARCH_URL}/_plugins/_alerting/monitors" \
+  -H 'Content-Type: application/json' \
+  -d @patroni_rest_api_health_issues.json)
+
+MONITOR_ID=$(echo $RESPONSE | jq -r '._id')
+if [ "$MONITOR_ID" != "null" ]; then
+    echo "✓ Monitor deployed: $MONITOR_ID"
+else
+    echo "❌ Failed to deploy patroni_rest_api_health_issues.json"
+    echo "$RESPONSE" | jq '.'
+fi
+echo ""
+
+echo "📊 Deploying patroni_cluster_state_changes.json..."
+RESPONSE=$(curl -s -X POST "${OPENSEARCH_URL}/_plugins/_alerting/monitors" \
+  -H 'Content-Type: application/json' \
+  -d @patroni_cluster_state_changes.json)
+
+MONITOR_ID=$(echo $RESPONSE | jq -r '._id')
+if [ "$MONITOR_ID" != "null" ]; then
+    echo "✓ Monitor deployed: $MONITOR_ID"
+else
+    echo "❌ Failed to deploy patroni_cluster_state_changes.json"
+    echo "$RESPONSE" | jq '.'
+fi
+echo ""
+
+echo "📊 Deploying patroni_configuration_errors.json..."
+RESPONSE=$(curl -s -X POST "${OPENSEARCH_URL}/_plugins/_alerting/monitors" \
+  -H 'Content-Type: application/json' \
+  -d @patroni_configuration_errors.json)
+
+MONITOR_ID=$(echo $RESPONSE | jq -r '._id')
+if [ "$MONITOR_ID" != "null" ]; then
+    echo "✓ Monitor deployed: $MONITOR_ID"
+else
+    echo "❌ Failed to deploy patroni_configuration_errors.json"
     echo "$RESPONSE" | jq '.'
 fi
 echo ""

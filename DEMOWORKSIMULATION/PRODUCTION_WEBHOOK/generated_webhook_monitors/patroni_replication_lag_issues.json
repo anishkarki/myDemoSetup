@@ -1,0 +1,156 @@
+{
+  "type": "monitor",
+  "name": "Patroni Replication Lag Issues",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 2,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                {
+                  "match_phrase": {
+                    "_raw": "replication lag"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "wal receiver"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "wal sender"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "replication slot"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "standby disconnected"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "replica behind"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "sync standby"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*lag.*exceeds.*"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*replication.*failed.*"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*standby.*disconnect.*"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*wal.*receiver.*"
+                  }
+                }
+              ],
+              "minimum_should_match": 1,
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m",
+                      "lte": "now"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "size": 0,
+          "aggs": {
+            "group_by_field": {
+              "terms": {
+                "field": "host.name",
+                "size": 50
+              },
+              "aggs": {
+                "top_entries": {
+                  "top_hits": {
+                    "size": 50,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ],
+                    "_source": {
+                      "includes": [
+                        "_raw",
+                        "@timestamp",
+                        "host.name"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Replication Lag Detected",
+      "severity": "2",
+      "condition": {
+        "script": {
+          "source": "if (ctx.results[0].aggregations == null) return false;\ndef groups = ctx.results[0].aggregations.group_by_field.buckets;\ndef validGroups = groups.findAll { it.doc_count >= 3 };\nreturn validGroups.size() >= 1;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Send Replication Alert",
+          "destination_id": "CHANNEL_ID_PLACEHOLDER",
+          "subject_template": {
+            "source": "\u26a0\ufe0f Patroni REPLICATION LAG: {{ctx.results.0.aggregations.group_by_field.buckets.size}} node(s) affected",
+            "lang": "mustache"
+          },
+          "message_template": {
+            "source": "{\"recipients\":[\"dba@test.local\",\"dev1@test.local\"],\"subject\":\"\\u26a0\\ufe0f Patroni REPLICATION LAG: {{ctx.results.0.aggregations.group_by_field.buckets.size}} node(s) affected\",\"message\":\"<html><head><meta charset=\\\\\\\"utf-8\\\\\\\">\\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:10px}\\n.group-section{margin-bottom:25px;border:2px solid #f39c12;border-radius:5px;overflow:hidden}\\n.group-header{font-weight:bold;color:#fff;background:#f39c12;padding:12px 15px;font-size:16px}\\n.error-code-section{margin:10px;border:1px solid #ddd;border-radius:3px;overflow:hidden}\\n.error-code-header{font-weight:bold;color:#333;background:#f5f5f5;padding:8px 12px;font-size:14px;border-bottom:1px solid #ddd}\\n.log-container{background:#fff}\\n.log-entry{padding:10px 15px;border-bottom:1px solid #ffe6e6;font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5}\\n.log-entry:nth-child(odd){background:#fff}\\n.log-entry:nth-child(even){background:#fff9f9}\\n.log-entry:last-child{border-bottom:none}\\ntime{color:#666;font-size:11px;display:block;margin-bottom:4px}</style>\\n</head><body><h2 style=\\\\\\\"color:#f39c12;margin:0 0 15px 0\\\\\\\">\\u26a0\\ufe0f Patroni Replication Lag Alert</h2><p style=\\\\\\\"margin-bottom:20px\\\\\\\"><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert Condition:</strong> Replication lag detected on standby nodes</p>{{#ctx.results.0.aggregations.group_by_field.buckets}}<div class=\\\\\\\"group-section\\\\\\\"><div class=\\\\\\\"group-header\\\\\\\">\\ud83d\\udfe1 Node: {{key}} \\u2014 {{doc_count}} error(s)</div><div class=\\\\\\\"log-container\\\\\\\">{{#top_entries.hits.hits}}<div class=\\\\\\\"log-entry\\\\\\\"><time>{{_source.@timestamp}}</time>{{{_source._raw}}}}</div>{{/top_entries.hits.hits}}</div></div>{{/ctx.results.0.aggregations.group_by_field.buckets}}</body></html>\"}",
+            "lang": "mustache"
+          },
+          "throttle_enabled": true,
+          "throttle": {
+            "value": 10,
+            "unit": "MINUTES"
+          }
+        }
+      ]
+    }
+  ]
+}

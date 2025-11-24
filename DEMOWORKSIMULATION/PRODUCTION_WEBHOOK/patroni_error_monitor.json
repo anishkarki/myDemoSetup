@@ -1,0 +1,181 @@
+{
+  "type": "monitor",
+  "name": "Patroni & PostgreSQL Error Monitor",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "from": "now-2m",
+                      "to": "now",
+                      "include_lower": true,
+                      "include_upper": true
+                    }
+                  }
+                }
+              ],
+              "should": [
+                {
+                  "match_phrase": {
+                    "_raw": "ERROR:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "FATAL:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "PANIC:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "WARNING:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "CRITICAL:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "failover"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "switchover"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "promoted"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "demoted"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "leader election"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "DCS"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "etcd"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "connection refused"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "connection timeout"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "replication lag"
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "aggregations": {
+            "group_by_host": {
+              "terms": {
+                "field": "host.name",
+                "size": 50
+              },
+              "aggregations": {
+                "error_samples": {
+                  "top_hits": {
+                    "size": 50,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ],
+                    "_source": {
+                      "includes": [
+                        "_raw",
+                        "@timestamp",
+                        "host.name",
+                        "source"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "query_level_trigger": {
+        "name": "Patroni/PostgreSQL Errors Detected",
+        "severity": "1",
+        "condition": {
+          "script": {
+            "source": "if (ctx.results[0].aggregations == null) return false; def groups = ctx.results[0].aggregations.group_by_host.buckets; return groups.size() >= 1;",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "name": "Send Error Alert",
+            "destination_id": "CHANNEL_ID_PLACEHOLDER",
+            "message_template": {
+              "source": "{\"recipients\":[\"dba@test.local\",\"ops@test.local\"],\"subject\":\"🚨 Patroni/PostgreSQL: Errors Detected on {{ctx.results.0.aggregations.group_by_host.buckets.size}} host(s)\",\"message\":\"<html><head><meta charset=\\\"utf-8\\\"><style>body{font-family:Arial,sans-serif;color:#222;padding:10px}.host-section{margin-bottom:25px;border:2px solid #dc3545;border-radius:5px;overflow:hidden}.host-header{font-weight:bold;color:#fff;background:#dc3545;padding:12px 15px;font-size:16px}.log-container{background:#fff}.log-entry{padding:10px 15px;border-bottom:1px solid #ffe6e6;font-family:Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5}.log-entry:nth-child(odd){background:#fff}.log-entry:nth-child(even){background:#fff9f9}.log-entry:last-child{border-bottom:none}time{color:#666;font-size:11px;display:block;margin-bottom:4px}</style></head><body><h2 style=\\\"color:#dc3545;margin:0 0 15px 0\\\">🚨 Patroni/PostgreSQL Error Alert</h2><p style=\\\"margin-bottom:20px\\\"><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert:</strong> Errors/warnings detected in Patroni or PostgreSQL logs</p>{{#ctx.results.0.aggregations.group_by_host.buckets}}<div class=\\\"host-section\\\"><div class=\\\"host-header\\\">🔴 Host: {{key}} — {{doc_count}} error(s)</div><div class=\\\"log-container\\\">{{#error_samples.hits.hits}}<div class=\\\"log-entry\\\"><time>{{_source.@timestamp}}</time>{{{_source._raw}}}</div>{{/error_samples.hits.hits}}</div></div>{{/ctx.results.0.aggregations.group_by_host.buckets}}</body></html>\"}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": true,
+            "subject_template": {
+              "source": "🚨 Patroni/PostgreSQL: Errors Detected on {{ctx.results.0.aggregations.group_by_host.buckets.size}} host(s)",
+              "lang": "mustache"
+            },
+            "throttle": {
+              "value": 5,
+              "unit": "MINUTES"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "type": "monitor",
+  "name": "PostgreSQL Critical Errors with Context",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "from": "now-2m",
+                      "to": "now",
+                      "include_lower": true,
+                      "include_upper": true
+                    }
+                  }
+                }
+              ],
+              "should": [
+                {
+                  "match_phrase": {
+                    "_raw": "ERROR:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "FATAL:"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "PANIC:"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*e=(22012|23505|40P01|53000|53200|53300|57000|57014|57P01|XX000).*"
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          "aggregations": {
+            "errors_by_host": {
+              "terms": {
+                "field": "host.name",
+                "size": 50
+              },
+              "aggregations": {
+                "error_samples": {
+                  "top_hits": {
+                    "size": 10,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ],
+                    "_source": [
+                      "_raw",
+                      "@timestamp",
+                      "host.name",
+                      "source"
+                    ]
+                  }
+                },
+                "all_logs_context": {
+                  "top_hits": {
+                    "size": 100,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "asc"
+                        }
+                      }
+                    ],
+                    "_source": [
+                      "_raw",
+                      "@timestamp"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "query_level_trigger": {
+        "name": "PostgreSQL Critical Errors",
+        "severity": "1",
+        "condition": {
+          "script": {
+            "source": "return ctx.results[0].hits.total.value > 0",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "name": "Send Critical Error Alert with Context",
+            "destination_id": "CHANNEL_ID_PLACEHOLDER",
+            "message_template": {
+              "source": "{\"recipients\":[\"dba@test.local\",\"ops@test.local\"],\"subject\":\"🚨 PostgreSQL CRITICAL: {{ctx.results.0.hits.total.value}} error(s) detected\",\"message\":\"<html><head><meta charset=\\\"utf-8\\\"><style>body{font-family:Arial,sans-serif;color:#222;padding:10px;background:#f8f9fa}h2{color:#dc3545;margin:0 0 15px 0}p{margin-bottom:20px}.error-block{margin-bottom:30px;background:#fff;border:2px solid #dc3545;border-radius:8px;overflow:hidden}.error-header{background:#dc3545;color:#fff;padding:12px 20px;font-weight:bold;font-size:16px}.error-content{padding:20px}.error-line{padding:8px 12px;margin:4px 0;font-family:Consolas,Monaco,monospace;font-size:13px;line-height:1.6;border-left:3px solid #ced4da;background:#f8f9fa}.error-line.match{background:#ffe6e6;border-left-color:#dc3545;font-weight:bold}.timestamp{color:#6c757d;font-size:11px;margin-bottom:4px;display:block}.host{color:#0056b3;font-weight:bold}</style></head><body><h2>🚨 PostgreSQL Critical Error Alert</h2><p><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Total Errors:</strong> {{ctx.results.0.hits.total.value}}</p>{{#ctx.results.0.hits.hits}}<div class=\\\"error-block\\\"><div class=\\\"error-header\\\">Error #{{_index}} - <span class=\\\"host\\\">{{_source.host.name}}</span></div><div class=\\\"error-content\\\"><div class=\\\"timestamp\\\">📅 {{_source.@timestamp}}</div><div class=\\\"error-line match\\\">{{{_source._raw}}}</div></div></div>{{/ctx.results.0.hits.hits}}</body></html>\"}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": true,
+            "subject_template": {
+              "source": "🚨 PostgreSQL CRITICAL: {{ctx.results.0.hits.total.value}} error(s) detected",
+              "lang": "mustache"
+            },
+            "throttle": {
+              "value": 5,
+              "unit": "MINUTES"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

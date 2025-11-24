@@ -1,0 +1,136 @@
+{
+  "type": "monitor",
+  "name": "Patroni REST API Health Issues",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 2,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "postgresdata",
+          "postgresd*"
+        ],
+        "query": {
+          "query": {
+            "bool": {
+              "should": [
+                {
+                  "match_phrase": {
+                    "_raw": "restapi"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "health check failed"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "REST API is not accessible"
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "_raw": "API endpoint unavailable"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*restapi.*error.*"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*REST.*failed.*"
+                  }
+                },
+                {
+                  "regexp": {
+                    "_raw": ".*health.*check.*fail.*"
+                  }
+                }
+              ],
+              "minimum_should_match": 1,
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m",
+                      "lte": "now"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "size": 0,
+          "aggs": {
+            "group_by_field": {
+              "terms": {
+                "field": "host.name",
+                "size": 50
+              },
+              "aggs": {
+                "top_entries": {
+                  "top_hits": {
+                    "size": 50,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ],
+                    "_source": {
+                      "includes": [
+                        "_raw",
+                        "@timestamp",
+                        "host.name"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "REST API Issues",
+      "severity": "3",
+      "condition": {
+        "script": {
+          "source": "if (ctx.results[0].aggregations == null) return false;\ndef groups = ctx.results[0].aggregations.group_by_field.buckets;\ndef validGroups = groups.findAll { it.doc_count >= 2 };\nreturn validGroups.size() >= 1;",
+          "lang": "painless"
+        }
+      },
+      "actions": [
+        {
+          "name": "Send API Alert",
+          "destination_id": "CHANNEL_ID_PLACEHOLDER",
+          "subject_template": {
+            "source": "\ud83d\udd27 Patroni REST API: Health issues detected",
+            "lang": "mustache"
+          },
+          "message_template": {
+            "source": "{\"recipients\":[\"ops@test.local\",\"dev1@test.local\"],\"subject\":\"\\ud83d\\udd27 Patroni REST API: Health issues detected\",\"message\":\"<html><head><meta charset=\\\\\\\"utf-8\\\\\\\">\\n<style>body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:10px}\\n.group-section{margin-bottom:25px;border:2px solid #e67e22;border-radius:5px;overflow:hidden}\\n.group-header{font-weight:bold;color:#fff;background:#e67e22;padding:12px 15px;font-size:16px}\\n.error-code-section{margin:10px;border:1px solid #ddd;border-radius:3px;overflow:hidden}\\n.error-code-header{font-weight:bold;color:#333;background:#f5f5f5;padding:8px 12px;font-size:14px;border-bottom:1px solid #ddd}\\n.log-container{background:#fff}\\n.log-entry{padding:10px 15px;border-bottom:1px solid #ffe6e6;font-family:Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.5}\\n.log-entry:nth-child(odd){background:#fff}\\n.log-entry:nth-child(even){background:#fff9f9}\\n.log-entry:last-child{border-bottom:none}\\ntime{color:#666;font-size:11px;display:block;margin-bottom:4px}</style>\\n</head><body><h2 style=\\\\\\\"color:#e67e22;margin:0 0 15px 0\\\\\\\">\\ud83d\\udd27 Patroni REST API Alert</h2><p style=\\\\\\\"margin-bottom:20px\\\\\\\"><strong>Monitor:</strong> {{ctx.monitor.name}}<br/><strong>Trigger:</strong> {{ctx.trigger.name}}<br/><strong>Time Window:</strong> {{ctx.periodStart}} to {{ctx.periodEnd}}<br/><strong>Alert Condition:</strong> REST API health check failures</p>{{#ctx.results.0.aggregations.group_by_field.buckets}}<div class=\\\\\\\"group-section\\\\\\\"><div class=\\\\\\\"group-header\\\\\\\">\\ud83d\\udfe0 Node: {{key}} \\u2014 {{doc_count}} error(s)</div><div class=\\\\\\\"log-container\\\\\\\">{{#top_entries.hits.hits}}<div class=\\\\\\\"log-entry\\\\\\\"><time>{{_source.@timestamp}}</time>{{{_source._raw}}}}</div>{{/top_entries.hits.hits}}</div></div>{{/ctx.results.0.aggregations.group_by_field.buckets}}</body></html>\"}",
+            "lang": "mustache"
+          },
+          "throttle_enabled": true,
+          "throttle": {
+            "value": 15,
+            "unit": "MINUTES"
+          }
+        }
+      ]
+    }
+  ]
+}

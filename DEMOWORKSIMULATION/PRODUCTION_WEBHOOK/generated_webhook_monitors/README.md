@@ -3,15 +3,18 @@
 ## Overview
 This directory contains auto-generated OpenSearch monitors with webhook notification integration.
 
-**Generated on**: 2025-11-20  
+**Generated on**: 2025-11-24  
 **Configuration**: Based on YAML DSL configuration
 
 ## Files
 
 ### Monitor Definitions
-- `postgres_critical_errors___production.json` - Monitors critical PostgreSQL errors across all database servers
-- `postgres_high_frequency_errors.json` - Alerts when same error appears multiple times in short window
-- `postgres_connection_issues.json` - Monitors connection-related errors and authentication failures
+- `patroni_leader_election_events.json` - Monitors leader election events and failover scenarios
+- `patroni_replication_lag_issues.json` - Monitors replication lag and synchronization issues
+- `patroni_etcd_connection_issues.json` - Monitors ETCD connectivity and DCS communication problems
+- `patroni_rest_api_health_issues.json` - Monitors Patroni REST API availability and health check failures
+- `patroni_cluster_state_changes.json` - Monitors cluster state changes and synchronization status
+- `patroni_configuration_errors.json` - Monitors configuration reload issues and parameter problems
 
 ### Deployment Scripts
 - `deploy_monitors.sh` - Automated deployment script
