@@ -46,3 +46,8 @@ __pycache__/
 # Temporary
 tmp/
 temp/
+
+# Runtime data directories
+DEMOWORKSIMULATION/etcd-data/
+DEMOWORKSIMULATION/patroni1-data/
+DEMOWORKSIMULATION/patroni2-data/

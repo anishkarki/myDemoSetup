@@ -137,6 +137,8 @@ services:
     volumes:
       - "~/cribl-config:/opt/cribl/config-volume"
       - ./postgres-logs:/var/log/postgresql:ro
+      - ./patroni1-logs:/var/log/patroni1:ro
+      - ./patroni2-logs:/var/log/patroni2:ro
     networks:
       - app-network
   workers:
@@ -150,6 +152,8 @@ services:
       - "19002:9000"
     volumes:
       - ./postgres-logs:/var/log/postgresql:ro
+      - ./patroni1-logs:/var/log/patroni1:ro
+      - ./patroni2-logs:/var/log/patroni2:ro
     networks:
       - app-network
   
@@ -176,6 +180,100 @@ services:
     volumes:
       - ./scripts:/scripts
     entrypoint: ["/bin/bash"]
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.12
+    container_name: etcd
+    command: >
+      etcd
+      --name etcd
+      --data-dir /etcd-data
+      --listen-client-urls http://0.0.0.0:2379
+      --advertise-client-urls http://etcd:2379
+      --listen-peer-urls http://0.0.0.0:2380
+      --initial-advertise-peer-urls http://etcd:2380
+      --initial-cluster etcd=http://etcd:2380
+      --initial-cluster-token patroni-cluster-token
+      --initial-cluster-state new
+    networks:
+      - app-network
+    ports:
+      - "12379:2379"
+      - "12380:2380"
+    volumes:
+      - ./etcd-data:/etcd-data
+
+  patroni1:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: patroni1
+    hostname: patroni1
+    environment:
+      PATRONI_NAME: patroni1
+      PATRONI_SCOPE: postgres-cluster
+      PATRONI_POSTGRESQL_DATA_DIR: /var/lib/postgresql/data
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:5432
+      PATRONI_RESTAPI_LISTEN: 0.0.0.0:8008
+      PATRONI_SUPERUSER_USERNAME: postgres
+      PATRONI_SUPERUSER_PASSWORD: postgres
+      PATRONI_REPLICATION_USERNAME: replicator
+      PATRONI_REPLICATION_PASSWORD: replicator
+    ports:
+      - "15433:5432"
+      - "8008:8008"
+    volumes:
+      - ./patroni1.yml:/etc/patroni/patroni.yml
+      - ./patroni1-data:/var/lib/postgresql/data
+      - ./patroni1-logs:/var/log/postgresql
+    networks:
+      - app-network
+    depends_on:
+      - etcd
+    command: ["/usr/local/bin/patroni", "/etc/patroni/patroni.yml"]
+
+  patroni2:
+    build:
+      context: .
+      dockerfile: Dockerfile.patroni
+    container_name: patroni2
+    hostname: patroni2
+    environment:
+      PATRONI_NAME: patroni2
+      PATRONI_SCOPE: postgres-cluster
+      PATRONI_POSTGRESQL_DATA_DIR: /var/lib/postgresql/data
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:5432
+      PATRONI_RESTAPI_LISTEN: 0.0.0.0:8008
+      PATRONI_SUPERUSER_USERNAME: postgres
+      PATRONI_SUPERUSER_PASSWORD: postgres
+      PATRONI_REPLICATION_USERNAME: replicator
+      PATRONI_REPLICATION_PASSWORD: replicator
+    ports:
+      - "15434:5432"
+      - "8009:8008"
+    volumes:
+      - ./patroni2.yml:/etc/patroni/patroni.yml
+      - ./patroni2-data:/var/lib/postgresql/data
+      - ./patroni2-logs:/var/log/postgresql
+    networks:
+      - app-network
+    depends_on:
+      - etcd
+    command: ["/usr/local/bin/patroni", "/etc/patroni/patroni.yml"]
+
+  haproxy:
+    image: haproxy:latest
+    container_name: haproxy
+    ports:
+      - "15432:5432"
+      - "7000:7000"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - app-network
+    depends_on:
+      - patroni1
+      - patroni2
 
 networks:
   app-network:
