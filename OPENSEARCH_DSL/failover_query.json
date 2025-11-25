@@ -1,0 +1,117 @@
+{
+  "size": 100,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "2025-11-25T04:42:00",
+              "lte": "2025-11-25T04:42:10",
+              "time_zone": "-07:00"
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "wildcard": {
+                  "source": {
+                    "value": "*postgresql*.log"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "source": {
+                    "value": "*postgres*.log"
+                  }
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*replication terminated*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*End of WAL reached*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*received promote request*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*selected new timeline ID*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*archive recovery complete*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*database system is ready to accept connections*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*standby promoted*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*failover*"
+                  }
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "asc"
+      }
+    }
+  ],
+  "aggs": {
+    "by_source": {
+      "terms": {
+        "field": "source",
+        "size": 10
+      }
+    }
+  }
+}
