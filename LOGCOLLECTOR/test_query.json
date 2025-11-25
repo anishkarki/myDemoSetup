@@ -1,0 +1,28 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "source": "*postgres*"
+          }
+        }
+      ],
+      "should": [
+        {
+          "match_phrase": {
+            "_raw": "database system is shut down"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "database system"
+          }
+        }
+      ],
+      "minimum_should_match": 1
+    }
+  },
+  "size": 3,
+  "_source": ["@timestamp", "_raw", "source"]
+}

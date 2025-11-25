@@ -1,0 +1,127 @@
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "multi_match": {
+            "query": "failover",
+            "fields": [
+              "message",
+              "log",
+              "msg",
+              "text",
+              "line"
+            ],
+            "type": "phrase",
+            "boost": 2
+          }
+        },
+        {
+          "multi_match": {
+            "query": "promoted demoted",
+            "fields": [
+              "message",
+              "log",
+              "msg"
+            ],
+            "type": "best_fields",
+            "operator": "or"
+          }
+        },
+        {
+          "multi_match": {
+            "query": "leader election",
+            "fields": [
+              "message",
+              "log",
+              "msg"
+            ],
+            "type": "phrase"
+          }
+        },
+        {
+          "multi_match": {
+            "query": "acquired lock released lock",
+            "fields": [
+              "message",
+              "log",
+              "msg"
+            ],
+            "type": "best_fields",
+            "operator": "or"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "starting as a secondary"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "promoted self to leader"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "no action. I am a secondary and following a leader"
+          }
+        },
+        {
+          "regexp": {
+            "message": ".*[Ff]ail.*[Oo]ver.*"
+          }
+        }
+      ],
+      "minimum_should_match": 1,
+      "filter": [
+        {
+          "terms": {
+            "source": [
+              "patroni",
+              "patroni1",
+              "patroni2",
+              "postgres",
+              "postgresql"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ],
+  "size": 500,
+  "_source": [
+    "@timestamp",
+    "message",
+    "log",
+    "source",
+    "host",
+    "container_name",
+    "level",
+    "severity"
+  ],
+  "highlight": {
+    "fields": {
+      "message": {
+        "fragment_size": 200,
+        "number_of_fragments": 3
+      },
+      "log": {
+        "fragment_size": 200,
+        "number_of_fragments": 3
+      }
+    },
+    "pre_tags": [
+      "<mark>"
+    ],
+    "post_tags": [
+      "</mark>"
+    ]
+  }
+}

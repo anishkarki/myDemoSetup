@@ -1,0 +1,94 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "2025-11-25T04:42:00",
+              "lte": "2025-11-25T04:42:10"
+            }
+          }
+        },
+        {
+          "wildcard": {
+            "source": "*postgres*"
+          }
+        }
+      ],
+      "should": [
+        {
+          "match_phrase": {
+            "_raw": "replication terminated by primary server"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "End of WAL reached on timeline"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "could not send end-of-streaming message to primary"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "could not connect to the primary server"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "received promote request"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "redo done at"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "selected new timeline ID"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "archive recovery complete"
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "database system is ready to accept connections"
+          }
+        },
+        {
+          "match": {
+            "_raw": {
+              "query": "promote timeline recovery complete ready to accept",
+              "operator": "or"
+            }
+          }
+        }
+      ],
+      "minimum_should_match": 1
+    }
+  },
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "asc"
+      }
+    }
+  ],
+  "size": 100,
+  "_source": ["@timestamp", "_raw", "source", "host"],
+  "highlight": {
+    "fields": {
+      "_raw": {
+        "fragment_size": 300,
+        "number_of_fragments": 1
+      }
+    }
+  }
+}

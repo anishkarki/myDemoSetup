@@ -1,0 +1,285 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║           PATRONI FAILOVER - CAPTURED EVENT AND DSL QUERY                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📅 EVENT DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Event Type:       AUTOMATIC FAILOVER
+Trigger Time:     2025-11-25T14:42:04+10:00 (2025-11-25 04:42:04 UTC)
+Failed Node:      patroni1 (was Leader)
+Promoted Node:    patroni2 (became Leader)
+Previous Timeline: 1
+New Timeline:     2
+Cluster:          postgres-cluster (7576517852827435030)
+
+🔍 KEY POSTGRESQL LOG ENTRIES (from postgresql-2025-11-25.log)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2025-11-25 04:42:05 UTC LOG:  replication terminated by primary server
+2025-11-25 04:42:05 UTC DETAIL:  End of WAL reached on timeline 1 at 0/304D5D0.
+2025-11-25 04:42:05 UTC FATAL:  could not send end-of-streaming message to primary
+2025-11-25 04:42:05 UTC FATAL:  could not connect to the primary server
+2025-11-25 04:42:05 UTC LOG:  waiting for WAL to become available at 0/304D5E8
+2025-11-25 04:42:06 UTC LOG:  received promote request  ← KEY EVENT
+2025-11-25 04:42:06 UTC LOG:  redo done at 0/304D558
+2025-11-25 04:42:06 UTC LOG:  selected new timeline ID: 2  ← TIMELINE CHANGE
+2025-11-25 04:42:07 UTC LOG:  archive recovery complete  ← PROMOTION COMPLETE
+2025-11-25 04:42:07 UTC LOG:  checkpoint starting: force
+2025-11-25 04:42:07 UTC LOG:  database system is ready to accept connections
+
+📊 FAILOVER SEQUENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1 (04:42:04): patroni1 (leader) stopped
+Step 2 (04:42:05): patroni2 detects primary is gone
+                    - "replication terminated by primary server"
+                    - "could not connect to the primary server"
+Step 3 (04:42:06): patroni2 receives promote request
+                    - "received promote request"
+Step 4 (04:42:06): PostgreSQL performs recovery
+                    - "redo done at 0/304D558"
+                    - "selected new timeline ID: 2"
+Step 5 (04:42:07): Promotion completes
+                    - "archive recovery complete"
+                    - "database system is ready to accept connections"
+Step 6 (04:42:07): patroni2 is now the new leader on timeline 2
+
+🔎 EXACT DSL QUERY FOR OPENSEARCH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: failover_event_20251125_0442.json
+
+GET /patroni-logs-*,postgres-logs-*/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "2025-11-25T04:42:00",
+              "lte": "2025-11-25T04:42:10"
+            }
+          }
+        },
+        {
+          "wildcard": {
+            "source": "postgres*"
+          }
+        }
+      ],
+      "should": [
+        {
+          "match_phrase": {
+            "message": "replication terminated by primary server"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "End of WAL reached on timeline"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "could not send end-of-streaming message to primary"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "could not connect to the primary server"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "received promote request"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "redo done at"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "selected new timeline ID"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "archive recovery complete"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "database system is ready to accept connections"
+          }
+        },
+        {
+          "match": {
+            "message": {
+              "query": "promote timeline recovery complete ready to accept",
+              "operator": "or"
+            }
+          }
+        }
+      ],
+      "minimum_should_match": 1
+    }
+  },
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "asc"
+      }
+    }
+  ],
+  "size": 100,
+  "_source": ["@timestamp", "message", "source", "level", "container_name", "host"],
+  "highlight": {
+    "fields": {
+      "message": {
+        "fragment_size": 300,
+        "number_of_fragments": 1
+      }
+    }
+  }
+}
+
+📝 QUERY EXPLANATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MUST CONDITIONS (all required):
+  ✓ Time range: 04:42:00 - 04:42:10 UTC (failover window)
+  ✓ Source filter: Only postgres* logs (excludes patroni.log)
+
+SHOULD CONDITIONS (at least 1 required):
+  ✓ "replication terminated" - Primary connection lost
+  ✓ "End of WAL reached" - Replication stopped at timeline end
+  ✓ "could not send end-of-streaming" - Primary unreachable
+  ✓ "could not connect to the primary" - Connection failure
+  ✓ "received promote request" - KEY: Promotion initiated
+  ✓ "redo done" - Recovery completion
+  ✓ "selected new timeline ID" - Timeline increment
+  ✓ "archive recovery complete" - Promotion finished
+  ✓ "ready to accept connections" - New primary online
+
+RESULT FORMAT:
+  • Sorted by timestamp (ascending)
+  • Returns up to 100 entries
+  • Highlights matching phrases
+  • Shows: timestamp, message, source, level, container, host
+
+💡 USAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Option 1: Using cURL
+────────────────────────────────────────────────────────────────────────────────
+curl -X GET "http://localhost:19200/patroni-logs-*,postgres-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @failover_event_20251125_0442.json | jq '.hits.hits[]._source'
+
+Option 2: OpenSearch Dashboards
+────────────────────────────────────────────────────────────────────────────────
+1. Open: http://localhost:15601
+2. Go to: Dev Tools
+3. Paste the query above
+4. Click Execute
+
+Option 3: Interactive Script
+────────────────────────────────────────────────────────────────────────────────
+cd /home/swordfish/EveryThing0and1/myDemoSetup/LOGCOLLECTOR
+./query_opensearch.sh
+
+🎯 GENERIC FAILOVER DETECTION QUERY (any time)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+To detect failover events at any time (remove time filter):
+
+GET /patroni-logs-*,postgres-logs-*/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "source": "postgres*"
+          }
+        }
+      ],
+      "should": [
+        {
+          "match_phrase": {
+            "message": "received promote request"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "selected new timeline ID"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "archive recovery complete"
+          }
+        }
+      ],
+      "minimum_should_match": 1
+    }
+  },
+  "sort": [{"@timestamp": {"order": "desc"}}],
+  "size": 50
+}
+
+🔧 CLUSTER STATE VERIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before Failover:
+----------------
++ Cluster: postgres-cluster (7576517852827435030)
+| Member   | Host     | Role    | State     | TL |
++----------+----------+---------+-----------+----+
+| patroni1 | patroni1 | Leader  | running   |  1 |
+| patroni2 | patroni2 | Replica | streaming |  1 |
+
+After Failover:
+---------------
++ Cluster: postgres-cluster (7576517852827435030)
+| Member   | Host     | Role    | State   | TL |
++----------+----------+---------+---------+----+
+| patroni1 | patroni1 | Replica | stopped |    |
+| patroni2 | patroni2 | Leader  | running |  2 |
+
+History Entry:
+--------------
+| TL | LSN      | Reason                       | Timestamp                        | New Leader |
++----+----------+------------------------------+----------------------------------+------------+
+|  1 | 50648528 | no recovery target specified | 2025-11-25T04:42:07.008057+00:00 | patroni2   |
+
+✅ SUCCESS INDICATORS IN LOGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Must see in sequence:
+  1. "received promote request"          - Promotion triggered
+  2. "redo done at"                       - Recovery complete
+  3. "selected new timeline ID: N"        - Timeline incremented
+  4. "archive recovery complete"          - Standby promoted
+  5. "database system is ready to accept" - Primary online
+
+If missing any of these → Failover incomplete or failed!
+
+📁 FILES CREATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/home/swordfish/EveryThing0and1/myDemoSetup/LOGCOLLECTOR/
+├── failover_event_20251125_0442.json    - Exact DSL query for this event
+└── FAILOVER_SUMMARY.txt                  - This document
+
+Source Logs:
+/home/swordfish/EveryThing0and1/myDemoSetup/DEMOWORKSIMULATION/patroni2-logs/
+└── postgresql-2025-11-25.log             - PostgreSQL logs with failover
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Last Updated: 2025-11-25
+Failover Time: 2025-11-25 04:42:06 UTC
+Query captures: PostgreSQL logs only (postgres*.log)

@@ -1,0 +1,155 @@
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "multi_match": {
+            "query": "failover switchover",
+            "fields": [
+              "message",
+              "log",
+              "msg",
+              "text"
+            ],
+            "type": "best_fields",
+            "operator": "or",
+            "boost": 3
+          }
+        },
+        {
+          "multi_match": {
+            "query": "promoted demoted",
+            "fields": [
+              "message",
+              "log",
+              "msg"
+            ],
+            "type": "best_fields",
+            "operator": "or",
+            "boost": 2
+          }
+        },
+        {
+          "multi_match": {
+            "query": "leader election replica",
+            "fields": [
+              "message",
+              "log",
+              "msg"
+            ],
+            "type": "best_fields",
+            "operator": "or"
+          }
+        },
+        {
+          "terms": {
+            "message.keyword": [
+              "acquired lock",
+              "released lock",
+              "promoted self to leader",
+              "demoting self",
+              "starting as a secondary",
+              "following a leader",
+              "no leader"
+            ]
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "replication state changed"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "timeline changed"
+          }
+        },
+        {
+          "match_phrase": {
+            "message": "cluster topology changed"
+          }
+        },
+        {
+          "regexp": {
+            "message": ".*([Ff]ail.*[Oo]ver|[Ss]witch.*[Oo]ver|[Pp]romot|[Dd]emot|[Ee]lection).*"
+          }
+        }
+      ],
+      "minimum_should_match": 1,
+      "filter": [
+        {
+          "terms": {
+            "source": [
+              "patroni",
+              "patroni1",
+              "patroni2",
+              "postgres",
+              "postgresql",
+              "haproxy",
+              "etcd"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ],
+  "size": 1000,
+  "_source": [
+    "@timestamp",
+    "message",
+    "log",
+    "source",
+    "host",
+    "container_name",
+    "level",
+    "severity",
+    "cluster",
+    "timeline",
+    "role"
+  ],
+  "highlight": {
+    "fields": {
+      "message": {
+        "fragment_size": 250,
+        "number_of_fragments": 5
+      },
+      "log": {
+        "fragment_size": 250,
+        "number_of_fragments": 5
+      }
+    },
+    "pre_tags": [
+      "<mark>"
+    ],
+    "post_tags": [
+      "</mark>"
+    ]
+  },
+  "aggs": {
+    "events_by_source": {
+      "terms": {
+        "field": "source.keyword",
+        "size": 10
+      }
+    },
+    "events_over_time": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "fixed_interval": "1m"
+      }
+    },
+    "events_by_severity": {
+      "terms": {
+        "field": "level.keyword",
+        "size": 10
+      }
+    }
+  }
+}

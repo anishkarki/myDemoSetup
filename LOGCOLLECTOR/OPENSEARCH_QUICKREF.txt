@@ -1,0 +1,196 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              OPENSEARCH DSL QUERIES - QUICK REFERENCE                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📁 Location: /home/swordfish/EveryThing0and1/myDemoSetup/LOGCOLLECTOR
+
+✅ CREATED FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. opensearch_failover_query.json       - DSL query for failover logs
+2. opensearch_switchover_query.json     - DSL query for switchover logs  
+3. opensearch_all_events_query.json     - DSL query for all events + aggregations
+4. query_opensearch.sh                  - Interactive query execution script
+5. OPENSEARCH_QUERIES.md                - Complete documentation
+
+🚀 QUICK START - INTERACTIVE MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+cd /home/swordfish/EveryThing0and1/myDemoSetup/LOGCOLLECTOR
+./query_opensearch.sh
+
+Menu Options:
+  1 - Query failover logs only
+  2 - Query switchover logs only
+  3 - Query all events (comprehensive with stats)
+  4 - Custom time range query
+  5 - Display previous results
+
+🔧 DIRECT CURL USAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Failover logs
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @opensearch_failover_query.json | jq '.'
+
+# Switchover logs
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @opensearch_switchover_query.json | jq '.'
+
+# All events with aggregations
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @opensearch_all_events_query.json | jq '.'
+
+📊 WHAT EACH QUERY MATCHES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FAILOVER QUERY (opensearch_failover_query.json):
+  ✓ "failover" keyword
+  ✓ "promoted" or "demoted" events
+  ✓ "leader election" events
+  ✓ "acquired lock" / "released lock"
+  ✓ "promoted self to leader"
+  ✓ "starting as a secondary"
+  ✓ Pattern matching: failover variations
+
+SWITCHOVER QUERY (opensearch_switchover_query.json):
+  ✓ "switchover" keyword
+  ✓ "manual failover" / "planned switchover"
+  ✓ "received switchover request"
+  ✓ "switchover scheduled"
+  ✓ "demoting self"
+  ✓ Pattern matching: switchover variations
+
+ALL EVENTS QUERY (opensearch_all_events_query.json):
+  ✓ Everything from failover + switchover queries
+  ✓ "replication state changed"
+  ✓ "timeline changed"
+  ✓ "cluster topology changed"
+  ✓ Includes HAProxy and etcd logs
+  ✓ Aggregations by source, time, and severity
+
+🎯 COMMON USE CASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Get just the messages
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @opensearch_failover_query.json | \
+  jq -r '.hits.hits[]._source.message'
+
+# Export to CSV
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @opensearch_failover_query.json | \
+  jq -r '.hits.hits[]._source | [.["@timestamp"],.source,.level,.message] | @csv' \
+  > failover_logs.csv
+
+# Count by source
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' \
+  -d @opensearch_all_events_query.json | \
+  jq '.aggregations.events_by_source.buckets'
+
+# Get last hour only
+jq '.query.bool.filter += [{"range":{"@timestamp":{"gte":"now-1h"}}}]' \
+  opensearch_failover_query.json > temp_query.json && \
+curl -X GET "http://localhost:19200/patroni-logs-*/_search" \
+  -H 'Content-Type: application/json' -d @temp_query.json | jq '.'
+
+🔧 OPENSEARCH DASHBOARDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Open: http://localhost:15601
+2. Go to: Dev Tools
+3. Use this format:
+
+   GET /patroni-logs-*,postgres-logs-*/_search
+   {
+     "query": {
+       ... (paste query content from .json files)
+     }
+   }
+
+⚙️  CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Set custom OpenSearch endpoint
+export OPENSEARCH_HOST=localhost
+export OPENSEARCH_PORT=19200
+export INDEX_PATTERN="patroni-logs-*,postgres-logs-*"
+
+# Then run
+./query_opensearch.sh
+
+🎓 EXAMPLE WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 1. Trigger a switchover
+./trigger_switchover.sh
+
+# 2. Wait a moment for logs to be ingested
+sleep 30
+
+# 3. Query the logs
+./query_opensearch.sh
+# Select option 3 (all events)
+
+# 4. View formatted results
+# Results saved to: results_all_events_YYYYMMDD_HHMMSS.json
+
+# 5. Extract specific info
+jq -r '.hits.hits[]._source | 
+  select(.message | contains("switchover")) | 
+  "[\(.\"@timestamp\")] \(.message)"' results_all_events_*.json
+
+📈 QUERY FIELDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Returned fields:
+  • @timestamp       - Event timestamp
+  • message / log    - Log message content
+  • source           - patroni1, patroni2, postgres, etc.
+  • host             - Hostname
+  • container_name   - Docker container name
+  • level / severity - INFO, WARNING, ERROR, etc.
+  • cluster          - Cluster name
+  • timeline         - PostgreSQL timeline number
+  • role             - leader, replica
+
+⚠️  TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Check OpenSearch is running
+curl http://localhost:19200
+
+# List indices
+curl http://localhost:19200/_cat/indices?v
+
+# Check if data exists
+curl http://localhost:19200/patroni-logs-*/_count
+
+# Validate JSON query
+cat opensearch_failover_query.json | jq '.'
+
+# Check container logs
+docker logs opensearch
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Full documentation: cat OPENSEARCH_QUERIES.md
+OpenSearch Dashboards: http://localhost:15601
+OpenSearch API: http://localhost:19200
+
+✨ TIP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For the easiest experience, use the interactive script:
+  ./query_opensearch.sh
+
+It handles all the complexity and provides formatted output!
+
+Happy querying! 🔍
