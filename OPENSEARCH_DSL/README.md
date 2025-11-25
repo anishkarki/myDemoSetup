@@ -85,11 +85,23 @@ Query has been tested and validated to capture:
 - **12 events** from patroni2 (promoted replica)
 
 ## Key Patterns Matched
-- `replication terminated`
-- `End of WAL reached`
-- `received promote request`
-- `selected new timeline ID`
-- `archive recovery complete`
-- `database system is ready to accept connections`
-- `standby promoted`
-- `failover`
+
+### Replica/Secondary Promotion Events
+- `received promote request` - Replica receives promotion signal
+- `promoting` / `promoted` - Promotion process
+- `selected new timeline ID` - New timeline creation
+- `archive recovery complete` - Recovery finishes
+- `replication terminated` - Replication stream ends
+- `could not connect to the primary` - Primary unreachable
+- `connection to server*failed` - Connection failures
+- `server closed the connection` - Disconnection events
+
+### Primary Demotion/Failure Events
+- `demote` / `demoting` - Explicit demotion
+- `released leader lock` - Lock release
+- `lock*expired` - Lock expiration
+- `lost leader lock` - Lock loss
+- `no longer leader` - Leadership loss
+- `terminating connection*administrator command` - Admin shutdown
+- `shutting down` / `shutdown` - Database shutdown
+- `failover` - General failover events

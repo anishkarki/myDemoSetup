@@ -1,0 +1,41 @@
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "host.name": "bced944a0a17"
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "2025-11-25T07:53:05+00:00",
+              "lte": "2025-11-25T07:55:15+00:00"
+            }
+          }
+        },
+        {
+          "script": {
+            "script": {
+              "lang": "painless",
+              "source": "\n                                    long docTime = doc['@timestamp'].value.toInstant().toEpochMilli();\n                                    long centerTime = params.center_time;\n                                    long window = params.window_ms;\n                                    return Math.abs(docTime - centerTime) <= window;\n                                ",
+              "params": {
+                "center_time": 1764057250000,
+                "window_ms": 60000
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "size": 500,
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "asc"
+      }
+    }
+  ]
+}

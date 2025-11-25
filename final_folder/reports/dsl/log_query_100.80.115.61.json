@@ -1,0 +1,35 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "host.name": "100.80.115.61"
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "now-1h",
+              "lte": "now"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_raw": "FATAL"
+          }
+        }
+      ]
+    }
+  },
+  "from": 0,
+  "size": 100,
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ]
+}

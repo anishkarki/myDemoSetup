@@ -1,0 +1,105 @@
+        <!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <title>Patroni Comprehensive Monitor</title>
+          <style>
+            body { font-family: "Segoe UI", Tahoma, sans-serif; background: #f7f9fb; color: #0f172a; padding: 24px; }
+            .card { max-width: 900px; margin: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08); border: 1px solid #e2e8f0; overflow: hidden; }
+            .header { padding: 18px 24px; background: linear-gradient(120deg, #4f46e5, #818cf8); color: #f8fafc; font-size: 20px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+            .status-badge { background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: 99px; font-size: 14px; }
+            .content { padding: 24px; }
+            .section-title { font-size: 16px; font-weight: 700; margin: 24px 0 12px; color: #334155; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+            .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+            .metric-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; }
+            .metric-label { font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 4px; }
+            .metric-value { font-size: 18px; font-weight: 700; color: #0f172a; }
+            table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+            th { background: #f1f5f9; color: #475569; font-weight: 600; }
+            .footer { padding: 14px 24px; font-size: 12px; color: #64748b; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; }
+            pre { background: #f1f5f9; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="header">
+              <span>Patroni Monitor</span>
+              <span class="status-badge">Running</span>
+            </div>
+            <div class="content">
+
+              <div class="metric-grid">
+                <div class="metric-box">
+                  <div class="metric-label">Health Status</div>
+                  <div class="metric-value" style="color: #16a34a">Healthy</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Role</div>
+                  <div class="metric-value">Primary</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">PG Running</div>
+                  <div class="metric-value">N/A</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">WAL Location</div>
+                  <div class="metric-value" style="font-size: 14px; word-break: break-all;">N/A</div>
+                </div>
+              </div>
+
+              <div class="section-title">Cluster Members</div>
+              <table>
+                <thead><tr><th>Name</th><th>Role</th><th>State</th><th>Lag</th><th>Timeline</th></tr></thead>
+                <tbody><tr><td>patroni1</td><td>Leader</td><td>Running</td><td>0</td><td>3</td></tr><tr><td>patroni2</td><td>Replica</td><td>Streaming</td><td>0</td><td>3</td></tr></tbody>
+              </table>
+
+              <div class="section-title">Node Details</div>
+              <table>
+                <tr><th style="width: 30%">Hostname</th><td>100.80.115.61</td></tr>
+                <tr><th>Port</th><td>8008</td></tr>
+                <tr><th>Server Version</th><td>160011</td></tr>
+                <tr><th>Cluster Name</th><td>Unknown</td></tr>
+                <tr><th>Pending Restart</th><td>False</td></tr>
+              </table>
+
+              <div class="section-title">Configuration (Partial)</div>
+              <pre>{
+  "ttl": 30,
+  "loop_wait": 10,
+  "retry_timeout": 10,
+  "maximum_lag_on_failover": 1048576,
+  "postgresql": {
+    "use_pg_rewind": true,
+    "parameters": {
+      "logging_collector": "on",
+      "log_directory": "/var/log/postgresql",
+      "log_filename": "postgresql-%Y-%m-%d.log",
+      "log_truncate_on_rotation": "off",
+      "log_rotation_age": "1d",
+      "log_rotation_size": "0",
+      "log_line_prefix": "%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h ",
+      "log_min_messages": "warning",
+      "log_min_error_statement": "error",
+      "log_statement": "all",
+      "max_connections": 100,
+      "shared_buffers": "256MB",
+      "effective_cache_size": "1GB",
+      "maintenance_work_mem": "64MB",
+      "checkpoint_completion_target": 0.9,
+      "wal_buffers": "16MB",
+      "default_statistics_target": 100,
+      "random_page_cost": 1.1,
+      "effective_io_concurrency": 200,
+      "work_mem": "2621kB",
+      "min_wal_size": "1GB",
+      "max_wal_size": "4GB"
+    }
+  }
+} ...</pre>
+
+            </div>
+            <div class="footer">Generated at 2025-11-25 09:25:02Z UTC</div>
+          </div>
+        </body>
+        </html>

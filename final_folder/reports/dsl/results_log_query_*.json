@@ -1,0 +1,1719 @@
+{
+  "took": 6,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 3909,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "patronidata",
+        "_id": "nbEzupoBDLC7DRstyFxc",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:05 UTC [41]: [4873-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:05.000Z"
+        },
+        "sort": [
+          1764060545000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "nrEzupoBDLC7DRstyFxc",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:05 UTC [41]: [4874-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:05.000Z"
+        },
+        "sort": [
+          1764060545000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "m7EzupoBDLC7DRstwFyL",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:03 UTC [35]: [235-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:03.000Z"
+        },
+        "sort": [
+          1764060543000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "nLEzupoBDLC7DRstwFyL",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:03 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:03.000Z"
+        },
+        "sort": [
+          1764060543000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "l7EzupoBDLC7DRstuFy8",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:02 UTC [37]: [738-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:02.000Z"
+        },
+        "sort": [
+          1764060542000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "mLEzupoBDLC7DRstuFy8",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:02 UTC [41]: [4871-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:02.000Z"
+        },
+        "sort": [
+          1764060542000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "mbEzupoBDLC7DRstuFy8",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:02 UTC [41]: [4872-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:02.000Z"
+        },
+        "sort": [
+          1764060542000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "mrEzupoBDLC7DRstuFy8",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:49:02 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:49:02.000Z"
+        },
+        "sort": [
+          1764060542000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "lbEzupoBDLC7DRstrVwF",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:59 UTC [41]: [4869-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:59.000Z"
+        },
+        "sort": [
+          1764060539000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "lrEzupoBDLC7DRstrVwF",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:59 UTC [41]: [4870-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:59.000Z"
+        },
+        "sort": [
+          1764060539000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "k7EzupoBDLC7DRstoVxK",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:56 UTC [41]: [4867-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:56.000Z"
+        },
+        "sort": [
+          1764060536000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "lLEzupoBDLC7DRstoVxK",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:56 UTC [41]: [4868-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:56.000Z"
+        },
+        "sort": [
+          1764060536000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "j7EzupoBDLC7DRstmVx5",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:53 UTC [35]: [234-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:53.000Z"
+        },
+        "sort": [
+          1764060533000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "kLEzupoBDLC7DRstmVx5",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:53 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:53.000Z"
+        },
+        "sort": [
+          1764060533000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "kbEzupoBDLC7DRstmVx5",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:53 UTC [41]: [4865-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:53.000Z"
+        },
+        "sort": [
+          1764060533000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "krEzupoBDLC7DRstmVx5",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:53 UTC [41]: [4866-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:53.000Z"
+        },
+        "sort": [
+          1764060533000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "i7EzupoBDLC7DRstkVyo",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:52 UTC [37]: [737-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:52.000Z"
+        },
+        "sort": [
+          1764060532000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "jLEzupoBDLC7DRstkVyo",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:52 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:52.000Z"
+        },
+        "sort": [
+          1764060532000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "ibEzupoBDLC7DRstiVzZ",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:50 UTC [41]: [4863-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:50.000Z"
+        },
+        "sort": [
+          1764060530000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "irEzupoBDLC7DRstiVzZ",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:50 UTC [41]: [4864-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:50.000Z"
+        },
+        "sort": [
+          1764060530000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "h7EzupoBDLC7DRstflwg",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:47 UTC [41]: [4861-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:47.000Z"
+        },
+        "sort": [
+          1764060527000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "iLEzupoBDLC7DRstflwg",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:47 UTC [41]: [4862-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:47.000Z"
+        },
+        "sort": [
+          1764060527000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "hbEzupoBDLC7DRstdlxP",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:44 UTC [41]: [4859-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:44.000Z"
+        },
+        "sort": [
+          1764060524000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "hrEzupoBDLC7DRstdlxP",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:44 UTC [41]: [4860-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:44.000Z"
+        },
+        "sort": [
+          1764060524000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "g7EzupoBDLC7DRstblx_",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:43 UTC [35]: [233-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:43.000Z"
+        },
+        "sort": [
+          1764060523000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "hLEzupoBDLC7DRstblx_",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:43 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:43.000Z"
+        },
+        "sort": [
+          1764060523000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "gbEzupoBDLC7DRstblx_",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:42 UTC [37]: [736-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:42.000Z"
+        },
+        "sort": [
+          1764060522000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "grEzupoBDLC7DRstblx_",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:42 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:42.000Z"
+        },
+        "sort": [
+          1764060522000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "f7EzupoBDLC7DRstZlyu",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:41 UTC [41]: [4857-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:41.000Z"
+        },
+        "sort": [
+          1764060521000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "gLEzupoBDLC7DRstZlyu",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:41 UTC [41]: [4858-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:41.000Z"
+        },
+        "sort": [
+          1764060521000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "fbEzupoBDLC7DRstWlz3",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:38 UTC [41]: [4855-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:38.000Z"
+        },
+        "sort": [
+          1764060518000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "frEzupoBDLC7DRstWlz3",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:38 UTC [41]: [4856-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:38.000Z"
+        },
+        "sort": [
+          1764060518000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "e7EzupoBDLC7DRstU1wm",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:35 UTC [41]: [4853-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:35.000Z"
+        },
+        "sort": [
+          1764060515000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "fLEzupoBDLC7DRstU1wm",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:35 UTC [41]: [4854-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:35.000Z"
+        },
+        "sort": [
+          1764060515000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "ebEzupoBDLC7DRstS1xV",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:33 UTC [35]: [232-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:33.000Z"
+        },
+        "sort": [
+          1764060513000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "erEzupoBDLC7DRstS1xV",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:33 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:33.000Z"
+        },
+        "sort": [
+          1764060513000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "dbEzupoBDLC7DRstQ1yE",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:32 UTC [41]: [4851-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:32.000Z"
+        },
+        "sort": [
+          1764060512000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "drEzupoBDLC7DRstQ1yE",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:32 UTC [41]: [4852-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:32.000Z"
+        },
+        "sort": [
+          1764060512000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "d7EzupoBDLC7DRstQ1yE",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:32 UTC [37]: [735-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:32.000Z"
+        },
+        "sort": [
+          1764060512000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "eLEzupoBDLC7DRstQ1yE",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:32 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:32.000Z"
+        },
+        "sort": [
+          1764060512000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "c7EzupoBDLC7DRstN1zM",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:29 UTC [41]: [4849-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:29.000Z"
+        },
+        "sort": [
+          1764060509000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "dLEzupoBDLC7DRstN1zM",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:29 UTC [41]: [4850-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:29.000Z"
+        },
+        "sort": [
+          1764060509000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "cbEzupoBDLC7DRstLFwS",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:26 UTC [41]: [4847-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:26.000Z"
+        },
+        "sort": [
+          1764060506000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "crEzupoBDLC7DRstLFwS",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:26 UTC [41]: [4848-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:26.000Z"
+        },
+        "sort": [
+          1764060506000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "bbEzupoBDLC7DRstJFxB",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:23 UTC [35]: [231-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:23.000Z"
+        },
+        "sort": [
+          1764060503000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "brEzupoBDLC7DRstJFxB",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:23 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:23.000Z"
+        },
+        "sort": [
+          1764060503000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "b7EzupoBDLC7DRstJFxB",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:23 UTC [41]: [4845-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:23.000Z"
+        },
+        "sort": [
+          1764060503000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "cLEzupoBDLC7DRstJFxB",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:23 UTC [41]: [4846-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:23.000Z"
+        },
+        "sort": [
+          1764060503000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "a7EzupoBDLC7DRstHFxx",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:22 UTC [37]: [734-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:22.000Z"
+        },
+        "sort": [
+          1764060502000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "bLEzupoBDLC7DRstHFxx",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:22 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:22.000Z"
+        },
+        "sort": [
+          1764060502000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "abEzupoBDLC7DRstFFyi",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:20 UTC [41]: [4843-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:20.000Z"
+        },
+        "sort": [
+          1764060500000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "arEzupoBDLC7DRstFFyi",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:20 UTC [41]: [4844-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:20.000Z"
+        },
+        "sort": [
+          1764060500000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "Z7EzupoBDLC7DRstCFzp",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:17 UTC [41]: [4841-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:17.000Z"
+        },
+        "sort": [
+          1764060497000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "aLEzupoBDLC7DRstCFzp",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:17 UTC [41]: [4842-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:17.000Z"
+        },
+        "sort": [
+          1764060497000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "ZbEzupoBDLC7DRstAVwY",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:14 UTC [41]: [4839-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:14.000Z"
+        },
+        "sort": [
+          1764060494000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "ZrEzupoBDLC7DRstAVwY",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:14 UTC [41]: [4840-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:14.000Z"
+        },
+        "sort": [
+          1764060494000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "YbEyupoBDLC7DRst-VxH",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:13 UTC [35]: [230-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:13.000Z"
+        },
+        "sort": [
+          1764060493000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "YrEyupoBDLC7DRst-VxH",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:13 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:13.000Z"
+        },
+        "sort": [
+          1764060493000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "X7EyupoBDLC7DRst-VxH",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:12 UTC [37]: [733-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:12.000Z"
+        },
+        "sort": [
+          1764060492000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "YLEyupoBDLC7DRst-VxH",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:12 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:12.000Z"
+        },
+        "sort": [
+          1764060492000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "XbEyupoBDLC7DRst8Vx3",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:11 UTC [41]: [4837-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:11.000Z"
+        },
+        "sort": [
+          1764060491000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "XrEyupoBDLC7DRst8Vx3",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:11 UTC [41]: [4838-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:11.000Z"
+        },
+        "sort": [
+          1764060491000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "W7EyupoBDLC7DRst5Vy6",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:08 UTC [41]: [4835-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:08.000Z"
+        },
+        "sort": [
+          1764060488000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "XLEyupoBDLC7DRst5Vy6",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:08 UTC [41]: [4836-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:08.000Z"
+        },
+        "sort": [
+          1764060488000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "WbEyupoBDLC7DRst3Vzq",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:05 UTC [41]: [4833-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:05.000Z"
+        },
+        "sort": [
+          1764060485000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "WrEyupoBDLC7DRst3Vzq",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:05 UTC [41]: [4834-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:05.000Z"
+        },
+        "sort": [
+          1764060485000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "V7EyupoBDLC7DRst1lwa",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:03 UTC [35]: [229-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:03.000Z"
+        },
+        "sort": [
+          1764060483000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "WLEyupoBDLC7DRst1lwa",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:03 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:03.000Z"
+        },
+        "sort": [
+          1764060483000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "U7EyupoBDLC7DRstzlwy",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:02 UTC [41]: [4831-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:02.000Z"
+        },
+        "sort": [
+          1764060482000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "VLEyupoBDLC7DRstzlwy",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:02 UTC [41]: [4832-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:02.000Z"
+        },
+        "sort": [
+          1764060482000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "VbEyupoBDLC7DRstzlwy",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:02 UTC [37]: [732-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:02.000Z"
+        },
+        "sort": [
+          1764060482000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "VrEyupoBDLC7DRstzlwy",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:48:02 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:48:02.000Z"
+        },
+        "sort": [
+          1764060482000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "UbEyupoBDLC7DRstwlx6",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:59 UTC [41]: [4829-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:59.000Z"
+        },
+        "sort": [
+          1764060479000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "UrEyupoBDLC7DRstwlx6",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:59 UTC [41]: [4830-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:59.000Z"
+        },
+        "sort": [
+          1764060479000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "T7EyupoBDLC7DRsttlzA",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:56 UTC [41]: [4827-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:56.000Z"
+        },
+        "sort": [
+          1764060476000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "ULEyupoBDLC7DRsttlzA",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:56 UTC [41]: [4828-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:56.000Z"
+        },
+        "sort": [
+          1764060476000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "S7EyupoBDLC7DRstrlzx",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:53 UTC [35]: [228-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:53.000Z"
+        },
+        "sort": [
+          1764060473000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "TLEyupoBDLC7DRstrlzx",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:53 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:53.000Z"
+        },
+        "sort": [
+          1764060473000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "TbEyupoBDLC7DRstrlzx",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:53 UTC [41]: [4825-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:53.000Z"
+        },
+        "sort": [
+          1764060473000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "TrEyupoBDLC7DRstrlzx",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:53 UTC [41]: [4826-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:53.000Z"
+        },
+        "sort": [
+          1764060473000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "R7EyupoBDLC7DRstp1wf",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:52 UTC [37]: [731-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:52.000Z"
+        },
+        "sort": [
+          1764060472000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "SLEyupoBDLC7DRstp1wf",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:52 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:52.000Z"
+        },
+        "sort": [
+          1764060472000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "RbEyupoBDLC7DRstn1xQ",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:50 UTC [41]: [4823-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:50.000Z"
+        },
+        "sort": [
+          1764060470000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "RrEyupoBDLC7DRstn1xQ",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:50 UTC [41]: [4824-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:50.000Z"
+        },
+        "sort": [
+          1764060470000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "Q7EyupoBDLC7DRstk1yU",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:47 UTC [41]: [4821-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:47.000Z"
+        },
+        "sort": [
+          1764060467000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "RLEyupoBDLC7DRstk1yU",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:47 UTC [41]: [4822-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:47.000Z"
+        },
+        "sort": [
+          1764060467000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "QbEyupoBDLC7DRsti1zG",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:44 UTC [41]: [4819-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:44.000Z"
+        },
+        "sort": [
+          1764060464000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "QrEyupoBDLC7DRsti1zG",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:44 UTC [41]: [4820-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:44.000Z"
+        },
+        "sort": [
+          1764060464000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "P7EyupoBDLC7DRstg1z1",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:43 UTC [35]: [227-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:43.000Z"
+        },
+        "sort": [
+          1764060463000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "QLEyupoBDLC7DRstg1z1",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:43 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:43.000Z"
+        },
+        "sort": [
+          1764060463000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "PbEyupoBDLC7DRstg1z1",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:42 UTC [37]: [730-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:42.000Z"
+        },
+        "sort": [
+          1764060462000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "PrEyupoBDLC7DRstg1z1",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:42 UTC INFO: no action. I am (patroni1), the leader with the lock",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:42.000Z"
+        },
+        "sort": [
+          1764060462000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "O7EyupoBDLC7DRstfFwk",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:41 UTC [41]: [4817-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:41.000Z"
+        },
+        "sort": [
+          1764060461000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "PLEyupoBDLC7DRstfFwk",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:41 UTC [41]: [4818-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:41.000Z"
+        },
+        "sort": [
+          1764060461000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "ObEyupoBDLC7DRstcFxr",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:38 UTC [41]: [4815-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:38.000Z"
+        },
+        "sort": [
+          1764060458000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "OrEyupoBDLC7DRstcFxr",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:38 UTC [41]: [4816-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:38.000Z"
+        },
+        "sort": [
+          1764060458000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "N7EyupoBDLC7DRstaFya",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:35 UTC [41]: [4813-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:35.000Z"
+        },
+        "sort": [
+          1764060455000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "OLEyupoBDLC7DRstaFya",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:35 UTC [41]: [4814-1] user=postgres,db=postgres,app=Patroni restapi,client=127.0.0.1 LOG:  statement: SELECT pg_catalog.pg_postmaster_start_time(), CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), pg_catalog.pg_last_xact_replay_timestamp(), pg_catalog.pg_wal_lsn_diff(wr.latest_end_lsn, '0/0')::bigint, wr.status, pg_catalog.current_setting('restore_command'), pg_catalog.pg_wal_lsn_diff(wr.written_lsn, '0/0')::bigint, (SELECT pg_catalog.array_to_json(pg_catalog.array_agg(pg_catalog.row_to_json(ri))) FROM (SELECT (SELECT rolname FROM pg_catalog.pg_authid WHERE oid = usesysid) AS usename, application_name, client_addr, w.state, sync_state, sync_priority FROM pg_catalog.pg_stat_get_wal_senders() w, pg_catalog.pg_stat_get_activity(pid)) AS ri) FROM pg_catalog.pg_stat_get_wal_receiver() AS wr",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni1/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:35.000Z"
+        },
+        "sort": [
+          1764060455000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "NbEyupoBDLC7DRstYFzJ",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:33 UTC [35]: [226-1] user=postgres,db=postgres,app=Patroni heartbeat,client=127.0.0.1 LOG:  statement: SELECT CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE ('x' || pg_catalog.substr(pg_catalog.pg_walfile_name(pg_catalog.pg_current_wal_lsn()), 1, 8))::bit(32)::int END, CASE WHEN pg_catalog.pg_is_in_recovery() THEN 0 ELSE pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_current_wal_flush_lsn(), '0/0')::bigint END, pg_catalog.pg_wal_lsn_diff(pg_catalog.pg_last_wal_replay_lsn(), '0/0')::bigint, pg_catalog.pg_wal_lsn_diff(COALESCE(pg_catalog.pg_last_wal_receive_lsn(), '0/0'), '0/0')::bigint, pg_catalog.pg_is_in_recovery() AND pg_catalog.pg_is_wal_replay_paused(), 0, CASE WHEN latest_end_lsn IS NULL THEN NULL ELSE received_tli END, pg_catalog.pg_wal_lsn_diff(written_lsn, '0/0')::bigint, slot_name, conninfo, status, pg_catalog.current_setting('restore_command'), (SELECT pg_catalog.json_agg(s.*) FROM (SELECT slot_name, slot_type as type, datoid::bigint, plugin, catalog_xmin, pg_catalog.pg_wal_lsn_diff(confirmed_flush_lsn, '0/0')::bigint AS confirmed_flush_lsn, pg_catalog.pg_wal_lsn_diff(restart_lsn, '0/0')::bigint AS restart_lsn, xmin FROM pg_catalog.pg_get_replication_slots()) AS s), 'on', '', NULL FROM pg_catalog.pg_stat_get_wal_receiver()",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/postgresql-2025-11-25.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:33.000Z"
+        },
+        "sort": [
+          1764060453000
+        ]
+      },
+      {
+        "_index": "patronidata",
+        "_id": "NrEyupoBDLC7DRstYFzJ",
+        "_score": null,
+        "_source": {
+          "_raw": "2025-11-25 08:47:33 UTC INFO: no action. I am (patroni2), a secondary, and following a leader (patroni1)",
+          "host": {
+            "name": "bced944a0a17"
+          },
+          "source": "/var/log/patroni2/patroni.log",
+          "cribl_breaker": "fallback",
+          "@timestamp": "2025-11-25T08:47:33.000Z"
+        },
+        "sort": [
+          1764060453000
+        ]
+      }
+    ]
+  }
+}

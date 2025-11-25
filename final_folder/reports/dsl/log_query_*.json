@@ -1,0 +1,72 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "host.name": "*"
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "now-24h",
+              "lte": "now"
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "_raw": "failover"
+                }
+              },
+              {
+                "match_phrase": {
+                  "_raw": "switchover"
+                }
+              },
+              {
+                "match_phrase": {
+                  "_raw": "promoted"
+                }
+              },
+              {
+                "match_phrase": {
+                  "_raw": "demoted"
+                }
+              },
+              {
+                "match_phrase": {
+                  "_raw": "primary_lost"
+                }
+              },
+              {
+                "match_phrase": {
+                  "_raw": "FATAL"
+                }
+              },
+              {
+                "match_phrase": {
+                  "_raw": "PANIC"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ]
+    }
+  },
+  "from": 0,
+  "size": 100,
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc"
+      }
+    }
+  ]
+}

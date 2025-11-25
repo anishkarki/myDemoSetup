@@ -6,8 +6,8 @@
         {
           "range": {
             "@timestamp": {
-              "gte": "2025-11-25T04:42:00",
-              "lte": "2025-11-25T04:42:10",
+              "gte": "2025-11-25T12:54:10",
+              "lte": "2025-11-24T11:54:10",
               "time_zone": "-07:00"
             }
           }
@@ -39,21 +39,21 @@
               {
                 "wildcard": {
                   "_raw": {
-                    "value": "*replication terminated*"
-                  }
-                }
-              },
-              {
-                "wildcard": {
-                  "_raw": {
-                    "value": "*End of WAL reached*"
-                  }
-                }
-              },
-              {
-                "wildcard": {
-                  "_raw": {
                     "value": "*received promote request*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*promoting*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*promoted*"
                   }
                 }
               },
@@ -74,14 +74,91 @@
               {
                 "wildcard": {
                   "_raw": {
-                    "value": "*database system is ready to accept connections*"
+                    "value": "*replication terminated*"
                   }
                 }
               },
               {
                 "wildcard": {
                   "_raw": {
-                    "value": "*standby promoted*"
+                    "value": "*could not connect to the primary*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*connection to server*failed*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*server closed the connection*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*demote*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*demoting*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*released leader lock*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*lock*expired*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*lost leader lock*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*no longer leader*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*terminating connection*administrator command*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*shutting down*"
+                  }
+                }
+              },
+              {
+                "wildcard": {
+                  "_raw": {
+                    "value": "*shutdown*"
                   }
                 }
               },
@@ -109,7 +186,7 @@
   "aggs": {
     "by_source": {
       "terms": {
-        "field": "source",
+        "field": "source.keyword",
         "size": 10
       }
     }
