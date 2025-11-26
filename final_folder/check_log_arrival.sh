@@ -2,13 +2,26 @@
 #
 # check_log_arrival.sh
 #
-# Checks for the presence of logs in OpenSearch for a specific hostname.
+# Checks for the presence of logs in OpenSearch for a specific hostname or a cluster of hosts.
 # Designed for robustness, portability, and ease of use.
 #
-# Usage: ./check_log_arrival.sh <hostname> [opensearch_url] [index_name]
+# Usage: ./check_log_arrival.sh [OPTIONS] <hostname|cluster_name> [opensearch_url] [index_name]
 #
 
 set -euo pipefail
+
+# --- Cleanup Trap ---
+cleanup() {
+    # This function runs on exit. You can add temporary file removal or other cleanup here.
+    # For now, we just ensure we exit cleanly.
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        # Only print if we haven't already printed a specific error message
+        # (This is a generic catch-all)
+        :
+    fi
+}
+trap cleanup EXIT INT TERM
 
 # --- Configuration ---
 DEFAULT_OPENSEARCH_URL="http://100.80.115.61:19200"
@@ -34,12 +47,12 @@ fi
 
 usage() {
     cat <<USAGE_EOF
-Usage: $(basename "${0}") [OPTIONS] <hostname> [opensearch_url] [index_name]
+Usage: $(basename "${0}") [OPTIONS] <hostname|cluster_name> [opensearch_url] [index_name]
 
 Arguments:
-    hostname        The hostname to search for in logs (required).
-    opensearch_url  The OpenSearch URL (default: ${DEFAULT_OPENSEARCH_URL}).
-    index_name      The index pattern to search (default: ${DEFAULT_INDEX}).
+    hostname/cluster The hostname or cluster name (e.g., 'patroni-az') to check.
+    opensearch_url   The OpenSearch URL (default: ${DEFAULT_OPENSEARCH_URL}).
+    index_name       The index pattern to search (default: ${DEFAULT_INDEX}).
 
 Options:
     -u, --username <user>   Basic Auth Username (overrides OPENSEARCH_USERNAME)
@@ -56,8 +69,8 @@ Environment Variables:
 
 Example:
     $(basename "${0}") patroni1
-    $(basename "${0}") -u admin -p secret patroni1
-    $(basename "${0}") --token "eyJ..." patroni1 https://opensearch.local:9200
+    $(basename "${0}") patroni-az
+    $(basename "${0}") -u admin -p secret patroni-az
 USAGE_EOF
     exit 1
 }
@@ -77,10 +90,92 @@ check_deps() {
     done
 }
 
+# Function to list hosts for a given target (cluster or single host)
+list_hosts() {
+    local target="$1"
+    case "$target" in
+        "patroni-az")
+            echo "patroni1"
+            echo "patroni2"
+            echo "etcd"
+            ;;
+        *)
+            echo "$target"
+            ;;
+    esac
+}
+
+# Function to check logs for a single host
+check_single_host() {
+    local host="$1"
+    # We use global variables for configuration to avoid passing secrets as arguments
+    # This is safer if 'set -x' is ever enabled.
+    local url="$OPENSEARCH_URL"
+    local index="$INDEX"
+    local user="$FINAL_USER"
+    local pass="$FINAL_PASS"
+    local token="$FINAL_TOKEN"
+
+    # Prepare Query
+    local query
+    query=$(jq -n \
+        --arg host "$host" \
+        '{
+            size: 1,
+            sort: [{ "@timestamp": { order: "desc" } }],
+            query: {
+                term: { "host.name.keyword": $host }
+            }
+        }')
+
+    # Prepare Curl Options
+    local curl_opts=(
+        -s 
+        -k 
+        --max-time "$TIMEOUT"
+        -X GET "$url/$index/_search"
+        -H 'Content-Type: application/json'
+    )
+
+    if [[ -n "$token" ]]; then
+        curl_opts+=(-H "Authorization: Bearer $token")
+    elif [[ -n "$user" ]] && [[ -n "$pass" ]]; then
+        curl_opts+=(-u "$user:$pass")
+    fi
+
+    # Execute Request
+    local response
+    if ! response=$(curl "${curl_opts[@]}" -d "$query"); then
+        log_fail "[$host] Failed to connect to OpenSearch at $url"
+        return 1
+    fi
+
+    # Parse Response
+    local parsed_data
+    if ! parsed_data=$(echo "$response" | jq -r '.hits.total.value // 0, .hits.hits[0]._source["@timestamp"] // "None"'); then
+        log_fail "[$host] Failed to parse JSON response."
+        log_warn "[$host] Raw Response: $response"
+        return 1
+    fi
+
+    # Read into variables
+    local total_hits last_timestamp
+    { read -r total_hits; read -r last_timestamp; } <<< "$parsed_data"
+
+    # Evaluate Results
+    if [[ "$total_hits" -gt 0 ]]; then
+        log_pass "[$host] Logs detected. (Count: $total_hits, Last: $last_timestamp)"
+        return 0
+    else
+        log_fail "[$host] No logs found in index '$index'."
+        return 1
+    fi
+}
+
 # --- Main Execution ---
 
 # Variables for arguments
-HOSTNAME=""
+TARGET=""
 ARG_URL=""
 ARG_INDEX=""
 ARG_USER=""
@@ -114,8 +209,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             # Positional arguments handling
-            if [[ -z "$HOSTNAME" ]]; then
-                HOSTNAME="$1"
+            if [[ -z "$TARGET" ]]; then
+                TARGET="$1"
             elif [[ -z "$ARG_URL" ]]; then
                 ARG_URL="$1"
             elif [[ -z "$ARG_INDEX" ]]; then
@@ -129,9 +224,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate Hostname
-if [[ -z "$HOSTNAME" ]]; then
-    log_fail "Hostname argument is required."
+# Validate Target
+if [[ -z "$TARGET" ]]; then
+    log_fail "Hostname or Cluster Name argument is required."
     usage
 fi
 
@@ -144,61 +239,35 @@ FINAL_USER="${ARG_USER:-${OPENSEARCH_USERNAME:-}}"
 FINAL_PASS="${ARG_PASS:-${OPENSEARCH_PASSWORD:-}}"
 FINAL_TOKEN="${ARG_TOKEN:-${OPENSEARCH_TOKEN:-}}"
 
-# 2. Check Dependencies
+# Check Dependencies
 check_deps
 
-# 3. Prepare Query
-# Using jq to safely construct JSON prevents injection issues and syntax errors
-QUERY=$(jq -n \
-    --arg host "$HOSTNAME" \
-    '{
-        size: 1,
-        sort: [{ "@timestamp": { order: "desc" } }],
-        query: {
-            term: { "host.name.keyword": $host }
-        }
-    }')
+# Get list of hosts to check
+log_info "Resolving hosts for target '$TARGET'..."
+mapfile -t HOSTS < <(list_hosts "$TARGET")
 
-# 4. Prepare Curl Options
-CURL_OPTS=(
-    -s 
-    -k 
-    --max-time "$TIMEOUT"
-    -X GET "$OPENSEARCH_URL/$INDEX/_search"
-    -H 'Content-Type: application/json'
-)
-
-if [[ -n "$FINAL_TOKEN" ]]; then
-    CURL_OPTS+=(-H "Authorization: Bearer $FINAL_TOKEN")
-elif [[ -n "$FINAL_USER" ]] && [[ -n "$FINAL_PASS" ]]; then
-    CURL_OPTS+=(-u "$FINAL_USER:$FINAL_PASS")
-fi
-
-# 5. Execute Request
-log_info "Querying $OPENSEARCH_URL/$INDEX for host '$HOSTNAME'..."
-
-if ! RESPONSE=$(curl "${CURL_OPTS[@]}" -d "$QUERY"); then
-    log_fail "Failed to connect to OpenSearch at $OPENSEARCH_URL"
+if [[ ${#HOSTS[@]} -eq 0 ]]; then
+    log_fail "No hosts found for target '$TARGET'."
     exit 1
 fi
 
-# 6. Parse Response
-# We capture exit code of jq to check for parsing errors
-if ! PARSED_DATA=$(echo "$RESPONSE" | jq -r '.hits.total.value // 0, .hits.hits[0]._source["@timestamp"] // "None"'); then
-    log_fail "Failed to parse JSON response."
-    log_warn "Raw Response: $RESPONSE"
-    exit 1
-fi
+log_info "Checking logs for ${#HOSTS[@]} host(s): ${HOSTS[*]}"
 
-# Read into variables (newline separated from jq output)
-{ read -r TOTAL_HITS; read -r LAST_TIMESTAMP; } <<< "$PARSED_DATA"
+# Iterate and check
+FAIL_COUNT=0
+for HOST in "${HOSTS[@]}"; do
+    if ! check_single_host "$HOST"; then
+        ((FAIL_COUNT+=1))
+    fi
+done
 
-# 7. Evaluate Results
-if [[ "$TOTAL_HITS" -gt 0 ]]; then
-    log_pass "Logs detected."
-    echo -e "       Details: Found ${GREEN}${TOTAL_HITS}${NC} logs. Last received at ${YELLOW}${LAST_TIMESTAMP}${NC}."
+# Final Summary
+if [[ "$FAIL_COUNT" -eq 0 ]]; then
+    echo ""
+    log_pass "All hosts passed log checks."
+    exit 0
 else
-    log_fail "No logs found."
-    echo -e "       Details: Host '$HOSTNAME' has 0 documents in index '$INDEX'."
+    echo ""
+    log_fail "$FAIL_COUNT host(s) failed log checks."
     exit 1
 fi
