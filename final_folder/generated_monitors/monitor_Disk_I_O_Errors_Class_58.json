@@ -1,0 +1,96 @@
+{
+  "type": "monitor",
+  "name": "Disk I/O Errors (Class 58)",
+  "monitor_type": "query_level_monitor",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 5,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "patronidata"
+        ],
+        "query": {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-5m",
+                      "lte": "now"
+                    }
+                  }
+                },
+                {
+                  "bool": {
+                    "should": [
+                      {
+                        "match_phrase": {
+                          "_raw": "FATAL"
+                        }
+                      },
+                      {
+                        "match_phrase": {
+                          "_raw": "ERROR"
+                        }
+                      }
+                    ],
+                    "minimum_should_match": 1
+                  }
+                },
+                {
+                  "wildcard": {
+                    "_raw": {
+                      "value": "*58???*",
+                      "case_insensitive": true
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "size": 10,
+          "sort": [
+            {
+              "@timestamp": {
+                "order": "desc"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Disk IO Error Trigger",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "lang": "painless",
+          "source": "ctx.results[0].hits.total.value > 0"
+        }
+      },
+      "actions": [
+        {
+          "name": "Send Email Action",
+          "destination_id": "yZI4WJoBHocox8i_xA-r",
+          "message_template": {
+            "source": "Monitor {{ctx.monitor.name}} detected disk I/O errors.\nHits: {{ctx.results[0].hits.total.value}}\n",
+            "lang": "mustache"
+          },
+          "subject_template": {
+            "source": "ERROR: Disk I/O Error Detected",
+            "lang": "mustache"
+          }
+        }
+      ]
+    }
+  ]
+}

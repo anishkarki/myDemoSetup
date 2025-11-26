@@ -1,29 +1,46 @@
         # Patroni Comprehensive Monitor Report
 
         **Status:** ✅ Running
-        **Generated:** 2025-11-25 09:25:02Z
+        **Generated:** 2025-11-26 06:00:30Z
 
-        ## 1. Cluster State & Health
+        ## 1. Active Alerts
+        - ✅ No active alerts. System is healthy.
+
+        ## 2. Cluster State & Health
         - **Leader:** See Members Table
         - **Health:** ✅ Healthy
-        - **PG Running:** Unknown
+        - **PG Running:** 1
+        - **Endpoints:** **leader:** 200, **replica:** 503, **standby-leader:** 503, **synchronous:** 503, **asynchronous:** 503
+        - **Paused:** False | **Failsafe:** False
 
-        ## 2. Cluster Members (Replication & Failover Readiness)
+        ## 3. Cluster Members (Replication & Failover Readiness)
 
         | Name | Role | State | Lag | Timeline |
         | --- | --- | --- | --- | --- |
         | patroni1 | leader | running | 0 | 3 |
 | patroni2 | replica | streaming | 0 | 3 |
 
-        ## 3. Node Details
-        - **Hostname:** `100.80.115.61`
+        ## 4. Cluster History
+
+        | Timeline | LSN | Reason | Timestamp |
+        | --- | --- | --- | --- |
+        | 1 | 50648528 | no recovery target specified | 2025-11-25T04:42:07.008057+00:00 |
+| 2 | 50649104 | no recovery target specified | 2025-11-25T07:54:11.743650+00:00 |
+
+        ## 5. Node Details
+        - **Hostname:** `localhost`
         - **Port:** `8008`
+        - **Patroni Version:** `040100`
         - **Server Version:** `160011`
         - **Cluster Name:** `Unknown`
         - **Pending Restart:** `False`
 
-        ## 4. WAL & Metrics
-        - **WAL Location:** `N/A`
+        ## 6. DCS Configuration
+        - **TTL:** `30`
+        - **Loop Wait:** `10`
+
+        ## 7. WAL & Metrics
+        - **WAL Location:** `50649384`
         - **Timeline:** `3`
 
         ---

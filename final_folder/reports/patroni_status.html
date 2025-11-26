@@ -19,6 +19,17 @@
             th { background: #f1f5f9; color: #475569; font-weight: 600; }
             .footer { padding: 14px 24px; font-size: 12px; color: #64748b; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; }
             pre { background: #f1f5f9; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
+
+            /* Accordion Styles */
+            .accordion { background-color: #f8fafc; color: #334155; cursor: pointer; padding: 16px; width: 100%; border: 1px solid #e2e8f0; text-align: left; outline: none; font-size: 16px; transition: 0.4s; border-radius: 8px; margin-bottom: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+            .active, .accordion:hover { background-color: #f1f5f9; }
+            .accordion:after { content: '+'; font-size: 20px; color: #64748b; }
+            .active:after { content: '-'; }
+            .panel { padding: 0 18px; background-color: white; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; margin-bottom: 12px; }
+            .alert-item { padding: 12px; border-left: 4px solid #ccc; margin: 8px 0; background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+            .alert-CRITICAL { border-left-color: #dc2626; background: #fef2f2; color: #991b1b; }
+            .alert-WARNING { border-left-color: #f59e0b; background: #fffbeb; color: #92400e; }
+            .alert-INFO { border-left-color: #3b82f6; background: #eff6ff; color: #1e40af; }
           </style>
         </head>
         <body>
@@ -28,6 +39,12 @@
               <span class="status-badge">Running</span>
             </div>
             <div class="content">
+
+              <!-- Alerts Accordion -->
+              <button class="accordion">Active Alerts <span style="background: #16a34a; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">0</span></button>
+              <div class="panel" style="max-height: 0px">
+                <div class='alert-item' style='border-left-color: #16a34a; color: #16a34a;'>No active alerts. System is healthy.</div>
+              </div>
 
               <div class="metric-grid">
                 <div class="metric-box">
@@ -40,11 +57,11 @@
                 </div>
                 <div class="metric-box">
                   <div class="metric-label">PG Running</div>
-                  <div class="metric-value">N/A</div>
+                  <div class="metric-value">1</div>
                 </div>
                 <div class="metric-box">
                   <div class="metric-label">WAL Location</div>
-                  <div class="metric-value" style="font-size: 14px; word-break: break-all;">N/A</div>
+                  <div class="metric-value" style="font-size: 14px; word-break: break-all;">50649384</div>
                 </div>
               </div>
 
@@ -56,11 +73,45 @@
 
               <div class="section-title">Node Details</div>
               <table>
-                <tr><th style="width: 30%">Hostname</th><td>100.80.115.61</td></tr>
+                <tr><th style="width: 30%">Hostname</th><td>localhost</td></tr>
                 <tr><th>Port</th><td>8008</td></tr>
+                <tr><th>Patroni Version</th><td>040100</td></tr>
                 <tr><th>Server Version</th><td>160011</td></tr>
                 <tr><th>Cluster Name</th><td>Unknown</td></tr>
                 <tr><th>Pending Restart</th><td>False</td></tr>
+              </table>
+
+              <div class="section-title">Cluster Control Flags</div>
+              <div class="metric-grid">
+                <div class="metric-box">
+                  <div class="metric-label">Maintenance Mode (Paused)</div>
+                  <div class="metric-value" style="color: #0f172a">NO</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Failsafe Mode</div>
+                  <div class="metric-value" style="color: #0f172a">INACTIVE</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Cluster Unlocked</div>
+                  <div class="metric-value">NO</div>
+                </div>
+              </div>
+
+              <div class="section-title">DCS Configuration</div>
+              <table>
+                <tr><th>TTL</th><td>30 s</td><th>Loop Wait</th><td>10 s</td></tr>
+                <tr><th>Retry Timeout</th><td>10 s</td><th>Max Lag on Failover</th><td>1048576 bytes</td></tr>
+              </table>
+
+              <div class="section-title">Load Balancer Checks (HTTP Status)</div>
+              <div class="metric-grid">
+                <div class='metric-box'><div class='metric-label'>/leader</div><div class='metric-value' style='color: #16a34a'>200</div></div><div class='metric-box'><div class='metric-label'>/replica</div><div class='metric-value' style='color: #64748b'>503</div></div><div class='metric-box'><div class='metric-label'>/standby-leader</div><div class='metric-value' style='color: #64748b'>503</div></div><div class='metric-box'><div class='metric-label'>/synchronous</div><div class='metric-value' style='color: #64748b'>503</div></div><div class='metric-box'><div class='metric-label'>/asynchronous</div><div class='metric-value' style='color: #64748b'>503</div></div>
+              </div>
+
+              <div class="section-title">Cluster History</div>
+              <table>
+                <thead><tr><th>Timeline</th><th>LSN</th><th>Reason</th><th>Timestamp</th></tr></thead>
+                <tbody><tr><td>1</td><td>50648528</td><td>no recovery target specified</td><td>2025-11-25T04:42:07.008057+00:00</td></tr><tr><td>2</td><td>50649104</td><td>no recovery target specified</td><td>2025-11-25T07:54:11.743650+00:00</td></tr></tbody>
               </table>
 
               <div class="section-title">Configuration (Partial)</div>
@@ -99,7 +150,22 @@
 } ...</pre>
 
             </div>
-            <div class="footer">Generated at 2025-11-25 09:25:02Z UTC</div>
+            <div class="footer">Generated at 2025-11-26 06:00:30Z UTC</div>
           </div>
+          <script>
+            var acc = document.getElementsByClassName("accordion");
+            var i;
+            for (i = 0; i < acc.length; i++) {
+              acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                  panel.style.maxHeight = null;
+                } else {
+                  panel.style.maxHeight = panel.scrollHeight + "px";
+                } 
+              });
+            }
+          </script>
         </body>
         </html>

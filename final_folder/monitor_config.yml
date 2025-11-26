@@ -1,0 +1,97 @@
+opensearch:
+  host: "100.80.115.61"
+  port: 19200
+  index: "patronidata"
+  destination_id: "yZI4WJoBHocox8i_xA-r"
+
+monitors:
+  - name: "Postgres Internal Errors (Class XX)"
+    description: "Detects internal errors (XX000, XX001, etc) which usually indicate a crash or bug."
+    enabled: true
+    schedule:
+      period:
+        interval: 5
+        unit: "MINUTES"
+    window: "now-5m"
+    severity:
+      - "FATAL"
+      - "PANIC"
+    sql_code_class: "XX"
+    trigger:
+      name: "Internal Error Trigger"
+      level: "1"
+      condition: "ctx.results[0].hits.total.value > 0"
+    email_template:
+      subject: "CRITICAL: Postgres Internal Error Detected"
+      body: |
+        Monitor {{ctx.monitor.name}} just entered alert status.
+        Hits: {{ctx.results[0].hits.total.value}}
+        
+        Logs:
+        {{#ctx.results[0].hits.hits}}
+        - {{_source._raw}}
+        {{/ctx.results[0].hits.hits}}
+
+  - name: "Connection Exceptions (Class 08)"
+    description: "Detects connection failures."
+    enabled: true
+    schedule:
+      period:
+        interval: 5
+        unit: "MINUTES"
+    window: "now-5m"
+    severity:
+      - "FATAL"
+    sql_code_class: "08"
+    trigger:
+      name: "Connection Failure Trigger"
+      level: "1"
+      condition: "ctx.results[0].hits.total.value > 0"
+    email_template:
+      subject: "FATAL: Connection Exception Detected"
+      body: |
+        Monitor {{ctx.monitor.name}} detected connection failures.
+        Hits: {{ctx.results[0].hits.total.value}}
+
+  - name: "Disk I/O Errors (Class 58)"
+    description: "Detects IO errors (System Error)."
+    enabled: true
+    schedule:
+      period:
+        interval: 5
+        unit: "MINUTES"
+    window: "now-5m"
+    severity:
+      - "FATAL"
+      - "ERROR"
+    sql_code_class: "58"
+    trigger:
+      name: "Disk IO Error Trigger"
+      level: "1"
+      condition: "ctx.results[0].hits.total.value > 0"
+    email_template:
+      subject: "ERROR: Disk I/O Error Detected"
+      body: |
+        Monitor {{ctx.monitor.name}} detected disk I/O errors.
+        Hits: {{ctx.results[0].hits.total.value}}
+
+  - name: "Generic FATAL Errors"
+    description: "Detects any FATAL error regardless of SQL code."
+    enabled: true
+    schedule:
+      period:
+        interval: 5
+        unit: "MINUTES"
+    window: "now-5m"
+    severity:
+      - "FATAL"
+    trigger:
+      name: "Generic FATAL Trigger"
+      level: "1"
+      condition: "ctx.results[0].hits.total.value > 0"
+    email_template:
+      subject: "FATAL Error Detected"
+      body: |
+        Monitor {{ctx.monitor.name}} detected FATAL errors.
+        Hits: {{ctx.results[0].hits.total.value}}
+

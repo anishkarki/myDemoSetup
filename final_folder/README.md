@@ -1,76 +1,89 @@
-# Operational Scripts Usage Guide
+# OpenSearch Monitor Generator & Alerting System
 
-This directory contains scripts for Patroni monitoring, log analysis, and reporting.
+This project provides a Python-based tool to generate and deploy OpenSearch Alerting Monitors based on a YAML configuration. It is designed to detect specific PostgreSQL error codes (SQLSTATE) in logs and trigger email alerts.
 
-## 1. Patroni Monitor (`patroni_monitor.py`)
-Fetches cluster status from Patroni API and generates HTML/Markdown reports.
+## Components
 
-**Usage:**
-```bash
-python3 patroni_monitor.py <hostname> <port>
+1.  **`monitor_generator.py`**: The main script that parses the configuration and interacts with the OpenSearch API to create monitors.
+2.  **`monitor_config.yml`**: The configuration file defining monitor logic, triggers, and email templates.
+3.  **`inject_test_log.py`**: A utility script to inject fake log entries into OpenSearch for testing purposes.
+
+## Prerequisites
+
+*   Python 3.x
+*   `requests` library (`pip install requests`)
+*   Access to an OpenSearch cluster with the Alerting plugin enabled.
+*   A configured Email Destination in OpenSearch (e.g., Mailhog).
+
+## Configuration (`monitor_config.yml`)
+
+The configuration file allows you to define multiple monitors. Each monitor has:
+*   **name**: Display name in OpenSearch.
+*   **schedule**: Cron-like schedule (e.g., `period: { interval: 5, unit: MINUTES }`).
+*   **query**: The search query (supports wildcards).
+*   **triggers**: Conditions to fire alerts (e.g., `count > 0`).
+*   **actions**: Notification channels (Email) and templates.
+
+Example:
+```yaml
+monitors:
+  - name: "Postgres Internal Errors (Class XX)"
+    query: "*xx???*"  # Matches XX000, XX001, etc.
+    schedule:
+      period:
+        interval: 5
+        unit: MINUTES
+    triggers:
+      - name: "Internal Error Trigger"
+        severity: "1"
+        condition_script: "ctx.results[0].hits.total.value > 0"
+        actions:
+          - name: "Send Email Action"
+            destination_id: "YOUR_DESTINATION_ID"
+            subject: "CRITICAL: Postgres Internal Error Detected"
+            message_template: |
+              Monitor {{ctx.monitor.name}} just entered alert status.
+              Hits: {{ctx.results.0.hits.total.value}}
 ```
-**Example:**
+
+## Usage
+
+### 1. Deploy Monitors
+
+To create or update the monitors in OpenSearch, run:
+
 ```bash
-python3 patroni_monitor.py 100.80.115.61 8008
+python3 monitor_generator.py --create
 ```
-**Output:** `reports/patroni_status.html`, `reports/patroni_status.md`
 
----
+This will:
+*   Read `monitor_config.yml`.
+*   Generate the OpenSearch DSL JSON.
+*   POST the monitors to the OpenSearch API.
 
-## 2. Email Generator (`generate_mail.py`)
-Generates a formatted HTML email body for a specific action/alert.
+### 2. Generate DSL (Dry Run)
 
-**Usage:**
+To see the generated JSON without creating the monitors:
+
 ```bash
-python3 generate_mail.py <hostname> <port> "<action_description>"
+python3 monitor_generator.py --generate-dsl
 ```
-**Example:**
+
+### 3. Test Alerts
+
+To verify the system is working, use the injection script to send fake logs:
+
 ```bash
-python3 generate_mail.py 100.80.115.61 8008 "Manual Failover Initiated"
+python3 inject_test_log.py
 ```
-**Output:** `reports/action_notice.html`, `reports/action_notice.md`
 
----
+This script injects logs with SQL codes `XX000`, `08006`, and `58P01`. The monitors (running every 5 minutes) should pick these up and send alerts.
 
-## 3. DSL Generator (`generate_dsl.py`)
-Creates an OpenSearch DSL query JSON file for filtering logs.
+## Troubleshooting
 
-**Usage:**
-```bash
-python3 generate_dsl.py <hostname> --start <time> --end <time> --filter "<keyword>"
-```
-**Example:**
-```bash
-python3 generate_dsl.py 100.80.115.61 --start "now-1h" --end "now" --filter "FATAL"
-```
-**Output:** `reports/dsl/log_query_<host>.json`
+*   **No Alerts?**
+    *   Check if the monitors are created: `curl -X GET "http://localhost:9200/_plugins/_alerting/monitors"`
+    *   Check the `destination_id` in `monitor_config.yml`. It must match an existing Destination in OpenSearch.
+    *   Verify the index name in `monitor_generator.py` matches your data (default: `patronidata`).
 
----
-
-## 4. Run DSL (`run_dsl.py`)
-Executes a JSON DSL query file against OpenSearch.
-
-**Usage:**
-```bash
-python3 run_dsl.py <dsl_file_path> --port <port> --index <index>
-```
-**Example:**
-```bash
-python3 run_dsl.py reports/dsl/log_query_100.80.115.61.json --port 19200 --index patronidata
-```
-**Output:** `reports/results_<dsl_filename>.json`
-
----
-
-## 5. Log Context Fetcher (`fetch_log_context.py`)
-Finds a keyword trigger and fetches logs +/- 60 seconds around it.
-
-**Usage:**
-```bash
-python3 fetch_log_context.py "<keyword>" --start <time> --end <time>
-```
-**Example:**
-```bash
-python3 fetch_log_context.py "FATAL" --start "now-24h"
-```
-**Output:** `reports/incidents/incident_<keyword>_<timestamp>.json`
+*   **Case Sensitivity**: The generator automatically handles case-insensitive wildcard searches for SQL codes.

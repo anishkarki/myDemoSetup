@@ -70,6 +70,23 @@ def fetch_patroni_data(host: str, port: int) -> Dict[str, Any]:
         data["health_status"] = "Unreachable"
         data["is_healthy"] = False
 
+    # 6. /history (Cluster history)
+    try:
+        r = requests.get(f"{base_url}/history", timeout=5)
+        if r.status_code == 200:
+            data["history"] = r.json()
+    except Exception as e:
+        data["history"] = {"_error": str(e)}
+
+    # 7. Role Checks (Load Balancer endpoints)
+    data["role_checks"] = {}
+    for endpoint in ["leader", "replica", "standby-leader", "synchronous", "asynchronous"]:
+        try:
+            r = requests.get(f"{base_url}/{endpoint}", timeout=2)
+            data["role_checks"][endpoint] = r.status_code
+        except Exception:
+            data["role_checks"][endpoint] = "Unreachable"
+
     return data
 
 
@@ -84,10 +101,64 @@ def parse_prometheus(text: str) -> Dict[str, str]:
         if len(parts) >= 2:
             key = parts[0]
             val = parts[1]
-            # Store simple keys, ignore complex labels for now unless needed
-            if "{" not in key: 
-                metrics[key] = val
+            # Strip labels to get the metric name
+            if "{" in key:
+                key = key.split("{")[0]
+            metrics[key] = val
     return metrics
+
+
+def analyze_alerts(data: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Analyze data for potential issues."""
+    alerts = []
+    
+    # 1. Health
+    if not data.get("is_healthy"):
+        alerts.append({"level": "CRITICAL", "message": f"Node health check failed (Status: {data.get('health_status')})"})
+
+    # 2. Node State
+    node = data.get("node", {})
+    state = node.get("state", "unknown")
+    role = node.get("role", "unknown")
+    if state not in ["running", "streaming"]:
+        alerts.append({"level": "WARNING", "message": f"Node state is '{state}' (Role: {role})"})
+    
+    if node.get("pending_restart"):
+        alerts.append({"level": "WARNING", "message": "Node has a pending restart flag set."})
+
+    # 3. Metrics
+    metrics = data.get("metrics", {})
+    if metrics.get("patroni_failsafe_mode_is_active", "0") == "1":
+        alerts.append({"level": "WARNING", "message": "Cluster is in Failsafe Mode."})
+    
+    if metrics.get("patroni_is_paused", "0") == "1":
+        alerts.append({"level": "INFO", "message": "Cluster is in Maintenance Mode (Paused)."})
+
+    # 4. Cluster Members
+    cluster = data.get("cluster", {})
+    members = cluster.get("members", [])
+    leader_found = False
+    if members:
+        for m in members:
+            if m.get("role") == "leader":
+                leader_found = True
+            
+            m_name = m.get("name", "Unknown")
+            m_state = m.get("state", "unknown")
+            if m_state not in ["running", "streaming"]:
+                 alerts.append({"level": "WARNING", "message": f"Member '{m_name}' is in state '{m_state}'."})
+            
+            # Lag check
+            lag = m.get("lag")
+            if lag is not None and isinstance(lag, (int, float)) and lag > 10485760: # > 10MB
+                 alerts.append({"level": "WARNING", "message": f"Member '{m_name}' has high replication lag: {lag}"})
+
+        if not leader_found:
+            alerts.append({"level": "CRITICAL", "message": "No leader found in cluster members list."})
+    else:
+        alerts.append({"level": "WARNING", "message": "No cluster members information available."})
+
+    return alerts
 
 
 def build_monitor_html(data: Dict[str, Any]) -> str:
@@ -126,7 +197,48 @@ def build_monitor_html(data: Dict[str, Any]) -> str:
     # Metrics
     wal_gen = metrics.get("patroni_xlog_location", "N/A")
     pg_running = metrics.get("patroni_postgres_running", "N/A")
+    patroni_version = metrics.get("patroni_version", "Unknown")
+    is_paused = metrics.get("patroni_is_paused", "0") == "1"
+    is_failsafe = metrics.get("patroni_failsafe_mode_is_active", "0") == "1"
+    is_unlocked = metrics.get("patroni_cluster_unlocked", "0") == "1"
+
+    # DCS Config
+    dcs_ttl = config.get("ttl", "N/A")
+    dcs_loop = config.get("loop_wait", "N/A")
+    dcs_retry = config.get("retry_timeout", "N/A")
+    dcs_max_lag = config.get("maximum_lag_on_failover", "N/A")
+
+    # History
+    history_html = ""
+    history = data.get("history", [])
+    if isinstance(history, list) and history:
+        for h in history:
+            # Patroni history: [timeline, lsn, reason, timestamp]
+            if isinstance(h, list) and len(h) >= 4:
+                 history_html += f"<tr><td>{h[0]}</td><td>{h[1]}</td><td>{h[2]}</td><td>{h[3]}</td></tr>"
+            else:
+                 history_html += f"<tr><td colspan='4'>{str(h)}</td></tr>"
+    elif isinstance(history, dict) and "_error" in history:
+        history_html = f"<tr><td colspan='4'>Error: {history['_error']}</td></tr>"
+    else:
+        history_html = "<tr><td colspan='4'>No history found.</td></tr>"
+
+    # Role Checks
+    role_checks_html = ""
+    role_checks = data.get("role_checks", {})
+    for r_name, r_code in role_checks.items():
+        color = "#16a34a" if r_code == 200 else "#64748b"
+        role_checks_html += f"<div class='metric-box'><div class='metric-label'>/{r_name}</div><div class='metric-value' style='color: {color}'>{r_code}</div></div>"
     
+    # Alerts
+    alerts = analyze_alerts(data)
+    alerts_html = ""
+    if alerts:
+        for alert in alerts:
+            alerts_html += f"<div class='alert-item alert-{alert['level']}'><strong>{alert['level']}:</strong> {alert['message']}</div>"
+    else:
+        alerts_html = "<div class='alert-item' style='border-left-color: #16a34a; color: #16a34a;'>No active alerts. System is healthy.</div>"
+
     return dedent(
         f"""\
         <!doctype html>
@@ -150,6 +262,17 @@ def build_monitor_html(data: Dict[str, Any]) -> str:
             th {{ background: #f1f5f9; color: #475569; font-weight: 600; }}
             .footer {{ padding: 14px 24px; font-size: 12px; color: #64748b; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; }}
             pre {{ background: #f1f5f9; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 12px; }}
+            
+            /* Accordion Styles */
+            .accordion {{ background-color: #f8fafc; color: #334155; cursor: pointer; padding: 16px; width: 100%; border: 1px solid #e2e8f0; text-align: left; outline: none; font-size: 16px; transition: 0.4s; border-radius: 8px; margin-bottom: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }}
+            .active, .accordion:hover {{ background-color: #f1f5f9; }}
+            .accordion:after {{ content: '+'; font-size: 20px; color: #64748b; }}
+            .active:after {{ content: '-'; }}
+            .panel {{ padding: 0 18px; background-color: white; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; margin-bottom: 12px; }}
+            .alert-item {{ padding: 12px; border-left: 4px solid #ccc; margin: 8px 0; background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }}
+            .alert-CRITICAL {{ border-left-color: #dc2626; background: #fef2f2; color: #991b1b; }}
+            .alert-WARNING {{ border-left-color: #f59e0b; background: #fffbeb; color: #92400e; }}
+            .alert-INFO {{ border-left-color: #3b82f6; background: #eff6ff; color: #1e40af; }}
           </style>
         </head>
         <body>
@@ -160,6 +283,12 @@ def build_monitor_html(data: Dict[str, Any]) -> str:
             </div>
             <div class="content">
               
+              <!-- Alerts Accordion -->
+              <button class="accordion">Active Alerts <span style="background: {'#ef4444' if alerts else '#16a34a'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">{len(alerts)}</span></button>
+              <div class="panel" style="max-height: {'500px' if alerts else '0px'}">
+                {alerts_html}
+              </div>
+
               <div class="metric-grid">
                 <div class="metric-box">
                   <div class="metric-label">Health Status</div>
@@ -189,9 +318,43 @@ def build_monitor_html(data: Dict[str, Any]) -> str:
               <table>
                 <tr><th style="width: 30%">Hostname</th><td>{host}</td></tr>
                 <tr><th>Port</th><td>{port}</td></tr>
+                <tr><th>Patroni Version</th><td>{patroni_version}</td></tr>
                 <tr><th>Server Version</th><td>{node.get('server_version', 'Unknown')}</td></tr>
                 <tr><th>Cluster Name</th><td>{node.get('cluster_name', 'Unknown')}</td></tr>
                 <tr><th>Pending Restart</th><td>{node.get('pending_restart', False)}</td></tr>
+              </table>
+
+              <div class="section-title">Cluster Control Flags</div>
+              <div class="metric-grid">
+                <div class="metric-box">
+                  <div class="metric-label">Maintenance Mode (Paused)</div>
+                  <div class="metric-value" style="color: {'#d97706' if is_paused else '#0f172a'}">{'YES' if is_paused else 'NO'}</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Failsafe Mode</div>
+                  <div class="metric-value" style="color: {'#dc2626' if is_failsafe else '#0f172a'}">{'ACTIVE' if is_failsafe else 'INACTIVE'}</div>
+                </div>
+                <div class="metric-box">
+                  <div class="metric-label">Cluster Unlocked</div>
+                  <div class="metric-value">{'YES' if is_unlocked else 'NO'}</div>
+                </div>
+              </div>
+
+              <div class="section-title">DCS Configuration</div>
+              <table>
+                <tr><th>TTL</th><td>{dcs_ttl} s</td><th>Loop Wait</th><td>{dcs_loop} s</td></tr>
+                <tr><th>Retry Timeout</th><td>{dcs_retry} s</td><th>Max Lag on Failover</th><td>{dcs_max_lag} bytes</td></tr>
+              </table>
+
+              <div class="section-title">Load Balancer Checks (HTTP Status)</div>
+              <div class="metric-grid">
+                {role_checks_html}
+              </div>
+
+              <div class="section-title">Cluster History</div>
+              <table>
+                <thead><tr><th>Timeline</th><th>LSN</th><th>Reason</th><th>Timestamp</th></tr></thead>
+                <tbody>{history_html}</tbody>
               </table>
 
               <div class="section-title">Configuration (Partial)</div>
@@ -200,6 +363,21 @@ def build_monitor_html(data: Dict[str, Any]) -> str:
             </div>
             <div class="footer">Generated at {timestamp} UTC</div>
           </div>
+          <script>
+            var acc = document.getElementsByClassName("accordion");
+            var i;
+            for (i = 0; i < acc.length; i++) {{
+              acc[i].addEventListener("click", function() {{
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {{
+                  panel.style.maxHeight = null;
+                }} else {{
+                  panel.style.maxHeight = panel.scrollHeight + "px";
+                }} 
+              }});
+            }}
+          </script>
         </body>
         </html>
         """
@@ -232,6 +410,43 @@ def build_monitor_markdown(data: Dict[str, Any]) -> str:
         members_rows.append("| N/A | N/A | N/A | N/A | N/A |")
     members_table = "\n".join(members_rows)
 
+    # History
+    history_rows = []
+    history = data.get("history", [])
+    if isinstance(history, list) and history:
+        for h in history:
+            if isinstance(h, list) and len(h) >= 4:
+                 history_rows.append(f"| {h[0]} | {h[1]} | {h[2]} | {h[3]} |")
+            else:
+                 history_rows.append(f"| {str(h)} | | | |")
+    else:
+        history_rows.append("| N/A | N/A | N/A | N/A |")
+    history_table = "\n".join(history_rows)
+
+    # Role Checks
+    role_checks = data.get("role_checks", {})
+    role_checks_str = ", ".join([f"**{k}:** {v}" for k, v in role_checks.items()])
+
+    # Metrics extraction for Markdown
+    patroni_version = metrics.get("patroni_version", "Unknown")
+    is_paused = metrics.get("patroni_is_paused", "0") == "1"
+    is_failsafe = metrics.get("patroni_failsafe_mode_is_active", "0") == "1"
+    
+    # DCS Config
+    config = data.get("config", {})
+    dcs_ttl = config.get("ttl", "N/A")
+    dcs_loop = config.get("loop_wait", "N/A")
+
+    # Alerts
+    alerts = analyze_alerts(data)
+    alerts_md = ""
+    if alerts:
+        for alert in alerts:
+            icon = "🔴" if alert['level'] == "CRITICAL" else "🟠" if alert['level'] == "WARNING" else "🔵"
+            alerts_md += f"- {icon} **{alert['level']}:** {alert['message']}\n"
+    else:
+        alerts_md = "- ✅ No active alerts. System is healthy."
+
     return dedent(
         f"""\
         # Patroni Comprehensive Monitor Report
@@ -239,25 +454,41 @@ def build_monitor_markdown(data: Dict[str, Any]) -> str:
         **Status:** {health_icon} {state}
         **Generated:** {timestamp}
 
-        ## 1. Cluster State & Health
+        ## 1. Active Alerts
+        {alerts_md}
+
+        ## 2. Cluster State & Health
         - **Leader:** {role if role == 'Leader' else 'See Members Table'}
         - **Health:** {health_icon} {"Healthy" if is_healthy else "Unhealthy"}
         - **PG Running:** {metrics.get("patroni_postgres_running", "Unknown")}
+        - **Endpoints:** {role_checks_str}
+        - **Paused:** {is_paused} | **Failsafe:** {is_failsafe}
 
-        ## 2. Cluster Members (Replication & Failover Readiness)
+        ## 3. Cluster Members (Replication & Failover Readiness)
         
         | Name | Role | State | Lag | Timeline |
         | --- | --- | --- | --- | --- |
         {members_table}
 
-        ## 3. Node Details
+        ## 4. Cluster History
+        
+        | Timeline | LSN | Reason | Timestamp |
+        | --- | --- | --- | --- |
+        {history_table}
+
+        ## 5. Node Details
         - **Hostname:** `{host}`
         - **Port:** `{port}`
+        - **Patroni Version:** `{patroni_version}`
         - **Server Version:** `{node.get('server_version', 'Unknown')}`
         - **Cluster Name:** `{node.get('cluster_name', 'Unknown')}`
         - **Pending Restart:** `{node.get('pending_restart', False)}`
+        
+        ## 6. DCS Configuration
+        - **TTL:** `{dcs_ttl}`
+        - **Loop Wait:** `{dcs_loop}`
 
-        ## 4. WAL & Metrics
+        ## 7. WAL & Metrics
         - **WAL Location:** `{metrics.get("patroni_xlog_location", "N/A")}`
         - **Timeline:** `{node.get("timeline", "N/A")}`
 
