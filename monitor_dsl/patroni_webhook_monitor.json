@@ -1,0 +1,70 @@
+{
+    "type": "monitor",
+    "name": "Patroni Error Monitor (Webhook)",
+    "monitor_type": "query_level_monitor",
+    "enabled": true,
+    "schedule": {
+        "period": {
+            "interval": 1,
+            "unit": "MINUTES"
+        }
+    },
+    "inputs": [
+        {
+            "search": {
+                "indices": [
+                    "patronidata"
+                ],
+                "query": {
+                    "size": 0,
+                    "query": {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "range": {
+                                        "@timestamp": {
+                                            "gte": "now-1h",
+                                            "lte": "now"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match_phrase": {
+                                        "message": "error"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "triggers": [
+        {
+            "name": "Error Threshold Trigger",
+            "severity": "1",
+            "condition": {
+                "script": {
+                    "source": "ctx.results[0].hits.total.value > 0",
+                    "lang": "painless"
+                }
+            },
+            "actions": [
+                {
+                    "name": "Send Email via Webhook",
+                    "destination_id": "1bSPxJoBDLC7DRstX4Fl",
+                    "message_template": {
+                        "source": "{\n  \"recipient_email\": \"admin@example.com\",\n  \"subject_title\": \"Alert: {{ctx.monitor.name}} Triggered\",\n  \"message\": \"Monitor {{ctx.monitor.name}} detected errors.\\n\\nTrigger: {{ctx.trigger.name}}\\nSeverity: {{ctx.trigger.severity}}\\nPeriod: {{ctx.periodStart}} to {{ctx.periodEnd}}\\n\\nTotal Hits: {{ctx.results.0.hits.total.value}}\"\n}",
+                        "lang": "mustache"
+                    },
+                    "throttle_enabled": false,
+                    "subject_template": {
+                        "source": "Webhook Notification",
+                        "lang": "mustache"
+                    }
+                }
+            ]
+        }
+    ]
+}

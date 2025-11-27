@@ -1,0 +1,115 @@
+{
+    "type": "monitor",
+    "name": "Patroni YAML Configured Monitor",
+    "monitor_type": "query_level_monitor",
+    "enabled": true,
+    "schedule": {
+        "period": {
+            "interval": 1,
+            "unit": "MINUTES"
+        }
+    },
+    "inputs": [
+        {
+            "search": {
+                "indices": [
+                    "patronidata"
+                ],
+                "query": {
+                    "size": 0,
+                    "query": {
+                        "bool": {
+                            "filter": [
+                                {
+                                    "range": {
+                                        "@timestamp": {
+                                            "gte": "now-1h",
+                                            "lte": "now"
+                                        }
+                                    }
+                                },
+                                {
+                                    "wildcard": {
+                                        "host.name.keyword": {
+                                            "value": "patroni*",
+                                            "case_insensitive": true
+                                        }
+                                    }
+                                }
+                            ],
+                            "must": [
+                                {
+                                    "match_phrase": {
+                                        "message": "error"
+                                    }
+                                }
+                            ],
+                            "must_not": [
+                                {
+                                    "match_phrase": {
+                                        "message": "user=,"
+                                    }
+                                }
+                            ],
+                            "should": [
+                                {
+                                    "match_phrase": {
+                                        "message": "e=22000,"
+                                    }
+                                },
+                                {
+                                    "match_phrase": {
+                                        "message": "e=2202E,"
+                                    }
+                                },
+                                {
+                                    "match_phrase": {
+                                        "message": "e=22021,"
+                                    }
+                                },
+                                {
+                                    "match_phrase": {
+                                        "message": "e=22008,"
+                                    }
+                                },
+                                {
+                                    "match_phrase": {
+                                        "message": "e=22012,"
+                                    }
+                                }
+                            ],
+                            "minimum_should_match": 1
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "triggers": [
+        {
+            "name": "Error Count Trigger",
+            "severity": "1",
+            "condition": {
+                "script": {
+                    "source": "ctx.results[0].hits.total.value > 0",
+                    "lang": "painless"
+                }
+            },
+            "actions": [
+                {
+                    "name": "Send Email via Webhook",
+                    "destination_id": "IbTrxJoBDLC7DRstfKLl",
+                    "message_template": {
+                        "source": "{\n  \"recipient_email\": \"admin@example.com\",\n  \"subject_title\": \"Alert: {{ctx.monitor.name}} Triggered\",\n  \"message\": \"Monitor {{ctx.monitor.name}} detected errors.\\n\\nTrigger: {{ctx.trigger.name}}\\nSeverity: {{ctx.trigger.severity}}\\nPeriod: {{ctx.periodStart}} to {{ctx.periodEnd}}\\n\\nTotal Hits: {{ctx.results.0.hits.total.value}}\"\n}\n",
+                        "lang": "mustache"
+                    },
+                    "throttle_enabled": false,
+                    "subject_template": {
+                        "source": "Alert: {{ctx.monitor.name}} Triggered",
+                        "lang": "mustache"
+                    }
+                }
+            ]
+        }
+    ]
+}

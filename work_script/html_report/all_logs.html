@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Report - test-injector</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .summary { background-color: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        .summary-item { font-weight: bold; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.9em; color: white; }
+        .badge-info { background-color: #17a2b8; }
+        .badge-danger { background-color: #dc3545; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f1f3f5; font-weight: 600; }
+        tr:hover { background-color: #f8f9fa; }
+        .timestamp { white-space: nowrap; color: #666; font-family: monospace; }
+        .message { font-family: monospace; font-size: 0.95em; }
+        .no-results { text-align: center; padding: 40px; color: #666; font-style: italic; }
+        .filters { margin-bottom: 20px; font-size: 0.9em; color: #555; }
+        .keyword-tag { background: #e2e6ea; padding: 2px 6px; border-radius: 3px; margin-right: 5px; border: 1px solid #d6d8db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Log Analysis Report</h1>
+        
+        <div class="summary">
+            <div class="summary-item">Host: <span class="badge badge-info">test-injector</span></div>
+            <div class="summary-item">Total Hits: <span class="badge badge-danger">0</span></div>
+            <div class="summary-item">Generated: 2025-11-27 18:33:30</div>
+        </div>
+
+        <div class="filters">
+            <strong>Filters Applied:</strong> 
+            <span class='keyword-tag'>*</span>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="200">Timestamp</th>
+                    <th>Log Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan='2' class='no-results'>No logs found matching the criteria.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

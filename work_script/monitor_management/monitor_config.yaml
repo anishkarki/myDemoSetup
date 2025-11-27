@@ -1,0 +1,46 @@
+monitor:
+  name: "Patroni YAML Configured Monitor"
+  enabled: true
+  schedule:
+    interval: 1
+    unit: "MINUTES"
+  inputs:
+    indices: 
+      - "patronidata"
+    time_range: "1h"
+    host_pattern: "patroni*"
+    filters:
+      - field: "message"
+        match: "error"
+    match_any:
+      - field: "message"
+        match: "e=22000,"
+      - field: "message"
+        match: "e=2202E,"
+      - field: "message"
+        match: "e=22021,"
+      - field: "message"
+        match: "e=22008,"
+      - field: "message"
+        match: "e=22012,"
+    exclude_filters:
+      - field: "message"
+        match: "user=,"
+  triggers:
+    - name: "Error Count Trigger"
+      severity: "1"
+      condition_script: "ctx.results[0].hits.total.value > 0"
+      actions:
+        - name: "Send Email via Webhook"
+          destination_type: "webhook"
+          # Note: The script will attempt to resolve {{HOST_IP}} if present, 
+          # or you can hardcode the IP here.
+          webhook_url: "http://{{HOST_IP}}:5001/webhook/send-email"
+          recipient_email: "admin@example.com"
+          subject: "Alert: {{ctx.monitor.name}} Triggered"
+          message_body: |
+            {
+              "recipient_email": "admin@example.com",
+              "subject_title": "Alert: {{ctx.monitor.name}} Triggered",
+              "message": "Monitor {{ctx.monitor.name}} detected errors.\n\nTrigger: {{ctx.trigger.name}}\nSeverity: {{ctx.trigger.severity}}\nPeriod: {{ctx.periodStart}} to {{ctx.periodEnd}}\n\nTotal Hits: {{ctx.results.0.hits.total.value}}"
+            }
