@@ -1,0 +1,66 @@
+{
+  "type": "monitor",
+  "name": "End-to-End Test Monitor",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "interval": 1,
+      "unit": "MINUTES"
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "patronidata"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "@timestamp": {
+                      "gte": "now-1m",
+                      "lte": "now"
+                    }
+                  }
+                },
+                {
+                  "term": {
+                    "host.name.keyword": "patroni1"
+                  }
+                }
+              ],
+              "should": [
+                {
+                  "wildcard": {
+                    "message": {
+                      "value": "ERROR*",
+                      "case_insensitive": true
+                    }
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Pattern Detected",
+      "severity": "1",
+      "condition": {
+        "script": {
+          "source": "ctx.results[0].hits.total.value > 0",
+          "lang": "painless"
+        }
+      },
+      "actions": []
+    }
+  ]
+}
