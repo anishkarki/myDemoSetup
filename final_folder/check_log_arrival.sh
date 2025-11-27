@@ -49,10 +49,14 @@ usage() {
     cat <<USAGE_EOF
 Usage: $(basename "${0}") [OPTIONS] <hostname|cluster_name> [opensearch_url] [index_name]
 
+Description:
+    Checks for the presence of logs in OpenSearch for a specific hostname or a defined cluster.
+    Returns exit code 0 if logs are found for all targets, 1 otherwise.
+
 Arguments:
-    hostname/cluster The hostname or cluster name (e.g., 'patroni-az') to check.
-    opensearch_url   The OpenSearch URL (default: ${DEFAULT_OPENSEARCH_URL}).
-    index_name       The index pattern to search (default: ${DEFAULT_INDEX}).
+    hostname/cluster    The hostname (e.g., 'patroni1') or cluster alias (e.g., 'patroni-az').
+    opensearch_url      The OpenSearch URL (default: ${DEFAULT_OPENSEARCH_URL}).
+    index_name          The index pattern to search (default: ${DEFAULT_INDEX}).
 
 Options:
     -u, --username <user>   Basic Auth Username (overrides OPENSEARCH_USERNAME)
@@ -63,14 +67,37 @@ Options:
     -h, --help              Show this help message
 
 Environment Variables:
-    OPENSEARCH_USERNAME  Basic Auth Username
-    OPENSEARCH_PASSWORD  Basic Auth Password
-    OPENSEARCH_TOKEN     Bearer Token
+    OPENSEARCH_USERNAME     Basic Auth Username
+    OPENSEARCH_PASSWORD     Basic Auth Password
+    OPENSEARCH_TOKEN        Bearer Token
 
-Example:
-    $(basename "${0}") patroni1
-    $(basename "${0}") patroni-az
-    $(basename "${0}") -u admin -p secret patroni-az
+Examples:
+    1. Simple check for a single host (uses defaults):
+       $(basename "${0}") patroni1
+
+    2. Check a defined cluster (e.g., patroni1, patroni2, etcd):
+       $(basename "${0}") patroni-az
+
+    3. Authentication with Username/Password:
+       $(basename "${0}") -u admin -p mysecret patroni1
+
+    4. Authentication with Bearer Token:
+       $(basename "${0}") --token "eyJhbGciOi..." patroni1
+
+    5. Custom OpenSearch URL and Index (using flags):
+       $(basename "${0}") --url "https://os.example.com:9200" --index "logs-*" patroni1
+
+    6. Custom OpenSearch URL and Index (using positional args):
+       $(basename "${0}") patroni1 "https://os.example.com:9200" "logs-*"
+
+    7. Using Environment Variables for Auth:
+       export OPENSEARCH_USERNAME="admin"
+       export OPENSEARCH_PASSWORD="password"
+       $(basename "${0}") patroni-az
+
+    8. Mixed Flags and Positional Args:
+       $(basename "${0}") -u admin -p pass patroni1 https://custom-url:9200
+
 USAGE_EOF
     exit 1
 }
